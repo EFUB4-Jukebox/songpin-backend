@@ -24,14 +24,14 @@ public class PlaylistPin {
     @JoinColumn(name = "pin_id", nullable = false)
     private Pin pin;
 
-    @Column(name = "index", nullable = false)
-    private int index;
+    @Column(name = "pin_index", nullable = false)
+    private int pinIndex;
 
     @Builder
-    public PlaylistPin(Long playlistPinId, Playlist playlist, Pin pin, int index) {
+    public PlaylistPin(Long playlistPinId, Playlist playlist, Pin pin, int pinIndex) {
         this.playlistPinId = playlistPinId;
         this.playlist = playlist;
         this.pin = pin;
-        this.index = index;
+        this.pinIndex = pinIndex;
     }
 }
