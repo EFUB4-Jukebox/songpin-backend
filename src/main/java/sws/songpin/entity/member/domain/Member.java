@@ -64,8 +64,4 @@ public class Member extends BaseTimeEntity {
         this.isNewAlarm = isNewAlarm;
     }
 
-    public enum Status {
-        ACTIVE,
-        DELETED
-    }
 }

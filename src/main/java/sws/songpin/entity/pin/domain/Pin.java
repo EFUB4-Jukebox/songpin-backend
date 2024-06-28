@@ -58,9 +58,4 @@ public class Pin extends BaseTimeEntity {
         this.visibility = visibility;
     }
 
-    public enum Visibility {
-        PUBLIC,
-        PRIVATE,
-//        FOLLOWERS_ONLY
-    }
 }

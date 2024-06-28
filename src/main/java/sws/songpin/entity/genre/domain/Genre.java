@@ -19,7 +19,8 @@ public class Genre {
     private Long genreId;
 
     @Column(name = "genre_name", nullable = false)
-    private String genreName;
+    @Enumerated(EnumType.STRING)
+    private GenreName genreName;
 
     @OneToMany(mappedBy = "genre", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pin> pins;
