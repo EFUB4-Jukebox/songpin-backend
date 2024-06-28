@@ -5,6 +5,7 @@ import lombok.*;
 import sws.songpin.entity.pin.domain.Pin;
 import sws.songpin.global.BaseTimeEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -29,5 +30,6 @@ public class Genre {
     public Genre(Long genreId, GenreName genreName) {
         this.genreId = genreId;
         this.genreName = genreName;
+        this.pins = new ArrayList<>();
     }
 }
