@@ -10,7 +10,7 @@ import sws.songpin.global.BaseTimeEntity;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class PlaylistPin extends BaseTimeEntity {
+public class PlaylistPin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "playlist_pin_id", updatable = false)

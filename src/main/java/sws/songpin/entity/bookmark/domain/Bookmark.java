@@ -10,7 +10,7 @@ import sws.songpin.global.BaseTimeEntity;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Bookmark extends BaseTimeEntity {
+public class Bookmark {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bookmark_id", updatable = false)

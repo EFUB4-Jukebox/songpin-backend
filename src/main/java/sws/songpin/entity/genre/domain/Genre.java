@@ -26,7 +26,7 @@ public class Genre {
     private List<Pin> pins;
 
     @Builder
-    public Genre(Long genreId, String genreName) {
+    public Genre(Long genreId, GenreName genreName) {
         this.genreId = genreId;
         this.genreName = genreName;
     }
