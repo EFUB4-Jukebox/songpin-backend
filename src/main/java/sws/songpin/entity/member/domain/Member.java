@@ -8,6 +8,7 @@ import lombok.*;
 import sws.songpin.entity.pin.domain.Pin;
 import sws.songpin.global.BaseTimeEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -62,6 +63,7 @@ public class Member extends BaseTimeEntity {
         this.profileImage = profileImage;
         this.status = status;
         this.isNewAlarm = isNewAlarm;
+        this.pins = new ArrayList<>();
     }
 
 }

@@ -5,6 +5,7 @@ import lombok.*;
 import sws.songpin.entity.pin.domain.Pin;
 import sws.songpin.global.BaseTimeEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -40,5 +41,6 @@ public class Place {
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.pins = new ArrayList<>();
     }
 }

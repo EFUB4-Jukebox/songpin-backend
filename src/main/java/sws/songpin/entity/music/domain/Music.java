@@ -5,6 +5,7 @@ import lombok.*;
 import sws.songpin.entity.pin.domain.Pin;
 import sws.songpin.global.BaseTimeEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -36,5 +37,6 @@ public class Music {
         this.title = title;
         this.artist = artist;
         this.imgPath = imgPath;
+        this.pins = new ArrayList<>();
     }
 }
