@@ -2,8 +2,8 @@ package sws.songpin.entity.genre.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import sws.songpin.entity.musicGenre.domain.MusicGenre;
 import sws.songpin.entity.pin.domain.Pin;
-import sws.songpin.global.BaseTimeEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +23,17 @@ public class Genre {
     @Enumerated(EnumType.STRING)
     private GenreName genreName;
 
-    @OneToMany(mappedBy = "genre", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "music", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pin> pins;
+
+    @OneToMany(mappedBy = "genre", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MusicGenre> musicGenres = new ArrayList<>();
 
     @Builder
     public Genre(Long genreId, GenreName genreName) {
         this.genreId = genreId;
         this.genreName = genreName;
         this.pins = new ArrayList<>();
+        this.musicGenres = new ArrayList<>();
     }
 }

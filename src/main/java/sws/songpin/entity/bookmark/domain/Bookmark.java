@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import sws.songpin.entity.member.domain.Member;
 import sws.songpin.entity.playlist.domain.Playlist;
-import sws.songpin.global.BaseTimeEntity;
 
 @Getter
 @Setter
