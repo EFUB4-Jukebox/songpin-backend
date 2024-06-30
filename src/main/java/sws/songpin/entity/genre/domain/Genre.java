@@ -23,7 +23,7 @@ public class Genre {
     @Enumerated(EnumType.STRING)
     private GenreName genreName;
 
-    @OneToMany(mappedBy = "music", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "genre", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pin> pins;
 
     @OneToMany(mappedBy = "genre", cascade = CascadeType.ALL, orphanRemoval = true)
