@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-## ⚠️ Issue
+## ⚠ Issue
 
 
 ## ✏️ To-do
