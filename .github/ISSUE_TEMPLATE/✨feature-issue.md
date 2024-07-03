@@ -1,13 +1,13 @@
 ---
-name: issue-template
-about: 이슈 템플릿입니다.
-title: "[feat]"
+name: "✨feature-issue"
+about: feature 이슈 템플릿입니다.
+title: "[Feat]"
 labels: enhancement
 assignees: ''
 
 ---
 
-## ⚠️ Description
+## ⚠️ Issue
 
 
 ## ✏️ To-do
