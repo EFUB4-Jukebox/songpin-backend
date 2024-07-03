@@ -8,10 +8,10 @@ assignees: ''
 ---
 
 ## ⚠️ Description
-설명
+
 
 ## ✏️ To-do
 ### 기능
-- [ ] 구현내용
+- [ ] 구현 내용
 
 ## Memo
