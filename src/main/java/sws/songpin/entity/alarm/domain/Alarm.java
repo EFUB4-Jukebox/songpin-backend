@@ -19,6 +19,9 @@ public class Alarm extends BaseTimeEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @Column(name = "target_mem_id", nullable = false)
+    private Long targetMemId;
+
     @Column(name = "message", nullable = false)
     private String message;
 
@@ -26,9 +29,10 @@ public class Alarm extends BaseTimeEntity {
     private boolean isChecked;
 
     @Builder
-    public Alarm(Long alarmId, Member member, String message, boolean isChecked) {
+    public Alarm(Long alarmId, Member member, Long targetMemId, String message, boolean isChecked) {
         this.alarmId = alarmId;
         this.member = member;
+        this.targetMemId = targetMemId;
         this.message = message;
         this.isChecked = isChecked;
     }
