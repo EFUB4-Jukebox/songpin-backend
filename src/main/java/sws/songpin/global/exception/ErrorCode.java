@@ -15,6 +15,8 @@ public enum ErrorCode {
 
     // Member
     MEMBER_NOT_FOUND(404, "해당 사용자를 찾을 수 없습니다."),
+    MEMBER_ALREADY_EXIST(409, "이미 가입된 이메일입니다."),
+    PASSWORD_MISMATCH(400,"비밀번호가 일치하지 않습니다."),
 
     ;
 
