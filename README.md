@@ -64,7 +64,5 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 #### branch 규칙
 - `feat -> develop -> deploy -> main` 순으로 merge
 - `feat` : 각 기능을 개발하는 브랜치
-  - 이슈 생성후, branch에서 추가할 내용(ex. feat, refactor, ...)과 이슈번호를 branch 이름으로 생성
-  - 예시: feat/#12
 - `develop` : 각 기능의 개발을 완료하고 테스트 완료 후 병합하는 브랜치
 - `deploy` : 배포 브랜치
