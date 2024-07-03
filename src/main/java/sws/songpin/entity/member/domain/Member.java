@@ -40,8 +40,8 @@ public class Member extends BaseTimeEntity {
     @NotBlank
     private String handle;
 
-    @Column(name = "profile_image")
-    private String profileImage;
+    @Column(name = "profile_img")
+    private ProfileImg profileImg;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -54,13 +54,13 @@ public class Member extends BaseTimeEntity {
     private List<Pin> pins;
 
     @Builder
-    public Member(Long memberId, String email, String password, String nickname, String handle, String profileImage, Status status, boolean isNewAlarm) {
+    public Member(Long memberId, String email, String password, String nickname, String handle, ProfileImg profileImg, Status status, boolean isNewAlarm) {
         this.memberId = memberId;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.handle= handle;
-        this.profileImage = profileImage;
+        this.profileImg = profileImg;
         this.status = status;
         this.isNewAlarm = isNewAlarm;
         this.pins = new ArrayList<>();
