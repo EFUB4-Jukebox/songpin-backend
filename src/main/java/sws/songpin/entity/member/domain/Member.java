@@ -3,7 +3,6 @@ package sws.songpin.entity.member.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import sws.songpin.entity.pin.domain.Pin;
 import sws.songpin.global.BaseTimeEntity;
@@ -54,15 +53,15 @@ public class Member extends BaseTimeEntity {
     private List<Pin> pins;
 
     @Builder
-    public Member(Long memberId, String email, String password, String nickname, String handle, ProfileImg profileImg, Status status, boolean isNewAlarm) {
+    public Member(Long memberId, String email, String password, String nickname, String handle) {
         this.memberId = memberId;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.handle= handle;
-        this.profileImg = profileImg;
-        this.status = status;
-        this.isNewAlarm = isNewAlarm;
+        this.profileImg = ProfileImg.POP;
+        this.status = Status.ACTIVE;
+        this.isNewAlarm = false;
         this.pins = new ArrayList<>();
     }
 
