@@ -40,6 +40,7 @@ public class Member extends BaseTimeEntity {
     private String handle;
 
     @Column(name = "profile_img")
+    @Enumerated(EnumType.STRING)
     private ProfileImg profileImg;
 
     @Column(name = "status", nullable = false)
