@@ -3,7 +3,6 @@ package sws.songpin.entity.follow.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import sws.songpin.entity.member.domain.Member;
-import sws.songpin.global.BaseTimeEntity;
 
 @Getter
 @Setter

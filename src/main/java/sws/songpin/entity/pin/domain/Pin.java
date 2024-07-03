@@ -3,7 +3,7 @@ package sws.songpin.entity.pin.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import sws.songpin.entity.member.domain.Member;
-import sws.songpin.entity.music.domain.Music;
+import sws.songpin.entity.song.domain.Song;
 import sws.songpin.entity.genre.domain.Genre;
 import sws.songpin.entity.place.domain.Place;
 import sws.songpin.global.BaseTimeEntity;
@@ -25,8 +25,8 @@ public class Pin extends BaseTimeEntity {
     private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "music_id", nullable = false)
-    private Music music;
+    @JoinColumn(name = "song_id", nullable = false)
+    private Song song;
 
     @ManyToOne
     @JoinColumn(name = "genre_id", nullable = false)
@@ -47,10 +47,10 @@ public class Pin extends BaseTimeEntity {
     private Visibility visibility;
 
     @Builder
-    public Pin(Long pinId, Member member, Music music, Genre genre, Place place, LocalDate listenedDate, String memo, Visibility visibility) {
+    public Pin(Long pinId, Member member, Song song, Genre genre, Place place, LocalDate listenedDate, String memo, Visibility visibility) {
         this.pinId = pinId;
         this.member = member;
-        this.music = music;
+        this.song = song;
         this.genre = genre;
         this.place = place;
         this.listenedDate = listenedDate;
