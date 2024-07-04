@@ -1,6 +1,7 @@
 package sws.songpin.entity.playlistPin.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import sws.songpin.entity.pin.domain.Pin;
 import sws.songpin.entity.playlist.domain.Playlist;
@@ -15,15 +16,18 @@ public class PlaylistPin {
     @Column(name = "playlist_pin_id", updatable = false)
     private Long playlistPinId;
 
-    @Column(name = "pin_index", nullable = false)
+    @Column(name = "pin_index")
+    @NotNull
     private int pinIndex;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "playlist_id", nullable = false)
+    @JoinColumn(name = "playlist_id")
+    @NotNull
     private Playlist playlist;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pin_id", nullable = false)
+    @JoinColumn(name = "pin_id")
+    @NotNull
     private Pin pin;
 
     @Builder

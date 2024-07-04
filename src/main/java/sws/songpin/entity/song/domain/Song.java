@@ -1,6 +1,7 @@
 package sws.songpin.entity.song.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import sws.songpin.entity.genre.domain.GenreName;
 import sws.songpin.entity.pin.domain.Pin;
@@ -20,10 +21,12 @@ public class Song {
     @Column(name = "song_id", updatable = false)
     private Long songId;
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "title")
+    @NotNull
     private String title;
 
-    @Column(name = "artist", length = 100, nullable = false)
+    @Column(name = "artist", length = 100)
+    @NotNull
     private String artist;
 
     @Column(name = "img_path")

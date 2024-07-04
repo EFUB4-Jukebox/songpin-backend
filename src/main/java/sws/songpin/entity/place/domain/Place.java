@@ -1,6 +1,7 @@
 package sws.songpin.entity.place.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import sws.songpin.entity.pin.domain.Pin;
 
@@ -18,19 +19,24 @@ public class Place {
     @Column(name = "place_id", updatable = false)
     private Long placeId;
 
-    @Column(name = "place_name", length = 100, nullable = false)
+    @Column(name = "place_name", length = 100)
+    @NotNull
     private String placeName;
 
-    @Column(name = "address", nullable = false)
+    @Column(name = "address")
+    @NotNull
     private String address;
 
-    @Column(name = "provider_address_id", nullable = false)
+    @Column(name = "provider_address_id")
+    @NotNull
     private Long providerAddressId;
 
-    @Column(name = "latitude", nullable = false)
+    @Column(name = "latitude")
+    @NotNull
     private double latitude;
 
-    @Column(name = "longitude", nullable = false)
+    @Column(name = "longitude")
+    @NotNull
     private double longitude;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)

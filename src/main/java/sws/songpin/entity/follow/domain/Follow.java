@@ -1,6 +1,7 @@
 package sws.songpin.entity.follow.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import sws.songpin.entity.member.domain.Member;
 
@@ -15,11 +16,13 @@ public class Follow {
     private Long followId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "follower_id", nullable = false, updatable = false)
+    @JoinColumn(name = "follower_id", updatable = false)
+    @NotNull
     private Member follower;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "following_id", nullable = false, updatable = false)
+    @JoinColumn(name = "following_id", updatable = false)
+    @NotNull
     private Member following;
 
     @Builder

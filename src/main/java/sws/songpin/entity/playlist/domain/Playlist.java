@@ -1,6 +1,7 @@
 package sws.songpin.entity.playlist.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import sws.songpin.entity.bookmark.domain.Bookmark;
 import sws.songpin.entity.member.domain.Member;
@@ -22,15 +23,18 @@ public class Playlist extends BaseTimeEntity {
     @Column(name = "playlist_id", updatable = false)
     private Long playlistId;
 
-    @Column(name = "playlist_name", nullable = false)
+    @Column(name = "playlist_name")
+    @NotNull
     private String playlistName;
 
-    @Column(name = "visibility", length = 10, nullable = false)
+    @Column(name = "visibility", length = 10)
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Visibility visibility;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "creator_id", nullable = false, updatable = false)
+    @JoinColumn(name = "creator_id", updatable = false)
+    @NotNull
     private Member creator;
 
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
