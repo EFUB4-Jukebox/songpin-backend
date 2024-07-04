@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import sws.songpin.entity.genre.domain.GenreName;
 import sws.songpin.entity.pin.domain.Pin;
+import sws.songpin.entity.externalApi.model.ProviderType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,13 +30,15 @@ public class Song {
     @Column(name = "img_path")
     private String imgPath;
 
-    @Column(name = "provider_type", length = 10)
-    private String providerType;
+    @Column(name = "provider_type", length = 20)
+    @Enumerated(EnumType.STRING)
+    private ProviderType providerType;
 
     @Column(name = "provider_track_code")
     private String providerTrackCode;
 
-    @Column(name = "avg_genre")
+    @Column(name = "avg_genre", length = 30)
+    @Enumerated(EnumType.STRING)
     private GenreName avgGenre;
 
     @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -43,7 +46,7 @@ public class Song {
 
     @Builder
     public Song(Long songId, String title, String artist, String imgPath,
-                String providerType, String providerTrackCode, GenreName avgGenre) {
+                ProviderType providerType, String providerTrackCode, GenreName avgGenre) {
         this.songId = songId;
         this.title = title;
         this.artist = artist;
