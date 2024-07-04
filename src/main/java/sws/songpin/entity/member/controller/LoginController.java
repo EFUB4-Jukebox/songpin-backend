@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import sws.songpin.entity.member.dto.SignUpRequestDto;
+import sws.songpin.entity.member.dto.request.SignUpRequestDto;
 import sws.songpin.entity.member.service.MemberService;
 
 @RestController

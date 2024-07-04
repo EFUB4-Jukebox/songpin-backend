@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import sws.songpin.entity.member.domain.Member;
-import sws.songpin.entity.member.dto.SignUpRequestDto;
+import sws.songpin.entity.member.dto.request.SignUpRequestDto;
 import sws.songpin.entity.member.repository.MemberRepository;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
