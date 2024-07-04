@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import sws.songpin.entity.genre.domain.GenreName;
 import sws.songpin.entity.pin.domain.Pin;
-import sws.songpin.entity.externalApi.model.ProviderType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +29,6 @@ public class Song {
     @Column(name = "img_path")
     private String imgPath;
 
-    @Column(name = "provider_type", length = 20, nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ProviderType providerType;
-
     @Column(name = "provider_track_code")
     private String providerTrackCode;
 
@@ -45,13 +40,12 @@ public class Song {
     private List<Pin> pins;
 
     @Builder
-    public Song(Long songId, String title, String artist, String imgPath,
-                ProviderType providerType, String providerTrackCode, GenreName avgGenreName) {
+    public Song(Long songId, String title, String artist, String imgPath, String providerTrackCode,
+                GenreName avgGenreName) {
         this.songId = songId;
         this.title = title;
         this.artist = artist;
         this.imgPath = imgPath;
-        this.providerType = providerType;
         this.providerTrackCode = providerTrackCode;
         this.avgGenreName = avgGenreName;
         this.pins = new ArrayList<>();
