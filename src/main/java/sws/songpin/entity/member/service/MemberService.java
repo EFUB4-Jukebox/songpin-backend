@@ -29,7 +29,7 @@ public class MemberService {
 
         //이메일 중복 검사
         if (memberRepository.findByEmail(requestDto.email()).isPresent()) {
-            throw new CustomException(ErrorCode.MEMBER_ALREADY_EXIST);
+            throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
         //비밀번호 일치 검사

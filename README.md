@@ -46,7 +46,7 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
   ```
 
   - PR 체크 리스트
-    -  PR 제목 형식 : `[type] PR 제목`
+    -  PR 제목 형식 : `[Type] PR 제목`
         - ex. `[Chore] 프로젝트 구조 설정`
         - 타입은 대문자로
     -  label 설정
@@ -62,6 +62,7 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 <br>
 
 #### branch 규칙
+- 브랜치 네이밍 규칙: `feat/{도메인혹은큰기능}` ex) `feat/place`
 - `feat -> develop -> deploy -> main` 순으로 merge
 - `feat` : 각 기능을 개발하는 브랜치
 - `develop` : 각 기능의 개발을 완료하고 테스트 완료 후 병합하는 브랜치

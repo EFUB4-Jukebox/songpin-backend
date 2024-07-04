@@ -1,10 +1,10 @@
 package sws.songpin.entity.playlistPin.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import sws.songpin.entity.pin.domain.Pin;
 import sws.songpin.entity.playlist.domain.Playlist;
-import sws.songpin.global.BaseTimeEntity;
 
 @Getter
 @Setter
@@ -16,22 +16,25 @@ public class PlaylistPin {
     @Column(name = "playlist_pin_id", updatable = false)
     private Long playlistPinId;
 
-    @ManyToOne
-    @JoinColumn(name = "playlist_id", nullable = false)
-    private Playlist playlist;
-
-    @ManyToOne
-    @JoinColumn(name = "pin_id", nullable = false)
-    private Pin pin;
-
-    @Column(name = "pin_index", nullable = false)
+    @Column(name = "pin_index")
+    @NotNull
     private int pinIndex;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "playlist_id")
+    @NotNull
+    private Playlist playlist;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pin_id")
+    @NotNull
+    private Pin pin;
+
     @Builder
-    public PlaylistPin(Long playlistPinId, Playlist playlist, Pin pin, int pinIndex) {
+    public PlaylistPin(Long playlistPinId, int pinIndex, Playlist playlist, Pin pin) {
         this.playlistPinId = playlistPinId;
+        this.pinIndex = pinIndex;
         this.playlist = playlist;
         this.pin = pin;
-        this.pinIndex = pinIndex;
     }
 }

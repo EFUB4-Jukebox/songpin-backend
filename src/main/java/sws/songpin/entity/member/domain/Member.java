@@ -3,6 +3,7 @@ package sws.songpin.entity.member.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import sws.songpin.entity.pin.domain.Pin;
 import sws.songpin.global.BaseTimeEntity;
@@ -21,33 +22,40 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id", updatable = false)
     private Long memberId;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", length = 50, unique = true)
+    @NotNull
     @Email
     @NotBlank
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", length = 20)
+    @NotNull
     @NotBlank
     private String password;
 
-    @Column(name = "nickname", nullable = false)
+    @Column(name = "nickname", length = 10)
+    @NotNull
     @NotBlank
     private String nickname;
 
-    @Column(name = "handle", nullable = false, unique = true)
+    @Column(name = "handle", length = 12, unique = true)
+    @NotNull
     @NotBlank
     private String handle;
 
-    @Column(name = "profile_img")
+    @Column(name = "profile_img", length = 30)
+    @NotNull
     @Enumerated(EnumType.STRING)
     private ProfileImg profileImg;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", length = 10)
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @Column(name = "is_new_alarm", nullable = false)
-    private boolean isNewAlarm;
+    @Column(name = "is_new_alarm")
+    @NotNull
+    private Boolean isNewAlarm;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pin> pins;
@@ -64,5 +72,4 @@ public class Member extends BaseTimeEntity {
         this.isNewAlarm = false;
         this.pins = new ArrayList<>();
     }
-
 }
