@@ -20,31 +20,31 @@ public class Pin extends BaseTimeEntity {
     @Column(name = "pin_id", updatable = false)
     private Long pinId;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
-
-    @ManyToOne
-    @JoinColumn(name = "song_id", nullable = false)
-    private Song song;
-
-    @ManyToOne
-    @JoinColumn(name = "genre_id", nullable = false)
-    private Genre genre;
-
-    @ManyToOne
-    @JoinColumn(name = "place_id", nullable = false)
-    private Place place;
-
     @Column(name = "listened_date", nullable = false)
     private LocalDate listenedDate;
 
-    @Column(name = "memo", length = 200)
+    @Column(name = "memo", length = 200, nullable = false)
     private String memo;
 
-    @Column(name = "visibility", nullable = false)
+    @Column(name = "visibility", length = 10, nullable = false)
     @Enumerated(EnumType.STRING)
     private Visibility visibility;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false, updatable = false)
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "song_id", nullable = false, updatable = false)
+    private Song song;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "place_id", nullable = false, updatable = false)
+    private Place place;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "genre_id", nullable = false)
+    private Genre genre;
 
     @Builder
     public Pin(Long pinId, Member member, Song song, Genre genre, Place place, LocalDate listenedDate, String memo, Visibility visibility) {
