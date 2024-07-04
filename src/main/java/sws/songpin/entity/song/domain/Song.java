@@ -2,8 +2,7 @@ package sws.songpin.entity.song.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import sws.songpin.entity.genre.domain.Genre;
-import sws.songpin.entity.songGenre.domain.SongGenre;
+import sws.songpin.entity.genre.domain.GenreName;
 import sws.songpin.entity.pin.domain.Pin;
 
 import java.util.ArrayList;
@@ -24,30 +23,31 @@ public class Song {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "artist", nullable = false)
+    @Column(name = "artist", length = 100, nullable = false)
     private String artist;
 
     @Column(name = "img_path")
     private String imgPath;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "avg_genre")
-    private Genre avgGenre;
+    @Column(name = "provider_track_code")
+    private String providerTrackCode;
+
+    @Column(name = "avg_genre", length = 30)
+    @Enumerated(EnumType.STRING)
+    private GenreName avgGenreName;
 
     @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pin> pins;
 
-    @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SongGenre> songGenres = new ArrayList<>();
-
     @Builder
-    public Song(Long songId, String title, String artist, String imgPath, Genre avgGenre) {
+    public Song(Long songId, String title, String artist, String imgPath, String providerTrackCode,
+                GenreName avgGenreName) {
         this.songId = songId;
         this.title = title;
         this.artist = artist;
         this.imgPath = imgPath;
-        this.avgGenre = avgGenre;
+        this.providerTrackCode = providerTrackCode;
+        this.avgGenreName = avgGenreName;
         this.pins = new ArrayList<>();
-        this.songGenres = new ArrayList<>();
     }
 }

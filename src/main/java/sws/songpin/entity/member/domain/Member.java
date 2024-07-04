@@ -3,8 +3,8 @@ package sws.songpin.entity.member.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import sws.songpin.entity.pin.domain.Pin;
 import sws.songpin.global.BaseTimeEntity;
 
@@ -22,48 +22,47 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id", updatable = false)
     private Long memberId;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", length = 50, nullable = false, unique = true)
     @Email
     @NotBlank
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", length = 20, nullable = false)
     @NotBlank
     private String password;
 
-    @Column(name = "nickname", nullable = false)
+    @Column(name = "nickname", length = 10, nullable = false)
     @NotBlank
     private String nickname;
 
-    @Column(name = "handle", nullable = false, unique = true)
+    @Column(name = "handle", length = 12, nullable = false, unique = true)
     @NotBlank
     private String handle;
 
-    @Column(name = "profile_img")
+    @Column(name = "profile_img", length = 30, nullable = false)
     @Enumerated(EnumType.STRING)
     private ProfileImg profileImg;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", length = 10, nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
 
     @Column(name = "is_new_alarm", nullable = false)
-    private boolean isNewAlarm;
+    private Boolean isNewAlarm;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pin> pins;
 
     @Builder
-    public Member(Long memberId, String email, String password, String nickname, String handle, ProfileImg profileImg, Status status, boolean isNewAlarm) {
+    public Member(Long memberId, String email, String password, String nickname, String handle) {
         this.memberId = memberId;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.handle= handle;
-        this.profileImg = profileImg;
-        this.status = status;
-        this.isNewAlarm = isNewAlarm;
+        this.profileImg = ProfileImg.POP;
+        this.status = Status.ACTIVE;
+        this.isNewAlarm = false;
         this.pins = new ArrayList<>();
     }
-
 }

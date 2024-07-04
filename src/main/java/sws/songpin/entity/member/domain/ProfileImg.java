@@ -3,9 +3,9 @@ package sws.songpin.entity.member.domain;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum ProfileImg {
+    POP, // 팝
     ROCK, // 락&메탈
     BALLAD, // 발라드
-    POP, // 팝
     JAZZ, // 재즈
     HIPHOP, // 힙합
     LOFI, // 로파이

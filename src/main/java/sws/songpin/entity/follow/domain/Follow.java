@@ -14,12 +14,12 @@ public class Follow {
     @Column(name = "follow_id", updatable = false)
     private Long followId;
 
-    @ManyToOne
-    @JoinColumn(name = "follower_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "follower_id", nullable = false, updatable = false)
     private Member follower;
 
-    @ManyToOne
-    @JoinColumn(name = "following_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "following_id", nullable = false, updatable = false)
     private Member following;
 
     @Builder

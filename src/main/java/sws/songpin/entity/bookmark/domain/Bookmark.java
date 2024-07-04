@@ -15,12 +15,12 @@ public class Bookmark {
     @Column(name = "bookmark_id", updatable = false)
     private Long bookmarkId;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false, updatable = false)
     private Member member;
 
-    @ManyToOne
-    @JoinColumn(name = "playlist_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "playlist_id", nullable = false, updatable = false)
     private Playlist playlist;
 
     @Builder

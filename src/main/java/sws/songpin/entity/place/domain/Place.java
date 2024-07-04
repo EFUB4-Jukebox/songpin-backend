@@ -3,7 +3,6 @@ package sws.songpin.entity.place.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import sws.songpin.entity.pin.domain.Pin;
-import sws.songpin.global.BaseTimeEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +18,14 @@ public class Place {
     @Column(name = "place_id", updatable = false)
     private Long placeId;
 
-    @Column(name = "place_name", nullable = false)
+    @Column(name = "place_name", length = 100, nullable = false)
     private String placeName;
 
     @Column(name = "address", nullable = false)
     private String address;
+
+    @Column(name = "provider_address_id", nullable = false)
+    private Long providerAddressId;
 
     @Column(name = "latitude", nullable = false)
     private double latitude;
@@ -35,10 +37,12 @@ public class Place {
     private List<Pin> pins;
 
     @Builder
-    public Place(Long placeId, String placeName, String address, double latitude, double longitude) {
+    public Place(Long placeId, String placeName, String address, Long providerAddressId,
+                 double latitude, double longitude) {
         this.placeId = placeId;
         this.placeName = placeName;
         this.address = address;
+        this.providerAddressId = providerAddressId;
         this.latitude = latitude;
         this.longitude = longitude;
         this.pins = new ArrayList<>();
