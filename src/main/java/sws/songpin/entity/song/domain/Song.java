@@ -30,7 +30,7 @@ public class Song {
     @Column(name = "img_path")
     private String imgPath;
 
-    @Column(name = "provider_type", length = 20)
+    @Column(name = "provider_type", length = 20, nullable = false)
     @Enumerated(EnumType.STRING)
     private ProviderType providerType;
 

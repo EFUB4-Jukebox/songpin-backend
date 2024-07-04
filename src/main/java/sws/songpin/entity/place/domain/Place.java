@@ -19,13 +19,13 @@ public class Place {
     @Column(name = "place_id", updatable = false)
     private Long placeId;
 
-    @Column(name = "place_name", nullable = false)
+    @Column(name = "place_name", length = 100, nullable = false)
     private String placeName;
 
     @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "provider_type", length = 20)
+    @Column(name = "provider_type", length = 20, nullable = false)
     @Enumerated(EnumType.STRING)
     private ProviderType providerType;
 
