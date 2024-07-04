@@ -47,15 +47,16 @@ public class Pin extends BaseTimeEntity {
     private Genre genre;
 
     @Builder
-    public Pin(Long pinId, Member member, Song song, Genre genre, Place place, LocalDate listenedDate, String memo, Visibility visibility) {
+    public Pin(Long pinId, LocalDate listenedDate, String memo, Visibility visibility,
+               Member member, Song song, Place place, Genre genre) {
         this.pinId = pinId;
-        this.member = member;
-        this.song = song;
-        this.genre = genre;
-        this.place = place;
         this.listenedDate = listenedDate;
         this.memo = memo;
         this.visibility = visibility;
+        this.member = member;
+        this.song = song;
+        this.place = place;
+        this.genre = genre;
     }
 
 }

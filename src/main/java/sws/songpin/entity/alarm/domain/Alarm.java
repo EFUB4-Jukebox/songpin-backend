@@ -20,7 +20,7 @@ public class Alarm extends BaseTimeEntity {
     private String message;
 
     @Column(name = "target_mem_id")
-    private Long targetMemId; // NULL일 수 있음
+    private Long targetMemId;
 
     @Column(name = "is_checked", nullable = false)
     @ColumnDefault("false")
