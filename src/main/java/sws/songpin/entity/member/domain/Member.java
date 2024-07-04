@@ -41,7 +41,6 @@ public class Member extends BaseTimeEntity {
 
     @Column(name = "profile_img", length = 30, nullable = false)
     @Enumerated(EnumType.STRING)
-    @ColumnDefault("POP")
     private ProfileImg profileImg;
 
     @Column(name = "status", length = 10, nullable = false)
@@ -49,24 +48,21 @@ public class Member extends BaseTimeEntity {
     private Status status;
 
     @Column(name = "is_new_alarm", nullable = false)
-    @ColumnDefault("false")
     private Boolean isNewAlarm;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pin> pins;
 
     @Builder
-    public Member(Long memberId, String email, String password, String nickname, String handle,
-                  ProfileImg profileImg, Status status, Boolean isNewAlarm) {
+    public Member(Long memberId, String email, String password, String nickname, String handle) {
         this.memberId = memberId;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
-        this.handle = handle;
-        this.profileImg = profileImg;
-        this.status = status;
-        this.isNewAlarm = isNewAlarm;
+        this.handle= handle;
+        this.profileImg = ProfileImg.POP;
+        this.status = Status.ACTIVE;
+        this.isNewAlarm = false;
         this.pins = new ArrayList<>();
     }
-
 }
