@@ -1,6 +1,7 @@
 package sws.songpin.entity.bookmark.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import sws.songpin.entity.member.domain.Member;
 import sws.songpin.entity.playlist.domain.Playlist;
@@ -16,11 +17,13 @@ public class Bookmark {
     private Long bookmarkId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false, updatable = false)
+    @JoinColumn(name = "member_id", updatable = false)
+    @NotNull
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "playlist_id", nullable = false, updatable = false)
+    @JoinColumn(name = "playlist_id", updatable = false)
+    @NotNull
     private Playlist playlist;
 
     @Builder

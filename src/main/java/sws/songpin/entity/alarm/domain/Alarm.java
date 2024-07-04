@@ -1,6 +1,7 @@
 package sws.songpin.entity.alarm.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import sws.songpin.entity.member.domain.Member;
@@ -16,18 +17,21 @@ public class Alarm extends BaseTimeEntity {
     @Column(name = "alarm_id", updatable = false)
     private Long alarmId;
 
-    @Column(name = "message", length = 100, nullable = false)
+    @Column(name = "message", length = 100)
+    @NotNull
     private String message;
 
     @Column(name = "target_mem_id")
     private Long targetMemId;
 
-    @Column(name = "is_checked", nullable = false)
+    @Column(name = "is_checked")
+    @NotNull
     @ColumnDefault("false")
     private Boolean isChecked;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false, updatable = false)
+    @JoinColumn(name = "member_id", updatable = false)
+    @NotNull
     private Member member;
 
     @Builder
