@@ -2,12 +2,17 @@ package sws.songpin.global.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
     // 도메인
     // 타입(상태 코드, "메시지");
+
+    INVALID_INPUT_FORMAT(400, "유효하지 않은 형식입니다."),
+    INVALID_INPUT_LENGTH(400, "입력 길이가 잘못되었습니다."),
+    INVALID_INPUT_VALUE(400, "입력값이 잘못되었습니다."),
 
     // Default
     ERROR(400, "요청 처리에 실패했습니다."),
