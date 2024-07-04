@@ -39,21 +39,21 @@ public class Song {
 
     @Column(name = "avg_genre", length = 30)
     @Enumerated(EnumType.STRING)
-    private GenreName avgGenre;
+    private GenreName avgGenreName;
 
     @OneToMany(mappedBy = "song", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pin> pins;
 
     @Builder
     public Song(Long songId, String title, String artist, String imgPath,
-                ProviderType providerType, String providerTrackCode, GenreName avgGenre) {
+                ProviderType providerType, String providerTrackCode, GenreName avgGenreName) {
         this.songId = songId;
         this.title = title;
         this.artist = artist;
         this.imgPath = imgPath;
         this.providerType = providerType;
         this.providerTrackCode = providerTrackCode;
-        this.avgGenre = avgGenre;
+        this.avgGenreName = avgGenreName;
         this.pins = new ArrayList<>();
     }
 }
