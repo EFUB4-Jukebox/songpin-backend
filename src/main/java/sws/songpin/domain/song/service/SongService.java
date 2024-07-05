@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.song.entity.Song;
+import sws.songpin.domain.song.repository.SongRepository;
 import sws.songpin.global.spotify.SpotifyUtil;
 import sws.songpin.domain.genre.entity.Genre;
 
@@ -16,9 +17,10 @@ import java.util.stream.Collectors;
 public class SongService {
 
     private final SpotifyUtil spotifyUtil;
+    private final SongRepository songRepository;
 
     public List<Song> createSongsFromSpotify(String query, int limit, int offset) {
-        List<Track> tracks = spotifyUtil.searchTracks(query, limit, offset);
+        List<Track> tracks = spotifyUtil.searchTracks(query);
         List<Song> songs = new ArrayList<>();
 
         for (Track track : tracks) {
@@ -48,5 +50,14 @@ public class SongService {
                 .map(Map.Entry::getKey)
                 .findFirst()
                 .get(); // 예외를 던지지 않고 결과가 항상 있다고 가정
+    }
+
+    public Optional<Song> getSong(String title, String artist, String imgPath) {
+        return songRepository.findByTitleAndArtist(title, artist)
+                .or(() -> Optional.of(songRepository.save(Song.builder()
+                        .title(title)
+                        .artist(artist)
+                        .imgPath(imgPath)
+                        .build())));
     }
 }

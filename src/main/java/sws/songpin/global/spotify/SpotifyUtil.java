@@ -19,6 +19,10 @@ public class SpotifyUtil {
 
     private final SpotifyApi spotifyApi;
 
+    // limit, offset은 검색결과의 페이징 또는 무한스크롤을 위함
+    private static final int LIMIT = 8;
+    private static final int OFFSET = 0;
+
     // 동기적
     public String authenticate() {
         ClientCredentialsRequest clientCredentialsRequest = spotifyApi.clientCredentials().build();
@@ -32,11 +36,11 @@ public class SpotifyUtil {
         }
     }
 
-    // limit, offset은 페이징 또는 무한스크롤을 위함
-    public List<Track> searchTracks(String query, int limit, int offset) {
+    public List<Track> searchTracks(String query) {
         authenticate();
 
-        SearchTracksRequest searchTracksRequest = spotifyApi.searchTracks(query).limit(limit).offset(offset).build();
+        String searchQuery = "track:" + query + " artist:" + query; // 가수 또는 제목(트랙)에 대해 검색
+        SearchTracksRequest searchTracksRequest = spotifyApi.searchTracks(query).limit(LIMIT).offset(OFFSET).build();
         List<Track> tracks = new ArrayList<>();
         try {
             Paging<Track> trackPaging = searchTracksRequest.execute();
