@@ -1,8 +1,8 @@
-package sws.songpin.domain.playlistPin.repository;
+package sws.songpin.domain.playlistpin.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import sws.songpin.domain.playlist.entity.Playlist;
-import sws.songpin.domain.playlistPin.entity.PlaylistPin;
+import sws.songpin.domain.playlistpin.entity.PlaylistPin;
 
 import java.util.List;
 

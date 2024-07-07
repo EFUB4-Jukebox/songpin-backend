@@ -13,8 +13,8 @@ import sws.songpin.domain.playlist.dto.request.PlaylistUpdateRequestDto;
 import sws.songpin.domain.playlist.dto.response.PlaylistResponseDto;
 import sws.songpin.domain.playlist.entity.Playlist;
 import sws.songpin.domain.playlist.repository.PlaylistRepository;
-import sws.songpin.domain.playlistPin.entity.PlaylistPin;
-import sws.songpin.domain.playlistPin.repository.PlaylistPinRepository;
+import sws.songpin.domain.playlistpin.entity.PlaylistPin;
+import sws.songpin.domain.playlistpin.repository.PlaylistPinRepository;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 

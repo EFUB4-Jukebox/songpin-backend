@@ -6,7 +6,7 @@ import lombok.*;
 import sws.songpin.domain.bookmark.entity.Bookmark;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.pin.domain.Visibility;
-import sws.songpin.domain.playlistPin.entity.PlaylistPin;
+import sws.songpin.domain.playlistpin.entity.PlaylistPin;
 import sws.songpin.global.BaseTimeEntity;
 
 import java.util.ArrayList;

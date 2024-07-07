@@ -1,4 +1,4 @@
-package sws.songpin.domain.playlistPin.entity;
+package sws.songpin.domain.playlistpin.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
