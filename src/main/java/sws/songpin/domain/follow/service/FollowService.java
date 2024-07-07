@@ -39,7 +39,7 @@ public class FollowService {
             throw new CustomException(ErrorCode.FOLLOW_ALREADY_EXISTS);
         }
         Follow follow = followRepository.save(FollowAddRequestDto.toEntity(follower, following));
-        return FollowAddResponseDto.fromEntity(follow);
+        return FollowAddResponseDto.from(follow);
     }
 
     // 팔로우 삭제
@@ -72,7 +72,7 @@ public class FollowService {
                     );
                 })
                 .collect(Collectors.toList());
-        return FollowerListResponseDto.fromEntity(targetMember.equals(currentMember), targetMember.getHandle(), followDtoList);
+        return FollowerListResponseDto.from(targetMember.equals(currentMember), targetMember.getHandle(), followDtoList);
     }
 
     // 특정 사용자의 팔로잉 목록 조회
@@ -94,7 +94,7 @@ public class FollowService {
                     );
                 })
                 .collect(Collectors.toList());
-        return FollowingListResponseDto.fromEntity(targetMember.equals(currentMember), targetMember.getHandle(), followDtoList);
+        return FollowingListResponseDto.from(targetMember.equals(currentMember), targetMember.getHandle(), followDtoList);
     }
 
     // Member가 팔로잉중인지 확인하고 followId를 가져오기 위한 캐시를 생성해 반환 (팔로워 목록 조회, 팔로잉 목록 조회 시 사용)
