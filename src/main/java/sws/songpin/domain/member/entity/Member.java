@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import sws.songpin.domain.pin.domain.Pin;
+import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.global.BaseTimeEntity;
 
 import java.util.ArrayList;
@@ -28,7 +28,6 @@ public class Member extends BaseTimeEntity {
     @NotBlank
     private String email;
 
-    @Column(name = "password", length = 20)
     @NotNull
     @NotBlank
     private String password;

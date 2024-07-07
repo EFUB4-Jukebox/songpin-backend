@@ -3,7 +3,7 @@ package sws.songpin.domain.playlistPin.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import sws.songpin.domain.pin.domain.Pin;
+import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.playlist.entity.Playlist;
 
 @Getter
