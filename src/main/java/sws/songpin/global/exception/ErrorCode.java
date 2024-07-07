@@ -44,6 +44,7 @@ public enum ErrorCode {
     GENRE_NOT_FOUND(404, "장르를 찾을 수 없습니다."),
     FOLLOW_NOT_FOUND(404, "팔로우를 찾을 수 없습니다."),
     ALARM_NOT_FOUND(404, "알람을 찾을 수 없습니다."),
+    PLAYLIST_PIN_NOT_FOUND(404, "플레이리스트 핀을 찾을 수 없습니다."),
 
     // 409 Conflict
     // 중복 리소스 생성 시도
