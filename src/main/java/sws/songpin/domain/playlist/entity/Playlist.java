@@ -23,7 +23,7 @@ public class Playlist extends BaseTimeEntity {
     @Column(name = "playlist_id", updatable = false)
     private Long playlistId;
 
-    @Column(name = "playlist_name")
+    @Column(name = "playlist_name", length = 40)
     @NotNull
     private String playlistName;
 
@@ -52,4 +52,14 @@ public class Playlist extends BaseTimeEntity {
         this.playlistPins = new ArrayList<>();
         this.bookmarks = new ArrayList<>();
     }
+
+    public void updatePlaylistName(String playlistName){
+        this.playlistName = playlistName;
+    }
+
+    public void updateVisibility(Visibility visibility){
+        this.visibility = visibility;
+    }
+
+    public int pinCount = 0;
 }

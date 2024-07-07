@@ -37,4 +37,8 @@ public class PlaylistPin {
         this.playlist = playlist;
         this.pin = pin;
     }
+
+    public void updatePinIndex(int pinIndex) {
+        this.pinIndex = pinIndex;
+    }
 }
