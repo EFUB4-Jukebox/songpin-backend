@@ -1,7 +1,9 @@
 package sws.songpin.domain.genre.service;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.genre.repository.GenreRepository;
@@ -9,12 +11,26 @@ import sws.songpin.domain.genre.repository.GenreRepository;
 import java.util.Optional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class GenreService {
-
     private final GenreRepository genreRepository;
 
-    public Optional<Genre> getGenre(String genreName) {
-        return genreRepository.findByGenreName(GenreName.from(genreName));
+    // DB에 이미 넣어놨다면 필요없음
+    @PostConstruct
+    public void initGenres() {
+        for (GenreName genreName : GenreName.values()) {
+            genreRepository.findByGenreName(genreName).orElseGet(() -> {
+                Genre genre = Genre.builder()
+                        .genreName(genreName)
+                        .build();
+                return genreRepository.save(genre);
+            });
+        }
     }
+
+    public Optional<Genre> getGenreByName(GenreName genreName) {
+        return genreRepository.findByGenreName(genreName);
+    }
+
 }

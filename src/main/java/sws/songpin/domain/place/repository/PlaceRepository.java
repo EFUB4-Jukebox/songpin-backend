@@ -6,6 +6,7 @@ import sws.songpin.domain.place.entity.Place;
 
 import java.util.Optional;
 
+
 public interface PlaceRepository extends JpaRepository<Place, Long> {
-    Optional<Place> findByPlaceName(String placeName);
+    Optional<Place> findByProviderAddressId(Long providerAddressId);
 }

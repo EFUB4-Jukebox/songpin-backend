@@ -28,7 +28,6 @@ public class Member extends BaseTimeEntity {
     @NotBlank
     private String email;
 
-    @Column(name = "password", length = 20)
     @NotNull
     @NotBlank
     private String password;

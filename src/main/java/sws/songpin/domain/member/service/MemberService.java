@@ -9,6 +9,7 @@ import sws.songpin.domain.member.repository.MemberRepository;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -18,9 +19,10 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     //개발 진행을 위한 임시 메서드
-    public Member getCurrentMember(){
-        return memberRepository.findById((long)1).get();
+    public Optional<Member> getCurrentMember() {
+        return memberRepository.findById(1L);
     }
+
     public Member getMemberById(Long memberId){
         return memberRepository.findById(memberId).get();
     }

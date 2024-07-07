@@ -39,11 +39,13 @@ public enum ErrorCode {
     PIN_NOT_FOUND(404, "핀을 찾을 수 없습니다."),
     PLAYLIST_NOT_FOUND(404, "플레이리스트를 찾을 수 없습니다."),
     BOOKMARK_NOT_FOUND(404, "북마크를 찾을 수 없습니다."),
+    GENRE_NOT_FOUND(404, "장르를 찾을 수 없습니다."),
 
     // 409 Conflict
     // 중복 리소스 생성 시도
     EMAIL_ALREADY_EXISTS(409, "이미 가입된 이메일입니다."),
     BOOKMARK_ALREADY_EXISTS(409, "이미 북마크가 되어있습니다."),
+    PIN_ALREADY_EXISTS(409, "이미 추가된 핀입니다."),
 
     // 500 Internal Server Error
     // 외부 API 사용 도중 에러

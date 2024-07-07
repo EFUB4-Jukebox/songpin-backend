@@ -2,14 +2,17 @@ package sws.songpin.domain.song.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import se.michaelthelin.spotify.model_objects.specification.Track;
+import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.genre.entity.GenreName;
+import sws.songpin.domain.pin.dto.request.PinRequestDto;
 import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.song.repository.SongRepository;
-import sws.songpin.global.spotify.SpotifyUtil;
-import sws.songpin.domain.genre.entity.Genre;
+import sws.songpin.domain.song.spotify.SpotifyUtil;
+import se.michaelthelin.spotify.model_objects.specification.Track;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,28 +22,23 @@ public class SongService {
     private final SpotifyUtil spotifyUtil;
     private final SongRepository songRepository;
 
-    public List<Song> createSongsFromSpotify(String query, int limit, int offset) {
-        List<Track> tracks = spotifyUtil.searchTracks(query);
-        List<Song> songs = new ArrayList<>();
-
-        for (Track track : tracks) {
-            String imgPath = track.getAlbum().getImages().length > 0 ? track.getAlbum().getImages()[0].getUrl() : null;
-            String providerTrackCode = track.getId();
-
-            Song song = Song.builder()
-                    .title(track.getName())
-                    .artist(track.getArtists()[0].getName())
-                    .imgPath(imgPath)
-                    .providerTrackCode(providerTrackCode)
-                    .build();
-
-            songs.add(song);
-        }
-
-        return songs;
+    public List<PinRequestDto.SongRequestDto> searchTracks(String keyword, int offset) {
+        List<Track> tracks = spotifyUtil.searchTracks(keyword, offset);
+        return tracks.stream()
+                .map(track -> new PinRequestDto.SongRequestDto(
+                        track.getName(),
+                        spotifyUtil.getArtistNames(track),
+                        track.getAlbum().getImages().length > 0 ? track.getAlbum().getImages()[0].getUrl() : null,
+                        track.getId()
+                ))
+                .collect(Collectors.toList());
     }
 
-    public GenreName findMostCommonGenre(List<Genre> genres) {
+    public Optional<Song> getSongByProviderTrackCode(String providerTrackCode) {
+        return songRepository.findByProviderTrackCode(providerTrackCode);
+    }
+
+    public Optional<GenreName> findAvgGenreName(List<Genre> genres) {
         Map<GenreName, Long> genreCount = genres.stream()
                 .collect(Collectors.groupingBy(Genre::getGenreName, Collectors.counting()));
 
@@ -48,16 +46,15 @@ public class SongService {
                 .sorted(Map.Entry.<GenreName, Long>comparingByValue().reversed()
                         .thenComparing(Map.Entry::getKey))
                 .map(Map.Entry::getKey)
-                .findFirst()
-                .get(); // 예외를 던지지 않고 결과가 항상 있다고 가정
+                .findFirst();
     }
 
-    public Optional<Song> getSong(String title, String artist, String imgPath) {
-        return songRepository.findByTitleAndArtist(title, artist)
-                .or(() -> Optional.of(songRepository.save(Song.builder()
-                        .title(title)
-                        .artist(artist)
-                        .imgPath(imgPath)
-                        .build())));
+    public Song createSong(Song song) {
+        return songRepository.save(song);
+    }
+
+    // 임시 개발용
+    public Optional<Song> getSong(Long id) {
+        return songRepository.findById(id);
     }
 }
