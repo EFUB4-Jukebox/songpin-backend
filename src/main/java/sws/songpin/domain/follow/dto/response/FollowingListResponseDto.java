@@ -5,9 +5,9 @@ import java.util.List;
 public record FollowingListResponseDto(
         boolean isMe,
         String handle,
-        List<FollowListDto> followingList
+        List<FollowDto> followingList
 ) {
-    public static FollowingListResponseDto fromEntity(boolean isMe, String handle, List<FollowListDto> followingListDtos) {
-        return new FollowingListResponseDto(isMe, handle, followingListDtos);
+    public static FollowingListResponseDto fromEntity(boolean isMe, String handle, List<FollowDto> followDtoList) {
+        return new FollowingListResponseDto(isMe, handle, followDtoList);
     }
 }

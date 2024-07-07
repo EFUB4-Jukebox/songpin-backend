@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.follow.dto.request.FollowAddRequestDto;
 import sws.songpin.domain.follow.dto.response.FollowAddResponseDto;
-import sws.songpin.domain.follow.dto.response.FollowListDto;
+import sws.songpin.domain.follow.dto.response.FollowDto;
 import sws.songpin.domain.follow.dto.response.FollowerListResponseDto;
 import sws.songpin.domain.follow.dto.response.FollowingListResponseDto;
 import sws.songpin.domain.follow.entity.Follow;
@@ -59,10 +59,10 @@ public class FollowSerivce {
         Member currentMember = memberService.getCurrentMember();
         Map<Member, Long> currentMemberFollowingCache = getMemberFollowingCache(currentMember);
 
-        List<FollowListDto> followerListDtos = followerList.stream()
+        List<FollowDto> followDtoList = followerList.stream()
                 .map(follow -> {
                     Member follower = follow.getFollower();
-                    return new FollowListDto(
+                    return new FollowDto(
                             follower.getMemberId(),
                             follower.getProfileImg(),
                             follower.getNickname(),
@@ -71,7 +71,7 @@ public class FollowSerivce {
                     );
                 })
                 .collect(Collectors.toList());
-        return FollowerListResponseDto.fromEntity(targetMember.equals(currentMember), targetMember.getHandle(), followerListDtos);
+        return FollowerListResponseDto.fromEntity(targetMember.equals(currentMember), targetMember.getHandle(), followDtoList);
     }
 
     // 특정 사용자의 팔로잉 목록 조회
@@ -81,10 +81,10 @@ public class FollowSerivce {
         Member currentMember = memberService.getCurrentMember();
         Map<Member, Long> currentMemberFollowingCache = getMemberFollowingCache(currentMember);
 
-        List<FollowListDto> followingListDtos = followingList.stream()
+        List<FollowDto> followDtoList = followingList.stream()
                 .map(follow -> {
                     Member following = follow.getFollowing();
-                    return new FollowListDto(
+                    return new FollowDto(
                             following.getMemberId(),
                             following.getProfileImg(),
                             following.getNickname(),
@@ -93,7 +93,7 @@ public class FollowSerivce {
                     );
                 })
                 .collect(Collectors.toList());
-        return FollowingListResponseDto.fromEntity(targetMember.equals(currentMember), targetMember.getHandle(), followingListDtos);
+        return FollowingListResponseDto.fromEntity(targetMember.equals(currentMember), targetMember.getHandle(), followDtoList);
     }
 
     // Member가 팔로잉중인지 확인하고 followId를 가져오기 위한 캐시를 생성해 반환 (팔로워 목록 조회, 팔로잉 목록 조회 시 사용)
