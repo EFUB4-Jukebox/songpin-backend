@@ -1,6 +1,8 @@
 package sws.songpin.domain.member.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import sws.songpin.global.exception.CustomException;
+import sws.songpin.global.exception.ErrorCode;
 
 public enum ProfileImg {
     POP, // 팝
@@ -15,6 +17,10 @@ public enum ProfileImg {
 
     @JsonCreator
     public static ProfileImg from(String s) {
-        return ProfileImg.valueOf(s.toUpperCase());
+        try {
+            return ProfileImg.valueOf(s.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
+        }
     }
 }
