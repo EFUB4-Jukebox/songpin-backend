@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
@@ -27,6 +28,7 @@ public class Member extends BaseTimeEntity {
     @NotBlank
     private String email;
 
+    @Column(name = "password")
     @NotNull
     @NotBlank
     private String password;

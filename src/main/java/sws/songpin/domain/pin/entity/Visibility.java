@@ -1,6 +1,8 @@
 package sws.songpin.domain.pin.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import sws.songpin.global.exception.CustomException;
+import sws.songpin.global.exception.ErrorCode;
 
 public enum Visibility {
     PUBLIC,
@@ -9,6 +11,10 @@ public enum Visibility {
 
     @JsonCreator
     public static Visibility from(String s) {
-        return Visibility.valueOf(s.toUpperCase());
+        try {
+            return Visibility.valueOf(s.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
+        }
     }
 }
