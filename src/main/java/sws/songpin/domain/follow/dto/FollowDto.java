@@ -1,4 +1,4 @@
-package sws.songpin.domain.follow.dto.response;
+package sws.songpin.domain.follow.dto;
 
 import sws.songpin.domain.member.entity.ProfileImg;
 

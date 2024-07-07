@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.follow.dto.request.FollowAddRequestDto;
 import sws.songpin.domain.follow.dto.response.FollowAddResponseDto;
-import sws.songpin.domain.follow.dto.response.FollowDto;
+import sws.songpin.domain.follow.dto.FollowDto;
 import sws.songpin.domain.follow.dto.response.FollowerListResponseDto;
 import sws.songpin.domain.follow.dto.response.FollowingListResponseDto;
 import sws.songpin.domain.follow.entity.Follow;
