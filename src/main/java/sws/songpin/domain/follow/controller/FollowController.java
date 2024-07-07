@@ -1,4 +1,4 @@
-package sws.songpin.domain.follow.dto.controller;
+package sws.songpin.domain.follow.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
