@@ -4,14 +4,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import sws.songpin.domain.genre.entity.GenreName;
-import sws.songpin.domain.pin.domain.Pin;
+import sws.songpin.domain.pin.entity.Pin;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
@@ -52,5 +51,9 @@ public class Song {
         this.providerTrackCode = providerTrackCode;
         this.avgGenreName = avgGenreName;
         this.pins = new ArrayList<>();
+    }
+
+    public void setAvgGenreName(GenreName avgGenreName) {
+        this.avgGenreName = avgGenreName;
     }
 }

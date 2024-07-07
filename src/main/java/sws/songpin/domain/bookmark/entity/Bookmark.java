@@ -7,7 +7,6 @@ import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.playlist.entity.Playlist;
 
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Bookmark {

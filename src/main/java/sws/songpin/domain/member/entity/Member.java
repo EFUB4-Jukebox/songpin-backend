@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import sws.songpin.domain.pin.domain.Pin;
+import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.global.BaseTimeEntity;
 
 import java.util.ArrayList;

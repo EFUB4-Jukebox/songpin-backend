@@ -3,13 +3,12 @@ package sws.songpin.domain.place.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import sws.songpin.domain.pin.domain.Pin;
+import sws.songpin.domain.pin.entity.Pin;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity

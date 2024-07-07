@@ -8,6 +8,7 @@ import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
 import org.springframework.format.number.NumberFormatAnnotationFormatterFactory;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.format.DateTimeFormatter;
 
@@ -36,5 +37,10 @@ public class AppConfig {
         dateRegistrar.registerFormatters(conversionService);
 
         return conversionService;
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }
