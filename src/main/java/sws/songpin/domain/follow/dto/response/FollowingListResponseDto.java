@@ -1,7 +1,5 @@
 package sws.songpin.domain.follow.dto.response;
 
-import sws.songpin.domain.follow.dto.FollowDto;
-
 import java.util.List;
 
 public record FollowingListResponseDto(
