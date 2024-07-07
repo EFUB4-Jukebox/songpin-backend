@@ -42,10 +42,13 @@ public enum ErrorCode {
     PLAYLIST_NOT_FOUND(404, "플레이리스트를 찾을 수 없습니다."),
     BOOKMARK_NOT_FOUND(404, "북마크를 찾을 수 없습니다."),
     GENRE_NOT_FOUND(404, "장르를 찾을 수 없습니다."),
+    FOLLOW_NOT_FOUND(404, "팔로우를 찾을 수 없습니다."),
+    ALARM_NOT_FOUND(404, "알람을 찾을 수 없습니다."),
 
     // 409 Conflict
     // 중복 리소스 생성 시도
     EMAIL_ALREADY_EXISTS(409, "이미 가입된 이메일입니다."),
+    FOLLOW_ALREADY_EXISTS(409, "이미 팔로우하고 있습니다."),
     BOOKMARK_ALREADY_EXISTS(409, "이미 북마크가 되어있습니다."),
 
     // 500 Internal Server Error
