@@ -1,4 +1,4 @@
-package sws.songpin.domain.pin.domain;
+package sws.songpin.domain.pin.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import sws.songpin.global.exception.CustomException;

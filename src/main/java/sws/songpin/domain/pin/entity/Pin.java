@@ -1,4 +1,4 @@
-package sws.songpin.domain.pin.domain;
+package sws.songpin.domain.pin.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -12,7 +12,6 @@ import sws.songpin.global.BaseTimeEntity;
 import java.time.LocalDate;
 
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Pin extends BaseTimeEntity {

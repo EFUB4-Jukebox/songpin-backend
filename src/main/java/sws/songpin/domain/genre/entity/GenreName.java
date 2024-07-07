@@ -17,7 +17,7 @@ public enum GenreName {
 
     // ex. JSON 데이터 "POP"라는 문자열 -> GenreName.POP으로 변환
     @JsonCreator
-    public static GenreName from2(String s) {
+    public static GenreName from(String s) {
         try {
             return GenreName.valueOf(s.toUpperCase());
         } catch (IllegalArgumentException e) {
