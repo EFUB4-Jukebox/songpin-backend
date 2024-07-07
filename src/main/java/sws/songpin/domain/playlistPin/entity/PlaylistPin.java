@@ -7,7 +7,6 @@ import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.playlist.entity.Playlist;
 
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class PlaylistPin {

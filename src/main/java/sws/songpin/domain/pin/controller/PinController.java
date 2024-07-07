@@ -15,6 +15,7 @@ public class PinController {
 
     private final PinService pinService;
 
+    // responseDto로 반환하도록 수정해야할듯
     @PostMapping
     public ResponseEntity<Void> createPin(@Valid @RequestBody PinRequestDto pinRequestDto) {
         pinService.createPin(pinRequestDto);
