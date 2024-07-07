@@ -1,6 +1,8 @@
 package sws.songpin.domain.genre.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import sws.songpin.global.exception.CustomException;
+import sws.songpin.global.exception.ErrorCode;
 
 public enum GenreName {
     POP, // 팝
@@ -15,7 +17,11 @@ public enum GenreName {
 
     // ex. JSON 데이터 "POP"라는 문자열 -> GenreName.POP으로 변환
     @JsonCreator
-    public static GenreName from(String s) {
-        return GenreName.valueOf(s.toUpperCase());
+    public static GenreName from2(String s) {
+        try {
+            return GenreName.valueOf(s.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
+        }
     }
 }

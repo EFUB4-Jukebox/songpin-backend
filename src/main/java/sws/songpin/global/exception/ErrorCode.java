@@ -25,11 +25,13 @@ public enum ErrorCode {
     INVALID_TOKEN(400, "유효하지 않은 토큰입니다."),
     // 자신과 관련해 불가능한 요청
     MEMBER_BAD_REQUEST(400, "자기 자신은 이 경로를 통해 조회할 수 없습니다."),
-    FOLLOW_BAD_REQUEST(400,"자기 자신은 팔로잉할 수 없습니다."),
+    FOLLOW_BAD_REQUEST(400,"팔로잉을 처리할 수 없습니다."),
 
     // 401 Unauthorized
     // 로그인 상태여야 하는 요청
     NOT_AUTHENTICATED(401, "로그인 상태가 아닙니다."),
+    // 권한이 없는 요청을 보냄
+    UNAUTHORIZED_REQUEST(401,"권한이 없습니다."),
 
     // 404 Not Found
     // 각 리소스를 찾지 못함
@@ -39,10 +41,13 @@ public enum ErrorCode {
     PIN_NOT_FOUND(404, "핀을 찾을 수 없습니다."),
     PLAYLIST_NOT_FOUND(404, "플레이리스트를 찾을 수 없습니다."),
     BOOKMARK_NOT_FOUND(404, "북마크를 찾을 수 없습니다."),
+    FOLLOW_NOT_FOUND(404, "팔로우를 찾을 수 없습니다."),
+    ALARM_NOT_FOUND(404, "알람을 찾을 수 없습니다."),
 
     // 409 Conflict
     // 중복 리소스 생성 시도
     EMAIL_ALREADY_EXISTS(409, "이미 가입된 이메일입니다."),
+    FOLLOW_ALREADY_EXISTS(409, "이미 팔로우하고 있습니다."),
     BOOKMARK_ALREADY_EXISTS(409, "이미 북마크가 되어있습니다."),
 
     // 500 Internal Server Error
