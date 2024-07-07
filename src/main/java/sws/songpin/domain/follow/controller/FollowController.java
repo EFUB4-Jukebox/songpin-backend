@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.follow.dto.request.FollowAddRequestDto;
-import sws.songpin.domain.follow.service.FollowSerivce;
+import sws.songpin.domain.follow.service.FollowService;
 
 @RestController
 @RequiredArgsConstructor
 public class FollowController {
-    private final FollowSerivce followService;
+    private final FollowService followService;
 
     @GetMapping("/members/{memberId}/followings")
     public ResponseEntity<?> followingList(@PathVariable final Long memberId) {

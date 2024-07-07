@@ -20,8 +20,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
-public class FollowSerivce {
+public class FollowService {
     private final FollowRepository followRepository;
     private final MemberService memberService;
 
