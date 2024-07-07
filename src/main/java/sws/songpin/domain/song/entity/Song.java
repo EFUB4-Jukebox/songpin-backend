@@ -11,7 +11,6 @@ import java.util.List;
 
 
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
@@ -52,5 +51,9 @@ public class Song {
         this.providerTrackCode = providerTrackCode;
         this.avgGenreName = avgGenreName;
         this.pins = new ArrayList<>();
+    }
+
+    public void setAvgGenreName(GenreName avgGenreName) {
+        this.avgGenreName = avgGenreName;
     }
 }

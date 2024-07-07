@@ -19,9 +19,9 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     //개발 진행을 위한 임시 메서드
-    public Optional<Member> getCurrentMember() {
-        return memberRepository.findById(1L);
-    }
+    public Member getCurrentMember(){
+        return memberRepository.findById((long) 1)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND)); }
 
     public Member getMemberById(Long memberId){
         return memberRepository.findById(memberId).get();

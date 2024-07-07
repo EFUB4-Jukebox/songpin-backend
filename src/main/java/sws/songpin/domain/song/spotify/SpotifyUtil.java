@@ -91,7 +91,7 @@ public class SpotifyUtil {
         return matchedTracks;
     }
 
-    public String getArtistNames(Track track) {  // 메서드를 public으로 변경
+    public String getArtistNames(Track track) {
         List<String> artistNames = new ArrayList<>();
         for (var artist : track.getArtists()) {
             artistNames.add(artist.getName());

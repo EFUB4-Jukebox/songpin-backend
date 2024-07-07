@@ -35,16 +35,14 @@ public class PinService {
     private final GenreService genreService;
 
     public Pin createPin(PinRequestDto pinRequestDto) {
-        Member member = memberService.getCurrentMember()
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Member member = memberService.getCurrentMember();
         Optional<Song> song = songService.getSongByProviderTrackCode(pinRequestDto.song().providerTrackCode());
         Optional<Place> place = placeService.getPlaceByProviderAddressId(pinRequestDto.place().providerAddressId());
-        Genre genre = genreService.getGenreByName(pinRequestDto.genreName())
-                .orElseThrow(() -> new CustomException(ErrorCode.GENRE_NOT_FOUND));
+        Genre genre = genreService.getGenreByGenreName(pinRequestDto.genreName());
 
-        if (pinRepository.existsByMemberAndSongAndPlaceAndListenedDate(member, song.orElse(null), place.orElse(null), pinRequestDto.listenedDate())) {
-            throw new CustomException(ErrorCode.PIN_ALREADY_EXISTS);
-        }
+//        if (pinRepository.existsByMemberAndSongAndPlaceAndListenedDate(member, song.orElse(null), place.orElse(null), pinRequestDto.listenedDate())) {
+//            throw new CustomException(ErrorCode.PIN_ALREADY_EXISTS);
+//        }
 
         Place finalPlace;
         if (place.isEmpty()) {
@@ -96,7 +94,7 @@ public class PinService {
                 .map(Pin::getGenre)
                 .collect(Collectors.toList());
 
-        Optional<GenreName> avgGenreName = songService.findAvgGenreName(genres);
+        Optional<GenreName> avgGenreName = songService.calculateAvgGenreName(genres);
         avgGenreName.ifPresent(song::setAvgGenreName);
         songRepository.save(song);
     }

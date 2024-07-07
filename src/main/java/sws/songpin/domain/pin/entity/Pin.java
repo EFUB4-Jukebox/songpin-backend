@@ -12,7 +12,6 @@ import sws.songpin.global.BaseTimeEntity;
 import java.time.LocalDate;
 
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Pin extends BaseTimeEntity {

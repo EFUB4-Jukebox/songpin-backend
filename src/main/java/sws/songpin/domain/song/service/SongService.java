@@ -38,7 +38,7 @@ public class SongService {
         return songRepository.findByProviderTrackCode(providerTrackCode);
     }
 
-    public Optional<GenreName> findAvgGenreName(List<Genre> genres) {
+    public Optional<GenreName> calculateAvgGenreName(List<Genre> genres) {
         Map<GenreName, Long> genreCount = genres.stream()
                 .collect(Collectors.groupingBy(Genre::getGenreName, Collectors.counting()));
 

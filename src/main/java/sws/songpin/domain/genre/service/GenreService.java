@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.genre.repository.GenreRepository;
-
-import java.util.Optional;
+import sws.songpin.global.exception.CustomException;
+import sws.songpin.global.exception.ErrorCode;
 
 @Service
 @Transactional
@@ -29,8 +29,9 @@ public class GenreService {
         }
     }
 
-    public Optional<Genre> getGenreByName(GenreName genreName) {
-        return genreRepository.findByGenreName(genreName);
+    public Genre getGenreByGenreName(GenreName genreName) {
+        return genreRepository.findByGenreName(genreName)
+                .orElseThrow(() -> new CustomException(ErrorCode.GENRE_NOT_FOUND));
     }
 
 }

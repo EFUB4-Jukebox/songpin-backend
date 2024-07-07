@@ -8,7 +8,6 @@ import sws.songpin.domain.member.entity.Member;
 import sws.songpin.global.BaseTimeEntity;
 
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Alarm extends BaseTimeEntity {
