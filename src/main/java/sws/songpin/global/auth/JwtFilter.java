@@ -1,0 +1,49 @@
+package sws.songpin.global.auth;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.data.redis.RedisConnectionFailureException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
+import sws.songpin.global.exception.CustomException;
+import sws.songpin.global.exception.ErrorCode;
+
+import java.io.IOException;
+
+@RequiredArgsConstructor
+@Log4j2
+public class JwtFilter extends OncePerRequestFilter {
+    private final JwtUtil jwtUtil;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        String authorizationHeader = request.getHeader("Authorization");
+
+        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer")){
+            String token = authorizationHeader.substring(7);
+
+            try{
+                if(jwtUtil.validateToken(token)){
+                    Authentication authentication = jwtUtil.getAuthentication(token);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (RedisConnectionFailureException e){
+                SecurityContextHolder.clearContext();
+                throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);
+            } catch (Exception e){
+                throw new CustomException(ErrorCode.INVALID_TOKEN);
+            }
+
+        }
+
+        filterChain.doFilter(request,response);
+
+
+    }
+}
