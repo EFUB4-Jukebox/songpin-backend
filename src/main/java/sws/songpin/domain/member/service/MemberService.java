@@ -16,7 +16,6 @@ import sws.songpin.global.auth.JwtUtil;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -27,10 +26,12 @@ public class MemberService {
     //개발 진행을 위한 임시 메서드
     public Member getCurrentMember(){
         return memberRepository.findById((long) 1)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND)); }
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    }
 
     public Member getMemberById(Long memberId){
-        return memberRepository.findById(memberId).get();
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
 }
