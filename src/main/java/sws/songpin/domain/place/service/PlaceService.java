@@ -22,5 +22,4 @@ public class PlaceService {
     public Optional<Place> getPlaceByProviderAddressId(Long providerAddressId) {
         return placeRepository.findByProviderAddressId(providerAddressId);
     }
-
 }
