@@ -1,8 +1,11 @@
 package sws.songpin.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.dto.request.SignUpRequestDto;
 import sws.songpin.domain.member.repository.MemberRepository;
@@ -17,12 +20,14 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    //개발 진행을 위한 임시 메서드
+    @Transactional(readOnly = true)
     public Member getCurrentMember(){
-        return memberRepository.findById((long) 1)
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return memberRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
     public Member getMemberById(Long memberId){
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
