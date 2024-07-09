@@ -1,7 +1,9 @@
 package sws.songpin.domain.playlist.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+
 public record PlaylistPinRequestDto(
-        Long playlistId,
-        Long pinId
+        @NotNull Long playlistId,
+        @NotNull Long pinId
 ) {
 }
