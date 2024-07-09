@@ -1,6 +1,7 @@
 package sws.songpin.domain.playlist.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.member.entity.Member;
@@ -9,6 +10,7 @@ import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.playlist.dto.request.PlaylistPinRequestDto;
+import sws.songpin.domain.playlist.dto.response.PlaylistCreateResponseDto;
 import sws.songpin.domain.playlist.dto.response.PlaylistPinUpdateDto;
 import sws.songpin.domain.playlist.dto.request.PlaylistRequestDto;
 import sws.songpin.domain.playlist.dto.request.PlaylistUpdateRequestDto;
@@ -25,6 +27,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -36,11 +39,11 @@ public class PlaylistService {
     private final PinService pinService;
 
     // 플레이리스트 생성
-    public Long createPlaylist(PlaylistRequestDto requestDto) {
+    public PlaylistCreateResponseDto createPlaylist(PlaylistRequestDto requestDto) {
         Member member = memberService.getCurrentMember();
         Playlist playlist = requestDto.toEntity(member);
         Playlist savedPlaylist = playlistRepository.save(playlist);
-        return savedPlaylist.getPlaylistId();
+        return PlaylistCreateResponseDto.from(savedPlaylist);
     }
 
     @Transactional(readOnly = true)
@@ -121,36 +124,62 @@ public class PlaylistService {
         // 현재 핀 리스트 가져오기
         List<PlaylistPin> currentPins = playlist.getPlaylistPins();
 
-        // 핀 삭제 처리
+        // 요청된 핀 리스트 가져오기
         List<Long> requestedPinIds = requestDto.pinList().stream()
                 .map(PlaylistPinUpdateDto::playlistPinId)
                 .collect(Collectors.toList());
-        List<PlaylistPin> remainingPins = currentPins.stream()
-                .filter(pin -> {
-                    if (!requestedPinIds.contains(pin.getPlaylistPinId())) {
-                        playlistPinRepository.delete(pin);
-                        return false;
-                    }
-                    return true;
-                })
-                .collect(Collectors.toList());
 
-        // 인덱스 재조정
-        for (int i = 0; i < remainingPins.size(); i++) {
-            PlaylistPin playlistPin = remainingPins.get(i);
-            playlistPin.updatePinIndex(i);
-            playlistPinRepository.save(remainingPins.get(i));
-        }
+        // 핀 삭제 & 순서 변경
+        List<PlaylistPin> updatedPins = new ArrayList<>();
+        for (PlaylistPin currentPin : currentPins) {
+            // 핀 삭제
+            if (!requestedPinIds.contains(currentPin.getPlaylistPinId())) {
+                playlistPinRepository.delete(currentPin);
+                log.info("삭제 확인");
 
-        // 핀 순서 변경
-        for (PlaylistPinUpdateDto pinDto : requestDto.pinList()) {
-            PlaylistPin playlistPin = currentPins.stream()
-                    .filter(pin -> pin.getPlaylistPinId().equals(pinDto.playlistPinId()))
-                    .findFirst()
-                    .orElseThrow(() -> new CustomException(ErrorCode.PLAYLIST_PIN_NOT_FOUND));
-            playlistPin.updatePinIndex(pinDto.pinIndex());
-            playlistPinRepository.save(playlistPin);
+
+            } else {
+                // 핀 순서 변경
+                PlaylistPinUpdateDto pinDto = requestDto.pinList().stream()
+                        .filter(dto -> dto.playlistPinId().equals(currentPin.getPlaylistPinId()))
+                        .findFirst()
+                        .orElseThrow(() -> new CustomException(ErrorCode.PLAYLIST_PIN_NOT_FOUND));
+                currentPin.updatePinIndex(pinDto.pinIndex());
+                updatedPins.add(currentPin);
+            }
         }
+        playlistPinRepository.saveAll(updatedPins);
+
+//        // 핀 삭제 처리
+//        List<Long> requestedPinIds = requestDto.pinList().stream()
+//                .map(PlaylistPinUpdateDto::playlistPinId)
+//                .collect(Collectors.toList());
+//        List<PlaylistPin> remainingPins = currentPins.stream()
+//                .filter(pin -> {
+//                    if (!requestedPinIds.contains(pin.getPlaylistPinId())) {
+//                        playlistPinRepository.delete(pin);
+//                        return false;
+//                    }
+//                    return true;
+//                })
+//                .collect(Collectors.toList());
+//
+//        // 인덱스 재조정
+//        for (int i = 0; i < remainingPins.size(); i++) {
+//            PlaylistPin playlistPin = remainingPins.get(i);
+//            playlistPin.updatePinIndex(i);
+//            playlistPinRepository.save(remainingPins.get(i));
+//        }
+//
+//        // 핀 순서 변경
+//        for (PlaylistPinUpdateDto pinDto : requestDto.pinList()) {
+//            PlaylistPin playlistPin = currentPins.stream()
+//                    .filter(pin -> pin.getPlaylistPinId().equals(pinDto.playlistPinId()))
+//                    .findFirst()
+//                    .orElseThrow(() -> new CustomException(ErrorCode.PLAYLIST_PIN_NOT_FOUND));
+//            playlistPin.updatePinIndex(pinDto.pinIndex());
+//            playlistPinRepository.save(playlistPin);
+//        }
     }
 
     // 플레이리스트 삭제

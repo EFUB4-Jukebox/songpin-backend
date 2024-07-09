@@ -12,7 +12,6 @@ public record PlaylistResponseDto(
         String playlistName,
         Long creatorId,
         String creatorNickname,
-//        int pinCount,
         LocalDate updatedDate,
         Visibility visibility,
         List<String> imgPathList,

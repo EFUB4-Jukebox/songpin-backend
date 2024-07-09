@@ -10,6 +10,5 @@ public record PlaylistUpdateRequestDto(
         @Size(max = 40, message = "INVALID_INPUT_LENGTH-플레이리스트 이름은 40자 이내여야 합니다.")
         String playlistName,
         Visibility visibility,
-        int pinCount,
         List<PlaylistPinUpdateDto> pinList) {
 }
