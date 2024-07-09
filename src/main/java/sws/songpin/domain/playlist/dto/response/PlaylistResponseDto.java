@@ -1,7 +1,7 @@
 package sws.songpin.domain.playlist.dto.response;
 
 import sws.songpin.domain.genre.entity.GenreName;
-import sws.songpin.domain.pin.domain.Visibility;
+import sws.songpin.domain.pin.entity.Visibility;
 import sws.songpin.domain.playlist.entity.Playlist;
 
 import java.time.LocalDate;
@@ -12,20 +12,19 @@ public record PlaylistResponseDto(
         String playlistName,
         Long creatorId,
         String creatorNickname,
-        int pinCount,
+//        int pinCount,
         LocalDate updatedDate,
         Visibility visibility,
         List<String> imgPathList,
         Long bookmarkId,
         List<PlaylistPinListDto> pinList) {
 
-    public static PlaylistResponseDto fromEntity(Playlist playlist, List<String> imgPathList, List<PlaylistPinListDto> pinList) {
+    public static PlaylistResponseDto from(Playlist playlist, List<String> imgPathList, List<PlaylistPinListDto> pinList) {
         return new PlaylistResponseDto(
                 false, // isMine (추후 추가)
                 playlist.getPlaylistName(),
                 playlist.getCreator().getMemberId(),
                 playlist.getCreator().getNickname(),
-                playlist.getPinCount(),
                 playlist.getModifiedTime().toLocalDate(),
                 playlist.getVisibility(),
                 imgPathList,

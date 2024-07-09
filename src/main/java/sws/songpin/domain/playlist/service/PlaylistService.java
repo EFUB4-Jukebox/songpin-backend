@@ -20,6 +20,7 @@ import sws.songpin.domain.playlistpin.repository.PlaylistPinRepository;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,7 +66,10 @@ public class PlaylistService {
                 .playlist(playlist)
                 .pin(pin)
                 .build();
-        playlistPinRepository.save(playlistPin);
+//        playlistPinRepository.save(playlistPin);
+        List<PlaylistPin> newPlaylistPins = new ArrayList<>();
+        newPlaylistPins.add(playlistPin);
+        playlistPinRepository.saveAll(newPlaylistPins);
     }
 
     // 플레이리스트 상세 정보 가져오기
@@ -73,32 +77,38 @@ public class PlaylistService {
     public PlaylistResponseDto getPlaylist(Long playlistId) {
         Playlist playlist = findPlaylistById(playlistId);
         List<PlaylistPin> playlistPinList = playlist.getPlaylistPins();
-        // imgPathList
-        List<String> imgPathList = playlistPinList.stream()
+        // imgPathList, pinList
+        List<PlaylistResponseDto.PlaylistPinListDto> pinList = new ArrayList<>();
+        List<String> imgPathList = new ArrayList<>();
+
+        playlistPinList.stream()
                 .sorted(Comparator.comparingInt(PlaylistPin::getPinIndex))
-                .limit(4)
-                .map(playlistPin -> playlistPin.getPin().getSong().getImgPath())
-                .collect(Collectors.toList());
-        // pinList
-        List<PlaylistResponseDto.PlaylistPinListDto> pinList = playlistPinList.stream()
-                .map(playlistPin -> new PlaylistResponseDto.PlaylistPinListDto(
-                        playlistPin.getPlaylistPinId(),
-                        playlistPin.getPin().getPinId(),
-                        // SongInfo
-                        new PlaylistResponseDto.SongInfo(
-                                playlistPin.getPin().getSong().getSongId(),
-                                playlistPin.getPin().getSong().getTitle(),
-                                playlistPin.getPin().getSong().getArtist(),
-                                playlistPin.getPin().getSong().getImgPath()
-                        ),
-                        playlistPin.getPin().getListenedDate(),
-                        playlistPin.getPin().getPlace().getPlaceName(),
-                        playlistPin.getPin().getPlace().getProviderAddressId(),
-                        playlistPin.getPin().getGenre().getGenreName(),
-                        playlistPin.getPinIndex()
-                ))
-                .collect(Collectors.toList());
-        return PlaylistResponseDto.fromEntity(playlist, imgPathList, pinList);
+                .forEach(playlistPin -> {
+                    // SongInfo
+                    PlaylistResponseDto.SongInfo songInfo = new PlaylistResponseDto.SongInfo(
+                            playlistPin.getPin().getSong().getSongId(),
+                            playlistPin.getPin().getSong().getTitle(),
+                            playlistPin.getPin().getSong().getArtist(),
+                            playlistPin.getPin().getSong().getImgPath()
+                    );
+                    // PlaylistPinListDto
+                    PlaylistResponseDto.PlaylistPinListDto pinListDto = new PlaylistResponseDto.PlaylistPinListDto(
+                            playlistPin.getPlaylistPinId(),
+                            playlistPin.getPin().getPinId(),
+                            songInfo,
+                            playlistPin.getPin().getListenedDate(),
+                            playlistPin.getPin().getPlace().getPlaceName(),
+                            playlistPin.getPin().getPlace().getProviderAddressId(),
+                            playlistPin.getPin().getGenre().getGenreName(),
+                            playlistPin.getPinIndex()
+                    );
+                    pinList.add(pinListDto);
+
+                    if (imgPathList.size() < 3) {
+                        imgPathList.add(playlistPin.getPin().getSong().getImgPath());
+                    }
+                });
+        return PlaylistResponseDto.from(playlist, imgPathList, pinList);
     }
 
     // 플레이리스트 편집
