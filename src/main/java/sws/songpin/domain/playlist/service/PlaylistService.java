@@ -131,13 +131,11 @@ public class PlaylistService {
 
         // 핀 삭제 & 순서 변경
         List<PlaylistPin> updatedPins = new ArrayList<>();
+        List<PlaylistPin> pinsToDelete = new ArrayList<>();
         for (PlaylistPin currentPin : currentPins) {
             // 핀 삭제
             if (!requestedPinIds.contains(currentPin.getPlaylistPinId())) {
-                playlistPinRepository.delete(currentPin);
-                log.info("삭제 확인");
-
-
+                pinsToDelete.add(currentPin);
             } else {
                 // 핀 순서 변경
                 PlaylistPinUpdateDto pinDto = requestDto.pinList().stream()
@@ -148,6 +146,12 @@ public class PlaylistService {
                 updatedPins.add(currentPin);
             }
         }
+        for (PlaylistPin pin : pinsToDelete) {
+            log.info("핀 삭제: " + pin.getPlaylistPinId());
+            playlist.removePlaylistPin(pin);
+            playlistPinRepository.delete(pin);
+        }
+        log.info("핀 업데이트: " + updatedPins);
         playlistPinRepository.saveAll(updatedPins);
 
 //        // 핀 삭제 처리

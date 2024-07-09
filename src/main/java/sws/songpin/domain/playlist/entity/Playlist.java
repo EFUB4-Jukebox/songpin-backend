@@ -61,5 +61,10 @@ public class Playlist extends BaseTimeEntity {
         this.visibility = visibility;
     }
 
+    public void removePlaylistPin(PlaylistPin currentPin) {
+        playlistPins.remove(currentPin);
+        currentPin.setPlaylist(null);
+    }
+
 //    public int pinCount = 0;
 }

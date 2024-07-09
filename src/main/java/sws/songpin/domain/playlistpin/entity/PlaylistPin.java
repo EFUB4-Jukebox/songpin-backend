@@ -40,4 +40,8 @@ public class PlaylistPin {
     public void updatePinIndex(int pinIndex) {
         this.pinIndex = pinIndex;
     }
+
+    public void setPlaylist(Playlist playlist) {
+        this.playlist = playlist;
+    }
 }
