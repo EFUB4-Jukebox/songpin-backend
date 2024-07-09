@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
-import sws.songpin.domain.pin.domain.Pin;
+import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.pin.repository.PinRepository;
+import sws.songpin.domain.pin.service.PinService;
+import sws.songpin.domain.playlist.dto.request.PlaylistPinRequestDto;
 import sws.songpin.domain.playlist.dto.response.PlaylistPinUpdateDto;
 import sws.songpin.domain.playlist.dto.request.PlaylistRequestDto;
 import sws.songpin.domain.playlist.dto.request.PlaylistUpdateRequestDto;
@@ -20,6 +22,7 @@ import sws.songpin.global.exception.ErrorCode;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +33,7 @@ public class PlaylistService {
     private final PlaylistPinRepository playlistPinRepository;
     private final PinRepository pinRepository;
     private final MemberService memberService;
+    private final PinService pinService;
 
     // 플레이리스트 생성
     public Long createPlaylist(PlaylistRequestDto requestDto) {
@@ -46,10 +50,11 @@ public class PlaylistService {
     }
 
     // 플레이리스트에 핀 추가
-    public void addPlaylistPin(Playlist playlist, Pin pin) {
+    public void addPlaylistPin(PlaylistPinRequestDto requestDto) {
+        Playlist playlist = findPlaylistById(requestDto.playlistId());
+        Optional<Pin> pin = pinService.getPinById(requestDto.pinId());
         int pinIndex = playlist.getPinCount()+1;
         playlist.setPinCount(pinIndex);
-
         PlaylistPin playlistPin = PlaylistPin.builder()
                 .pinIndex(pinIndex)
                 .playlist(playlist)
