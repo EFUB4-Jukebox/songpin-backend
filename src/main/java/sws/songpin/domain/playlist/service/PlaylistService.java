@@ -63,16 +63,19 @@ public class PlaylistService {
         if (pinExists) {
             throw new CustomException(ErrorCode.PIN_ALREADY_EXISTS);
         }
-        int pinIndex = playlist.getPlaylistPins().size() + 1;
+        int pinIndex = playlist.getPlaylistPins().size();
         PlaylistPin playlistPin = PlaylistPin.builder()
                 .pinIndex(pinIndex)
                 .playlist(playlist)
                 .pin(pin)
                 .build();
-//        playlistPinRepository.save(playlistPin);
-        List<PlaylistPin> newPlaylistPins = new ArrayList<>();
-        newPlaylistPins.add(playlistPin);
-        playlistPinRepository.saveAll(newPlaylistPins);
+        // modifiedTime 갱신
+        playlist.updatePlaylistName(playlist.getPlaylistName()+" ");
+        playlistRepository.saveAndFlush(playlist);
+        playlist.updatePlaylistName(playlist.getPlaylistName().trim());
+        // 핀 추가
+        playlist.addPlaylistPin(playlistPin);
+        playlistRepository.save(playlist);
     }
 
     // 플레이리스트 상세 정보 가져오기
@@ -147,43 +150,10 @@ public class PlaylistService {
             }
         }
         for (PlaylistPin pin : pinsToDelete) {
-            log.info("핀 삭제: " + pin.getPlaylistPinId());
             playlist.removePlaylistPin(pin);
             playlistPinRepository.delete(pin);
         }
-        log.info("핀 업데이트: " + updatedPins);
         playlistPinRepository.saveAll(updatedPins);
-
-//        // 핀 삭제 처리
-//        List<Long> requestedPinIds = requestDto.pinList().stream()
-//                .map(PlaylistPinUpdateDto::playlistPinId)
-//                .collect(Collectors.toList());
-//        List<PlaylistPin> remainingPins = currentPins.stream()
-//                .filter(pin -> {
-//                    if (!requestedPinIds.contains(pin.getPlaylistPinId())) {
-//                        playlistPinRepository.delete(pin);
-//                        return false;
-//                    }
-//                    return true;
-//                })
-//                .collect(Collectors.toList());
-//
-//        // 인덱스 재조정
-//        for (int i = 0; i < remainingPins.size(); i++) {
-//            PlaylistPin playlistPin = remainingPins.get(i);
-//            playlistPin.updatePinIndex(i);
-//            playlistPinRepository.save(remainingPins.get(i));
-//        }
-//
-//        // 핀 순서 변경
-//        for (PlaylistPinUpdateDto pinDto : requestDto.pinList()) {
-//            PlaylistPin playlistPin = currentPins.stream()
-//                    .filter(pin -> pin.getPlaylistPinId().equals(pinDto.playlistPinId()))
-//                    .findFirst()
-//                    .orElseThrow(() -> new CustomException(ErrorCode.PLAYLIST_PIN_NOT_FOUND));
-//            playlistPin.updatePinIndex(pinDto.pinIndex());
-//            playlistPinRepository.save(playlistPin);
-//        }
     }
 
     // 플레이리스트 삭제
