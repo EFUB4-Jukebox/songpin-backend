@@ -53,6 +53,12 @@ public class PlaylistService {
         Playlist playlist = findPlaylistById(requestDto.playlistId());
         Pin pin = pinService.getPinById(requestDto.pinId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PIN_NOT_FOUND));
+        // 중복 핀 체크
+        boolean pinExists = playlist.getPlaylistPins().stream()
+                .anyMatch(playlistPin -> playlistPin.getPin().getPinId().equals(pin.getPinId()));
+        if (pinExists) {
+            throw new CustomException(ErrorCode.PIN_ALREADY_EXISTS);
+        }
         int pinIndex = playlist.getPlaylistPins().size() + 1;
         PlaylistPin playlistPin = PlaylistPin.builder()
                 .pinIndex(pinIndex)
