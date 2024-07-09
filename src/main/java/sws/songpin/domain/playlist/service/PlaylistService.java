@@ -22,7 +22,6 @@ import sws.songpin.global.exception.ErrorCode;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,9 +51,9 @@ public class PlaylistService {
     // 플레이리스트에 핀 추가
     public void addPlaylistPin(PlaylistPinRequestDto requestDto) {
         Playlist playlist = findPlaylistById(requestDto.playlistId());
-        Optional<Pin> pin = pinService.getPinById(requestDto.pinId());
-        int pinIndex = playlist.getPinCount()+1;
-        playlist.setPinCount(pinIndex);
+        Pin pin = pinService.getPinById(requestDto.pinId())
+                .orElseThrow(() -> new CustomException(ErrorCode.PIN_NOT_FOUND));
+        int pinIndex = playlist.getPlaylistPins().size() + 1;
         PlaylistPin playlistPin = PlaylistPin.builder()
                 .pinIndex(pinIndex)
                 .playlist(playlist)

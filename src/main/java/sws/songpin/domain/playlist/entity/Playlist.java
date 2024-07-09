@@ -61,5 +61,5 @@ public class Playlist extends BaseTimeEntity {
         this.visibility = visibility;
     }
 
-    public int pinCount = 0;
+//    public int pinCount = 0;
 }

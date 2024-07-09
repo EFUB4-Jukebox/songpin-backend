@@ -1,7 +1,7 @@
 package sws.songpin.domain.playlist.dto.request;
 
 import jakarta.validation.constraints.Size;
-import sws.songpin.domain.pin.domain.Visibility;
+import sws.songpin.domain.pin.entity.Visibility;
 import sws.songpin.domain.playlist.dto.response.PlaylistPinUpdateDto;
 
 import java.util.List;
