@@ -19,10 +19,13 @@ public class MemberService {
 
     //개발 진행을 위한 임시 메서드
     public Member getCurrentMember(){
-        return memberRepository.findById((long)1).get();
+        return memberRepository.findById((long) 1)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
+
     public Member getMemberById(Long memberId){
-        return memberRepository.findById(memberId).get();
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     public void signUp(SignUpRequestDto requestDto) {

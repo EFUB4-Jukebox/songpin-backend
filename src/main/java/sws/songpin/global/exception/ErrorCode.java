@@ -41,6 +41,7 @@ public enum ErrorCode {
     PIN_NOT_FOUND(404, "핀을 찾을 수 없습니다."),
     PLAYLIST_NOT_FOUND(404, "플레이리스트를 찾을 수 없습니다."),
     BOOKMARK_NOT_FOUND(404, "북마크를 찾을 수 없습니다."),
+    GENRE_NOT_FOUND(404, "장르를 찾을 수 없습니다."),
     FOLLOW_NOT_FOUND(404, "팔로우를 찾을 수 없습니다."),
     ALARM_NOT_FOUND(404, "알람을 찾을 수 없습니다."),
     PLAYLIST_PIN_NOT_FOUND(404, "플레이리스트 핀을 찾을 수 없습니다."),

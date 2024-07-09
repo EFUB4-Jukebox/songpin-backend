@@ -3,11 +3,10 @@ package sws.songpin.domain.playlistpin.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import sws.songpin.domain.pin.domain.Pin;
+import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.playlist.entity.Playlist;
 
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class PlaylistPin {

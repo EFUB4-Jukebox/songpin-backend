@@ -6,7 +6,6 @@ import lombok.*;
 import sws.songpin.domain.member.entity.Member;
 
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Follow {
