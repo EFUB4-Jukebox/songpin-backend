@@ -21,8 +21,6 @@ public enum ErrorCode {
     PASSWORD_MISMATCH(400, "비밀번호가 일치하지 않습니다."),
     // enum 값이 잘못됨 (Visibility, GenreName, SortBy)
     INVALID_ENUM_VALUE(400, "enum 값이 잘못되었습니다."),
-    // 유효하지 않은 토큰
-    INVALID_TOKEN(400, "유효하지 않은 토큰입니다."),
     // 자신과 관련해 불가능한 요청
     MEMBER_BAD_REQUEST(400, "자기 자신은 이 경로를 통해 조회할 수 없습니다."),
     FOLLOW_BAD_REQUEST(400,"팔로잉을 처리할 수 없습니다."),
@@ -32,6 +30,12 @@ public enum ErrorCode {
     NOT_AUTHENTICATED(401, "로그인 상태가 아닙니다."),
     // 권한이 없는 요청을 보냄
     UNAUTHORIZED_REQUEST(401,"권한이 없습니다."),
+    // 로그인 시 잘못된 패스워드 입력
+    LOGIN_FAIL(401, "로그인에 실패했습니다."),
+    // 유효하지 않은 토큰
+    INVALID_TOKEN(401, "유효하지 않은 토큰입니다."),
+    // 만료된 토큰
+    EXPIRED_TOKEN(401,"만료된 토큰입니다."),
 
     // 404 Not Found
     // 각 리소스를 찾지 못함
