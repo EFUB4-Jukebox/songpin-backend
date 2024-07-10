@@ -31,10 +31,10 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode;
         if(errorMessage.contains("-")){
             String errorName = errorMessage.split("-")[0];
-            errorMessage = errorMessage.split("-")[1];
+            errorMessage = e.getFieldError().getField() + ":" + errorMessage.split("-")[1];
             errorCode = ErrorCode.valueOf(errorName);
         } else {
-            errorMessage = e.getFieldError().getField() + "-" + errorMessage;
+            errorMessage = e.getFieldError().getField() + ":" + errorMessage;
             errorCode = ErrorCode.INVALID_INPUT_VALUE;
         }
         ErrorDto errorDto = new ErrorDto(
