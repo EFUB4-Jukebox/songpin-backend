@@ -6,7 +6,7 @@ import sws.songpin.domain.pin.entity.Visibility;
 import sws.songpin.domain.playlist.entity.Playlist;
 
 public record PlaylistRequestDto(
-        @NotNull
+        @NotBlank
         @Size(max = 40, message = "INVALID_INPUT_LENGTH-플레이리스트 이름은 40자 이내여야 합니다.")
         String playlistName,
 
