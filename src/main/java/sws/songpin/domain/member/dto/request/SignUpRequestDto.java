@@ -1,6 +1,7 @@
 package sws.songpin.domain.member.dto.request;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import sws.songpin.domain.member.entity.Member;
@@ -13,6 +14,7 @@ public record SignUpRequestDto(
         @Size(max = 8, message = "INVALID_INPUT_LENGTH-닉네임은 8자 이내여야 합니다.")
         String nickname,
         @Size(max = 20, message = "INVALID_INPUT_LENGTH-비밀번호는 20자 이내여야 합니다.")
+        @NotBlank(message = "INVALID_INPUT_VALUE-비밀번호는 한 글자 이상 입력해야 합니다.")
         String password,
         String confirmPassword) {
     public Member toEntity(String handle, String password){
