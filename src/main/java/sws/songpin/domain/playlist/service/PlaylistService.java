@@ -88,7 +88,7 @@ public class PlaylistService {
         List<String> imgPathList = new ArrayList<>();
 
         playlistPinList.stream()
-                .sorted(Comparator.comparingInt(PlaylistPin::getPinIndex))
+                .sorted(Comparator.comparingInt(PlaylistPin::getPinIndex).reversed())
                 .forEach(playlistPin -> {
                     // SongInfo
                     PlaylistResponseDto.SongInfo songInfo = new PlaylistResponseDto.SongInfo(
