@@ -19,16 +19,16 @@ public record PlaylistResponseDto(
         Long bookmarkId,
         List<PlaylistPinListDto> pinList) {
 
-    public static PlaylistResponseDto from(Playlist playlist, List<String> imgPathList, List<PlaylistPinListDto> pinList) {
+    public static PlaylistResponseDto from(Playlist playlist, List<String> imgPathList, List<PlaylistPinListDto> pinList, Boolean isMine, Long bookmarkId) {
         return new PlaylistResponseDto(
-                false, // isMine (추후 추가)
+                isMine,
                 playlist.getPlaylistName(),
                 playlist.getCreator().getMemberId(),
                 playlist.getCreator().getNickname(),
                 playlist.getModifiedTime(),
                 playlist.getVisibility(),
                 imgPathList,
-                null, // bookmarkId (추후 추가)
+                bookmarkId,
                 pinList
         );
     }

@@ -4,10 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sws.songpin.domain.bookmark.entity.Bookmark;
+import sws.songpin.domain.bookmark.service.BookmarkService;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.pin.entity.Pin;
-import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.playlist.dto.request.PlaylistPinRequestDto;
 import sws.songpin.domain.playlist.dto.response.PlaylistCreateResponseDto;
@@ -25,6 +26,7 @@ import sws.songpin.global.exception.ErrorCode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -34,9 +36,9 @@ import java.util.stream.Collectors;
 public class PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final PlaylistPinRepository playlistPinRepository;
-    private final PinRepository pinRepository;
     private final MemberService memberService;
     private final PinService pinService;
+    private final BookmarkService bookmarkService;
 
     // 플레이리스트 생성
     public PlaylistCreateResponseDto createPlaylist(PlaylistRequestDto requestDto) {
@@ -81,6 +83,7 @@ public class PlaylistService {
     // 플레이리스트 상세 정보 가져오기
     @Transactional(readOnly = true)
     public PlaylistResponseDto getPlaylist(Long playlistId) {
+        Member currentMember = memberService.getCurrentMember();
         Playlist playlist = findPlaylistById(playlistId);
         List<PlaylistPin> playlistPinList = playlist.getPlaylistPins();
         // imgPathList, pinList
@@ -114,7 +117,13 @@ public class PlaylistService {
                         imgPathList.add(playlistPin.getPin().getSong().getImgPath());
                     }
                 });
-        return PlaylistResponseDto.from(playlist, imgPathList, pinList);
+        // isMine
+        boolean isMine = playlist.getCreator().equals(currentMember);
+        // bookmarkId
+        Long bookmarkId = bookmarkService.getBookmarkByPlaylistAndMember(playlist, currentMember)
+                .map(Bookmark::getBookmarkId)
+                .orElse(null);
+        return PlaylistResponseDto.from(playlist, imgPathList, pinList, isMine, bookmarkId);
     }
 
     // 플레이리스트 편집
