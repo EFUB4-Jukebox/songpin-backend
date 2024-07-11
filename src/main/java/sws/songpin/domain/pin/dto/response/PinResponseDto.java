@@ -25,7 +25,4 @@ public record PinResponseDto(
                 pin.getPlace().getPlaceName()
         );
     }
-    public boolean isMine(Long currentUserId) {
-        return this.creatorId.equals(currentUserId);
-    }
 }
