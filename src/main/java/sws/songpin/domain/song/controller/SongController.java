@@ -7,20 +7,41 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sws.songpin.domain.pin.dto.response.PinResponseDto;
+import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.song.dto.response.SongDetailResponseDto;
 import sws.songpin.domain.song.service.SongService;
 
+import java.util.List;
+
 @Tag(name = "Song", description = "Song 관련 API입니다.")
 @RestController
+@RequestMapping("/songs")
 @RequiredArgsConstructor
 public class SongController {
     private final SongService songService;
+    private final PinService pinService;
 
-    @GetMapping("/songs/{songId}")
-    @Operation(summary = "음악 상세정보 조회", description = "음악 상세정보를 조회합니다.")
-    public ResponseEntity<SongDetailResponseDto> getSongDetail(@Valid @PathVariable Long songId) {
+    @GetMapping("/{songId}")
+    @Operation(summary = "노래 상세보기", description = "노래의 상세 정보를 조회합니다.")
+    public ResponseEntity<SongDetailResponseDto> getSongDetails(@PathVariable Long songId) {
         SongDetailResponseDto songDetail = songService.getSongDetail(songId);
         return ResponseEntity.ok(songDetail);
+    }
+
+    @GetMapping("/{songId}/pins")
+    @Operation(summary = "노래에 대한 모든 핀", description = "해당 노래에 대한 모든 핀을 조회합니다.")
+    public ResponseEntity<List<PinResponseDto>> getPinsForSong(@PathVariable Long songId) {
+        List<PinResponseDto> pins = pinService.getPinsForSong(songId);
+        return ResponseEntity.ok(pins);
+    }
+
+    @GetMapping("/{songId}/pins/me")
+    @Operation(summary = "현재 로그인한 사용자의 핀 보기", description = "현재 로그인한 사용자가 만든 핀만 조회합니다.")
+    public ResponseEntity<List<PinResponseDto>> getMyPinsForSong(@PathVariable Long songId) {
+        List<PinResponseDto> myPins = pinService.getMyPinsForSong(songId);
+        return ResponseEntity.ok(myPins);
     }
 }

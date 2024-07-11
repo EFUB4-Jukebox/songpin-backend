@@ -70,10 +70,8 @@ public class SongService {
         Song song = songRepository.findById(songId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SONG_NOT_FOUND));
 
-        List<PinResponseDto> pins = pinRepository.findAllBySong(song).stream()
-                .map(PinResponseDto::from)
-                .collect(Collectors.toList());
+        int pinCount = pinRepository.countBySong(song);
 
-        return SongDetailResponseDto.from(song, pins);
+        return SongDetailResponseDto.from(song, pinCount);
     }
 }

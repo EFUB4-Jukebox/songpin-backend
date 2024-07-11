@@ -86,29 +86,9 @@ public class PinService {
     }
 
     @Transactional(readOnly = true)
-    public List<PinResponseDto> getPinResponseDtosForSong(Song song) {
-        List<Pin> pins = pinRepository.findAllBySong(song);
-        return pins.stream()
-                .map(PinResponseDto::from)
-                .collect(Collectors.toList());
-    }
-
     private SongDetailResponseDto getSongDetailPage(Song song) {
-        List<PinResponseDto> pinResponseDtos = getPinResponseDtosForSong(song);
-        return new SongDetailResponseDto(
-                song.getSongId(),
-                song.getTitle(),
-                song.getArtist(),
-                song.getImgPath(),
-                song.getAvgGenreName(),
-                pinResponseDtos.size(),
-                pinResponseDtos
-        );
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<Pin> getPinById(Long pinId) {
-        return pinRepository.findById(pinId);
+        int pinCount = pinRepository.countBySong(song);
+        return SongDetailResponseDto.from(song, pinCount);
     }
 
     // 음악 핀 수정
@@ -128,4 +108,40 @@ public class PinService {
 
         return getSongDetailPage(pin.getSong());
     }
+
+    @Transactional(readOnly = true)
+    public List<PinResponseDto> getPinResponseDtosForSong(Song song) {
+        List<Pin> pins = pinRepository.findAllBySong(song);
+        return pins.stream()
+                .map(PinResponseDto::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<PinResponseDto> getPinsForSong(Long songId) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new CustomException(ErrorCode.SONG_NOT_FOUND));
+        List<Pin> pins = pinRepository.findAllBySong(song);
+        return pins.stream()
+                .map(PinResponseDto::from)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PinResponseDto> getMyPinsForSong(Long songId) {
+        Member currentMember = memberService.getCurrentMember();
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new CustomException(ErrorCode.SONG_NOT_FOUND));
+
+        List<Pin> pins = pinRepository.findAllBySongAndMember(song, currentMember);
+        return pins.stream()
+                .map(PinResponseDto::from)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Pin> getPinById(Long pinId) {
+        return pinRepository.findById(pinId);
+    }
+
 }

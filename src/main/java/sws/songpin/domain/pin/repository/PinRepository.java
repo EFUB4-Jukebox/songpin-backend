@@ -11,4 +11,6 @@ import java.util.List;
 
 public interface PinRepository extends JpaRepository <Pin, Long> {
     List<Pin> findAllBySong(Song song);
+    List<Pin> findAllBySongAndMember(Song song, Member member);
+    int countBySong(Song song);
 }
