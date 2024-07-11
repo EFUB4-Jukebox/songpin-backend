@@ -11,19 +11,19 @@ import java.time.LocalDate;
 public record PinResponseDto(
         Long pinId,
         SongResponseDto song,
+        PlaceResponseDto place,
         String memo,
         LocalDate listenedDate,
-        PlaceResponseDto place,
         GenreName genreName,
         Visibility visibility
-) {
-    public PinResponseDto(Pin pin) {
-        this(
+)  {
+    public static PinResponseDto from(Pin pin) {
+        return new PinResponseDto(
                 pin.getPinId(),
                 new SongResponseDto(pin.getSong()),
+                new PlaceResponseDto(pin.getPlace()),
                 pin.getMemo(),
                 pin.getListenedDate(),
-                new PlaceResponseDto(pin.getPlace()),
                 pin.getGenre().getGenreName(),
                 pin.getVisibility()
         );
@@ -65,5 +65,6 @@ public record PinResponseDto(
                     place.getLongitude()
             );
         }
+
     }
 }

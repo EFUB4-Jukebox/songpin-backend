@@ -3,8 +3,9 @@ package sws.songpin.domain.pin.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.pin.dto.request.PinRequestDto;
+import sws.songpin.domain.pin.dto.response.PinResponseDto;
+import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.genre.entity.Genre;
@@ -16,8 +17,6 @@ import sws.songpin.domain.song.repository.SongRepository;
 import sws.songpin.domain.song.service.SongService;
 import sws.songpin.domain.genre.service.GenreService;
 import sws.songpin.domain.genre.entity.GenreName;
-import sws.songpin.global.exception.CustomException;
-import sws.songpin.global.exception.ErrorCode;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +33,7 @@ public class PinService {
     private final PlaceService placeService;
     private final GenreService genreService;
 
-    public Pin createPin(PinRequestDto pinRequestDto) {
+    public PinResponseDto createPin(PinRequestDto pinRequestDto) {
         Member member = memberService.getCurrentMember();
         Optional<Song> song = songService.getSongByProviderTrackCode(pinRequestDto.song().providerTrackCode());
         Optional<Place> place = placeService.getPlaceByProviderAddressId(pinRequestDto.place().providerAddressId());
@@ -44,33 +43,18 @@ public class PinService {
 //            throw new CustomException(ErrorCode.PIN_ALREADY_EXISTS);
 //        }
 
-        Place finalPlace;
-        if (place.isEmpty()) {
-            PinRequestDto.PlaceRequestDto placeRequest = pinRequestDto.place();
-            finalPlace = Place.builder()
-                    .placeName(placeRequest.placeName())
-                    .address(placeRequest.address())
-                    .providerAddressId(placeRequest.providerAddressId())
-                    .latitude(placeRequest.latitude())
-                    .longitude(placeRequest.longitude())
-                    .build();
-            finalPlace = placeService.createPlace(finalPlace);
-        } else {
-            finalPlace = place.get();
-        }
-
         Song finalSong;
         if (song.isEmpty()) {
-            PinRequestDto.SongRequestDto songRequest = pinRequestDto.song();
-            finalSong = Song.builder()
-                    .providerTrackCode(songRequest.providerTrackCode())
-                    .title(songRequest.title())
-                    .artist(songRequest.artist())
-                    .imgPath(songRequest.imgPath())
-                    .build();
-            finalSong = songService.createSong(finalSong);
+            finalSong = songService.createSong(pinRequestDto.song());
         } else {
             finalSong = song.get();
+        }
+
+        Place finalPlace;
+        if (place.isEmpty()) {
+            finalPlace = placeService.createPlace(pinRequestDto.place());
+        } else {
+            finalPlace = place.get();
         }
 
         Pin pin = Pin.builder()
@@ -86,7 +70,7 @@ public class PinService {
         pin = pinRepository.save(pin);
         updateSongAvgGenreName(finalSong);
 
-        return pin;
+        return PinResponseDto.from(pin);
     }
 
     private void updateSongAvgGenreName(Song song) {
@@ -99,6 +83,7 @@ public class PinService {
         songRepository.save(song);
     }
 
+    @Transactional(readOnly = true)
     public Optional<Pin> getPinById(Long id) {
         return pinRepository.findById(id);
     }
