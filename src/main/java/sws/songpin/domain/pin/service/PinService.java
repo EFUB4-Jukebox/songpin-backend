@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.pin.dto.request.PinRequestDto;
+import sws.songpin.domain.pin.dto.request.PinUpdateRequestDto;
 import sws.songpin.domain.pin.dto.response.PinResponseDto;
 import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.pin.entity.Pin;
+import sws.songpin.domain.place.dto.request.PlaceRequestDto;
+import sws.songpin.domain.song.dto.request.SongRequestDto;
 import sws.songpin.domain.song.dto.response.SongDetailResponseDto;
 import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.genre.entity.Genre;
@@ -18,6 +21,8 @@ import sws.songpin.domain.song.repository.SongRepository;
 import sws.songpin.domain.song.service.SongService;
 import sws.songpin.domain.genre.service.GenreService;
 import sws.songpin.domain.genre.entity.GenreName;
+import sws.songpin.global.exception.CustomException;
+import sws.songpin.global.exception.ErrorCode;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,29 +39,12 @@ public class PinService {
     private final PlaceService placeService;
     private final GenreService genreService;
 
+    // 음악 핀 생성 - 노래, 장소가 없다면 추가하기
     public SongDetailResponseDto createPin(PinRequestDto pinRequestDto) {
         Member member = memberService.getCurrentMember();
-        Optional<Song> song = songService.getSongByProviderTrackCode(pinRequestDto.song().getProviderTrackCode());
-        Optional<Place> place = placeService.getPlaceByProviderAddressId(pinRequestDto.place().providerAddressId());
+        Song finalSong = getOrCreateSong(pinRequestDto.song());
+        Place finalPlace = getOrCreatePlace(pinRequestDto.place());
         Genre genre = genreService.getGenreByGenreName(pinRequestDto.genreName());
-
-//        if (pinRepository.existsByMemberAndSongAndPlaceAndListenedDate(member, song.orElse(null), place.orElse(null), pinRequestDto.listenedDate())) {
-//            throw new CustomException(ErrorCode.PIN_ALREADY_EXISTS);
-//        }
-
-        Song finalSong;
-        if (song.isEmpty()) {
-            finalSong = songService.createSong(pinRequestDto.song());
-        } else {
-            finalSong = song.get();
-        }
-
-        Place finalPlace;
-        if (place.isEmpty()) {
-            finalPlace = placeService.createPlace(pinRequestDto.place());
-        } else {
-            finalPlace = place.get();
-        }
 
         Pin pin = Pin.builder()
                 .listenedDate(pinRequestDto.listenedDate())
@@ -73,14 +61,18 @@ public class PinService {
 
         List<PinResponseDto> pinResponseDtos = getPinResponseDtosForSong(finalSong);
 
-        // 노래 상세정보 페이지로 이동할 것이라서
-        return new SongDetailResponseDto(
-                finalSong.getSongId(),
-                finalSong.getTitle(),
-                finalSong.getArtist(),
-                finalSong.getImgPath(),
-                pinResponseDtos
-        );
+        // 노래 상세정보 페이지로 이동
+        return getSongDetailPage(finalSong);
+    }
+
+    private Song getOrCreateSong(SongRequestDto songRequestDto) {
+        return songService.getSongByProviderTrackCode(songRequestDto.getProviderTrackCode())
+                .orElseGet(() -> songService.createSong(songRequestDto));
+    }
+
+    private Place getOrCreatePlace(PlaceRequestDto placeRequestDto) {
+        return placeService.getPlaceByProviderAddressId(placeRequestDto.providerAddressId())
+                .orElseGet(() -> placeService.createPlace(placeRequestDto));
     }
 
     private void updateSongAvgGenreName(Song song) {
@@ -101,8 +93,37 @@ public class PinService {
                 .collect(Collectors.toList());
     }
 
+    private SongDetailResponseDto getSongDetailPage(Song song) {
+        List<PinResponseDto> pinResponseDtos = getPinResponseDtosForSong(song);
+        return new SongDetailResponseDto(
+                song.getSongId(),
+                song.getTitle(),
+                song.getArtist(),
+                song.getImgPath(),
+                pinResponseDtos
+        );
+    }
+
     @Transactional(readOnly = true)
-    public Optional<Pin> getPinById(Long id) {
-        return pinRepository.findById(id);
+    public Optional<Pin> getPinById(Long pinId) {
+        return pinRepository.findById(pinId);
+    }
+
+    // 음악 핀 수정
+    public SongDetailResponseDto updatePin(Long pinId, PinUpdateRequestDto pinUpdateRequestDto) {
+        Pin pin = pinRepository.findById(pinId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PIN_NOT_FOUND));
+
+        // 현재 로그인된 사용자가 핀의 생성자인지 확인
+        Member currentMember = memberService.getCurrentMember();
+        if (!pin.getMember().getMemberId().equals(currentMember.getMemberId())) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
+        }
+
+        Genre genre = genreService.getGenreByGenreName(pinUpdateRequestDto.genreName());
+        pin.updatePin(pinUpdateRequestDto.listenedDate(), pinUpdateRequestDto.memo(), pinUpdateRequestDto.visibility(), genre);
+        pinRepository.save(pin);
+
+        return getSongDetailPage(pin.getSong());
     }
 }

@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.pin.dto.request.PinRequestDto;
+import sws.songpin.domain.pin.dto.request.PinUpdateRequestDto;
+import sws.songpin.domain.pin.dto.response.PinResponseDto;
 import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.song.dto.response.SongDetailResponseDto;
 
@@ -30,6 +32,16 @@ public class PinController {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(location);
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{pinId}")
+    @Operation(summary = "핀 수정", description = "핀을 수정합니다.")
+    public ResponseEntity<Void> updatePin(@PathVariable("pinId") final Long pinId, @Valid @RequestBody PinUpdateRequestDto pinUpdateRequestDto) {
+        SongDetailResponseDto songDetailResponseDto = pinService.updatePin(pinId, pinUpdateRequestDto);
+        URI location = URI.create("/songs/" + songDetailResponseDto.songId());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(location);
+        return new ResponseEntity<>(headers, HttpStatus.OK);
     }
 
 }

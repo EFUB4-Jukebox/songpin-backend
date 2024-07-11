@@ -11,6 +11,4 @@ import java.util.List;
 
 public interface PinRepository extends JpaRepository <Pin, Long> {
     List<Pin> findAllBySong(Song song);
-
-//    boolean existsByMemberAndSongAndPlaceAndListenedDate(Member member, Song song, Place place, LocalDate listenedDate);
 }
