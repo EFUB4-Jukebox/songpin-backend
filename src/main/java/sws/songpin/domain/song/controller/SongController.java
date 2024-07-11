@@ -33,14 +33,14 @@ public class SongController {
     @GetMapping("/{songId}/pins")
     @Operation(summary = "노래에 대한 모든 핀", description = "해당 노래에 대한 모든 핀을 조회합니다.")
     public ResponseEntity<List<PinResponseDto>> getPinsForSong(@PathVariable Long songId) {
-        List<PinResponseDto> pins = pinService.getPinsForSong(songId);
-        return ResponseEntity.ok(pins);
+        List<PinResponseDto> allPins = pinService.getPinsForSong(songId, false);
+        return ResponseEntity.ok(allPins);
     }
 
     @GetMapping("/{songId}/pins/me")
     @Operation(summary = "현재 로그인한 사용자의 핀 보기", description = "현재 로그인한 사용자가 만든 핀만 조회합니다.")
     public ResponseEntity<List<PinResponseDto>> getMyPinsForSong(@PathVariable Long songId) {
-        List<PinResponseDto> myPins = pinService.getMyPinsForSong(songId);
+        List<PinResponseDto> myPins = pinService.getPinsForSong(songId, true);
         return ResponseEntity.ok(myPins);
     }
 }

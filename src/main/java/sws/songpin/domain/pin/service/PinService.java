@@ -101,25 +101,24 @@ public class PinService {
         return songService.getSongDetails(pin.getSong().getSongId());
     }
 
-    @Transactional(readOnly = true)
-    public List<PinResponseDto> getPinsForSong(Long songId) {
-        Song song = songRepository.findById(songId)
-                .orElseThrow(() -> new CustomException(ErrorCode.SONG_NOT_FOUND));
-        List<Pin> pins = pinRepository.findAllBySong(song);
-        return pins.stream()
-                .map(PinResponseDto::from)
-                .collect(Collectors.toList());
-    }
 
     @Transactional(readOnly = true)
-    public List<PinResponseDto> getMyPinsForSong(Long songId) {
-        Member currentMember = memberService.getCurrentMember();
+    public List<PinResponseDto> getPinsForSong(Long songId, boolean includeMyPins) {
         Song song = songRepository.findById(songId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SONG_NOT_FOUND));
+        List<Pin> pins;
 
-        List<Pin> pins = pinRepository.findAllBySongAndMember(song, currentMember);
+        Long currentMemberId = includeMyPins ? memberService.getCurrentMember().getMemberId() : null;
+        if (includeMyPins && currentMemberId != null) {
+            // includeMyPins가 false(default값)이고, 로그인된 유저가 있을 때
+            Member currentMember = memberService.getCurrentMember();
+            pins = pinRepository.findAllBySongAndMember(song, currentMember);
+        } else {
+            pins = pinRepository.findAllBySong(song);
+        }
+
         return pins.stream()
-                .map(PinResponseDto::from)
+                .map(pin -> PinResponseDto.from(pin, currentMemberId))
                 .collect(Collectors.toList());
     }
 
