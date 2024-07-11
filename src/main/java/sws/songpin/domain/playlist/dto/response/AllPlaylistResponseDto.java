@@ -6,23 +6,23 @@ import java.util.List;
 
 public record AllPlaylistResponseDto(
         int playlistCount,
-        List<UserPlaylistDto> playlistList){
+        List<PlaylistListDto> playlistList){
 
-    public static AllPlaylistResponseDto from(List<UserPlaylistDto> playlistList) {
+    public static AllPlaylistResponseDto from(List<PlaylistListDto> playlistList) {
         return new AllPlaylistResponseDto(
                 playlistList.size(),
                 playlistList
         );
     }
 
-    public record UserPlaylistDto(
-            String playlistName,
-            Long creatorId,
-            String creatorNickname,
-            int pinCount,
-            LocalDateTime updatedDate,
-            Visibility visibility,
-            List<String> imgPathList,
-            boolean isBookmarked) {
-    }
+//    public record UserPlaylistDto(
+//            Long playlistId,
+//            String playlistName,
+//            String creatorNickname,
+//            int pinCount,
+//            LocalDateTime updatedDate,
+//            Visibility visibility,
+//            List<String> imgPathList,
+//            boolean isBookmarked) {
+//    }
 }

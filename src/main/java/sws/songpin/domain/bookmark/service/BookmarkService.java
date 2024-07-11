@@ -15,6 +15,7 @@ import sws.songpin.domain.playlist.repository.PlaylistRepository;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -53,5 +54,10 @@ public class BookmarkService {
     @Transactional(readOnly = true)
     public Optional<Bookmark> getBookmarkByPlaylistAndMember(Playlist playlist, Member member) {
         return bookmarkRepository.findByPlaylistAndMember(playlist, member);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Bookmark> getBookmarksByMember(Member member) {
+        return bookmarkRepository.findByMember(member);
     }
 }
