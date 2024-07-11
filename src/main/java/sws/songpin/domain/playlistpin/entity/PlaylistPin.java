@@ -1,4 +1,4 @@
-package sws.songpin.domain.playlistPin.entity;
+package sws.songpin.domain.playlistpin.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -35,5 +35,13 @@ public class PlaylistPin {
         this.pinIndex = pinIndex;
         this.playlist = playlist;
         this.pin = pin;
+    }
+
+    public void updatePinIndex(int pinIndex) {
+        this.pinIndex = pinIndex;
+    }
+
+    public void setPlaylist(Playlist playlist) {
+        this.playlist = playlist;
     }
 }
