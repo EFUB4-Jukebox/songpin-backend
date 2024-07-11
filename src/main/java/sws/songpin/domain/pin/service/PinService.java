@@ -10,7 +10,7 @@ import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.place.dto.request.PlaceRequestDto;
 import sws.songpin.domain.song.dto.request.SongRequestDto;
-import sws.songpin.domain.song.dto.response.SongDetailResponseDto;
+import sws.songpin.domain.song.dto.response.SongDetailsResponseDto;
 import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.member.entity.Member;
@@ -40,7 +40,7 @@ public class PinService {
     private final GenreService genreService;
 
     // 음악 핀 생성 - 노래, 장소가 없다면 추가하기
-    public SongDetailResponseDto createPin(PinRequestDto pinRequestDto) {
+    public SongDetailsResponseDto createPin(PinRequestDto pinRequestDto) {
         Member member = memberService.getCurrentMember();
         Song finalSong = getOrCreateSong(pinRequestDto.song());
         Place finalPlace = getOrCreatePlace(pinRequestDto.place());
@@ -59,10 +59,8 @@ public class PinService {
         pin = pinRepository.save(pin);
         updateSongAvgGenreName(finalSong);
 
-        List<PinResponseDto> pinResponseDtos = getPinResponseDtosForSong(finalSong);
-
         // 노래 상세정보 페이지로 이동
-        return getSongDetailPage(finalSong);
+        return songService.getSongDetails(finalSong.getSongId());
     }
 
     private Song getOrCreateSong(SongRequestDto songRequestDto) {
@@ -85,14 +83,8 @@ public class PinService {
         songRepository.save(song);
     }
 
-    @Transactional(readOnly = true)
-    private SongDetailResponseDto getSongDetailPage(Song song) {
-        int pinCount = pinRepository.countBySong(song);
-        return SongDetailResponseDto.from(song, pinCount);
-    }
-
     // 음악 핀 수정
-    public SongDetailResponseDto updatePin(Long pinId, PinUpdateRequestDto pinUpdateRequestDto) {
+    public SongDetailsResponseDto updatePin(Long pinId, PinUpdateRequestDto pinUpdateRequestDto) {
         Pin pin = pinRepository.findById(pinId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PIN_NOT_FOUND));
 
@@ -106,15 +98,7 @@ public class PinService {
         pin.updatePin(pinUpdateRequestDto.listenedDate(), pinUpdateRequestDto.memo(), pinUpdateRequestDto.visibility(), genre);
         pinRepository.save(pin);
 
-        return getSongDetailPage(pin.getSong());
-    }
-
-    @Transactional(readOnly = true)
-    public List<PinResponseDto> getPinResponseDtosForSong(Song song) {
-        List<Pin> pins = pinRepository.findAllBySong(song);
-        return pins.stream()
-                .map(PinResponseDto::from)
-                .toList();
+        return songService.getSongDetails(pin.getSong().getSongId());
     }
 
     @Transactional(readOnly = true)

@@ -2,7 +2,6 @@ package sws.songpin.domain.song.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sws.songpin.domain.pin.dto.response.PinResponseDto;
 import sws.songpin.domain.pin.service.PinService;
-import sws.songpin.domain.song.dto.response.SongDetailResponseDto;
+import sws.songpin.domain.song.dto.response.SongDetailsResponseDto;
 import sws.songpin.domain.song.service.SongService;
 
 import java.util.List;
@@ -26,9 +25,9 @@ public class SongController {
 
     @GetMapping("/{songId}")
     @Operation(summary = "노래 상세보기", description = "노래의 상세 정보를 조회합니다.")
-    public ResponseEntity<SongDetailResponseDto> getSongDetails(@PathVariable Long songId) {
-        SongDetailResponseDto songDetail = songService.getSongDetail(songId);
-        return ResponseEntity.ok(songDetail);
+    public ResponseEntity<SongDetailsResponseDto> getSongDetails(@PathVariable Long songId) {
+        SongDetailsResponseDto songDetails = songService.getSongDetails(songId);
+        return ResponseEntity.ok(songDetails);
     }
 
     @GetMapping("/{songId}/pins")

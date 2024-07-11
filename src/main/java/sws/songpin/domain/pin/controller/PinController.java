@@ -10,9 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.pin.dto.request.PinRequestDto;
 import sws.songpin.domain.pin.dto.request.PinUpdateRequestDto;
-import sws.songpin.domain.pin.dto.response.PinResponseDto;
 import sws.songpin.domain.pin.service.PinService;
-import sws.songpin.domain.song.dto.response.SongDetailResponseDto;
+import sws.songpin.domain.song.dto.response.SongDetailsResponseDto;
 
 import java.net.URI;
 
@@ -27,7 +26,7 @@ public class PinController {
     @PostMapping
     @Operation(summary = "핀 생성", description = "핀을 생성합니다.")
     public ResponseEntity<Void> createPin(@Valid @RequestBody PinRequestDto pinRequestDto) {
-        SongDetailResponseDto songDetailResponseDto = pinService.createPin(pinRequestDto);
+        SongDetailsResponseDto songDetailResponseDto = pinService.createPin(pinRequestDto);
         URI location = URI.create("/songs/" + songDetailResponseDto.songId());
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(location);
@@ -37,7 +36,7 @@ public class PinController {
     @PutMapping("/{pinId}")
     @Operation(summary = "핀 수정", description = "핀을 수정합니다.")
     public ResponseEntity<Void> updatePin(@PathVariable("pinId") final Long pinId, @Valid @RequestBody PinUpdateRequestDto pinUpdateRequestDto) {
-        SongDetailResponseDto songDetailResponseDto = pinService.updatePin(pinId, pinUpdateRequestDto);
+        SongDetailsResponseDto songDetailResponseDto = pinService.updatePin(pinId, pinUpdateRequestDto);
         URI location = URI.create("/songs/" + songDetailResponseDto.songId());
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(location);

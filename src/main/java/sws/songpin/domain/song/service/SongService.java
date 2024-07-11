@@ -5,10 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.genre.entity.GenreName;
-import sws.songpin.domain.pin.dto.response.PinResponseDto;
 import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.song.dto.request.SongRequestDto;
-import sws.songpin.domain.song.dto.response.SongDetailResponseDto;
+import sws.songpin.domain.song.dto.response.SongDetailsResponseDto;
 import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.song.repository.SongRepository;
 import sws.songpin.domain.song.spotify.SpotifyUtil;
@@ -66,12 +65,10 @@ public class SongService {
     }
 
     @Transactional(readOnly = true)
-    public SongDetailResponseDto getSongDetail(Long songId) {
+    public SongDetailsResponseDto getSongDetails(Long songId) {
         Song song = songRepository.findById(songId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SONG_NOT_FOUND));
-
         int pinCount = pinRepository.countBySong(song);
-
-        return SongDetailResponseDto.from(song, pinCount);
+        return SongDetailsResponseDto.from(song, pinCount);
     }
 }
