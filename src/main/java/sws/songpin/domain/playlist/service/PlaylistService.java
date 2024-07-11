@@ -11,6 +11,7 @@ import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.playlist.dto.request.PlaylistPinRequestDto;
+import sws.songpin.domain.playlist.dto.response.AllPlaylistResponseDto;
 import sws.songpin.domain.playlist.dto.response.PlaylistCreateResponseDto;
 import sws.songpin.domain.playlist.dto.response.PlaylistPinUpdateDto;
 import sws.songpin.domain.playlist.dto.request.PlaylistRequestDto;
@@ -168,10 +169,44 @@ public class PlaylistService {
     // 플레이리스트 삭제
     public void deletePlaylist(Long playlistId) {
         Playlist playlist = findPlaylistById(playlistId);
-        Member currentmember = memberService.getCurrentMember();
-        if(!currentmember.equals(playlist.getCreator())){
+        Member currentMember = memberService.getCurrentMember();
+        if(!currentMember.equals(playlist.getCreator())){
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
         playlistRepository.delete(playlist);
+    }
+
+    // 내 플레이리스트 조회
+    @Transactional(readOnly = true)
+    public AllPlaylistResponseDto getAllPlaylists(){
+        Member currentMember = memberService.getCurrentMember();
+        return getAllPlaylists(currentMember.getMemberId());
+    }
+
+    // 유저 플레이리스트 조회
+    @Transactional(readOnly = true)
+    public AllPlaylistResponseDto getAllPlaylists(Long memberId) {
+        Member creator = memberService.getMemberById(memberId);
+        List<Playlist> playlists = playlistRepository.findAllByCreator(creator);
+        List<AllPlaylistResponseDto.UserPlaylistDto> playlistList = playlists.stream().map(playlist -> {
+            // imgPathList
+            List<String> imgPathList = playlist.getPlaylistPins().stream()
+                    .map(playlistPin -> playlistPin.getPin().getSong().getImgPath())
+                    .limit(3)
+                    .collect(Collectors.toList());
+            // isBookmarked
+            boolean isBookmarked = bookmarkService.getBookmarkByPlaylistAndMember(playlist, creator).isPresent();
+            return new AllPlaylistResponseDto.UserPlaylistDto(
+                    playlist.getPlaylistName(),
+                    playlist.getCreator().getMemberId(),
+                    playlist.getCreator().getNickname(),
+                    playlist.getPlaylistPins().size(),
+                    playlist.getModifiedTime(),
+                    playlist.getVisibility(),
+                    imgPathList,
+                    isBookmarked
+            );
+        }).collect(Collectors.toList());
+        return AllPlaylistResponseDto.from(playlistList);
     }
 }
