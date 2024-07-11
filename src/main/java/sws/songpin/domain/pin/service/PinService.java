@@ -100,6 +100,8 @@ public class PinService {
                 song.getTitle(),
                 song.getArtist(),
                 song.getImgPath(),
+                song.getAvgGenreName(),
+                pinResponseDtos.size(),
                 pinResponseDtos
         );
     }
