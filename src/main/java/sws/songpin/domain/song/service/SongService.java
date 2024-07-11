@@ -5,11 +5,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.genre.entity.GenreName;
+import sws.songpin.domain.pin.dto.response.PinResponseDto;
+import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.song.dto.request.SongRequestDto;
+import sws.songpin.domain.song.dto.response.SongDetailResponseDto;
 import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.song.repository.SongRepository;
 import sws.songpin.domain.song.spotify.SpotifyUtil;
 import se.michaelthelin.spotify.model_objects.specification.Track;
+import sws.songpin.global.exception.CustomException;
+import sws.songpin.global.exception.ErrorCode;
 
 import java.util.List;
 import java.util.Map;
@@ -18,10 +23,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class SongService {
 
     private final SpotifyUtil spotifyUtil;
     private final SongRepository songRepository;
+    private final PinRepository pinRepository;
 
     @Transactional(readOnly = true)
     public List<SongRequestDto> searchTracks(String keyword, int offset) {
@@ -53,15 +60,20 @@ public class SongService {
                 .findFirst();
     }
 
-    @Transactional
     public Song createSong(SongRequestDto songRequestDto) {
         Song song = songRequestDto.toEntity();
         return songRepository.save(song);
     }
 
-    // 임시 개발용
     @Transactional(readOnly = true)
-    public Optional<Song> getSong(Long id) {
-        return songRepository.findById(id);
+    public SongDetailResponseDto getSongDetail(Long songId) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new CustomException(ErrorCode.SONG_NOT_FOUND));
+
+        List<PinResponseDto> pins = pinRepository.findAllBySong(song).stream()
+                .map(PinResponseDto::from)
+                .collect(Collectors.toList());
+
+        return SongDetailResponseDto.from(song, pins);
     }
 }

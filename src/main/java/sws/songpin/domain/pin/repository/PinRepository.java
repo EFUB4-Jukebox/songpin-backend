@@ -12,6 +12,5 @@ import java.util.List;
 public interface PinRepository extends JpaRepository <Pin, Long> {
     List<Pin> findAllBySong(Song song);
 
-    // 메서드명 너무 길어서 수정할 방법이 있는지 찾고싶음
-    boolean existsByMemberAndSongAndPlaceAndListenedDate(Member member, Song song, Place place, LocalDate listenedDate);
+//    boolean existsByMemberAndSongAndPlaceAndListenedDate(Member member, Song song, Place place, LocalDate listenedDate);
 }

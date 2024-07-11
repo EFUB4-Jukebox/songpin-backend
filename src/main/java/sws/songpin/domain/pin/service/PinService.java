@@ -7,6 +7,7 @@ import sws.songpin.domain.pin.dto.request.PinRequestDto;
 import sws.songpin.domain.pin.dto.response.PinResponseDto;
 import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.pin.entity.Pin;
+import sws.songpin.domain.song.dto.response.SongDetailResponseDto;
 import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.member.entity.Member;
@@ -33,9 +34,9 @@ public class PinService {
     private final PlaceService placeService;
     private final GenreService genreService;
 
-    public PinResponseDto createPin(PinRequestDto pinRequestDto) {
+    public SongDetailResponseDto createPin(PinRequestDto pinRequestDto) {
         Member member = memberService.getCurrentMember();
-        Optional<Song> song = songService.getSongByProviderTrackCode(pinRequestDto.song().providerTrackCode());
+        Optional<Song> song = songService.getSongByProviderTrackCode(pinRequestDto.song().getProviderTrackCode());
         Optional<Place> place = placeService.getPlaceByProviderAddressId(pinRequestDto.place().providerAddressId());
         Genre genre = genreService.getGenreByGenreName(pinRequestDto.genreName());
 
@@ -70,7 +71,16 @@ public class PinService {
         pin = pinRepository.save(pin);
         updateSongAvgGenreName(finalSong);
 
-        return PinResponseDto.from(pin);
+        List<PinResponseDto> pinResponseDtos = getPinResponseDtosForSong(finalSong);
+
+        // 노래 상세정보 페이지로 이동할 것이라서
+        return new SongDetailResponseDto(
+                finalSong.getSongId(),
+                finalSong.getTitle(),
+                finalSong.getArtist(),
+                finalSong.getImgPath(),
+                pinResponseDtos
+        );
     }
 
     private void updateSongAvgGenreName(Song song) {
@@ -81,6 +91,14 @@ public class PinService {
         Optional<GenreName> avgGenreName = songService.calculateAvgGenreName(genres);
         avgGenreName.ifPresent(song::setAvgGenreName);
         songRepository.save(song);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PinResponseDto> getPinResponseDtosForSong(Song song) {
+        List<Pin> pins = pinRepository.findAllBySong(song);
+        return pins.stream()
+                .map(PinResponseDto::from)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
