@@ -15,9 +15,4 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     // 페이징 방식으로 장소 검색
     @Query("SELECT p FROM Place p WHERE REPLACE(p.placeName, ' ', '') LIKE %:placeNameNoSpaces%")
     Page<Place> findAllByPlaceNameContainingIgnoreSpaces(@Param("placeNameNoSpaces") String placeNameNoSpaces, Pageable pageable);
-
-    // 페이징 방식으로 장소 검색-정확도 기준
-    @Query("SELECT p FROM Place p WHERE REPLACE(p.placeName, ' ', '') LIKE %:placeNameNoSpaces% " +
-            "ORDER BY LENGTH(REPLACE(p.placeName, :placeNameNoSpaces, '')) ASC")
-    Page<Place> findAllByPlaceNameContainingIgnoreSpacesWithAccuracy(@Param("placeNameNoSpaces") String placeNameNoSpaces, Pageable pageable);
 }

@@ -55,28 +55,21 @@ public class PlaceService {
 
     // 장소 검색
     public PlaceSearchResponseDto searchPlaces(String keyword, SortBy sortBy, int pageNumber) {
-        // 정렬 기준 선택
         final int pageLimit = 30; // 단일 페이지 크기
-        Pageable pageable = PageRequest.of(pageNumber, pageLimit, getSortBy(sortBy));
+        Pageable pageable = PageRequest.of(pageNumber, pageLimit, getSortForPlace(sortBy)); // 정렬 기준 선택
 
         // 키워드의 띄어쓰기를 제거하여 띄어쓰기 없앤 장소이름을 검색
         String keywordNoSpaces = keyword.replace(" ", "");
-        Page<Place> placePage;
-        if (sortBy.equals(SortBy.ACCURACY)) {
-            // 정확도순인 경우에는 차이 글자수 적은 순대로 정렬
-            placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesWithAccuracy(keywordNoSpaces, pageable);
-        } else {
-            placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpaces(keywordNoSpaces, pageable);
-        }
+        Page<Place> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpaces(keywordNoSpaces, pageable);
         return PlaceSearchResponseDto.from((int) placePage.getTotalElements(), placePage.getContent());
     }
 
-    // 페이징 위해 Sort.by 설정
-    private Sort getSortBy(SortBy sortBy) {
+    // 장소 검색 - 페이징 위해 JPA 이용
+    public Sort getSortForPlace(SortBy sortBy) {
         return switch (sortBy) {
-            case COUNT -> Sort.by(Sort.Order.desc("pins.size")); // `pins.size`로 정렬
-            case NEWEST -> Sort.by(Sort.Order.desc("pins.createdTime")); // `pins.createdTime`으로 정렬
-            case ACCURACY -> Sort.by(Sort.Order.asc("placeId")); // 정확도순인 경우에 대한 기본 정렬 설정
+            case ACCURACY -> Sort.by(Sort.Order.asc("placeName")); // 사전순
+            case COUNT -> Sort.by(Sort.Order.desc("pins.size"), Sort.Order.asc("placeName")); // 1차 pins 크기순, 2차 사전순
+            case NEWEST -> Sort.by(Sort.Order.desc("pins.createdTime")); // pins 생성일순
         };
     }
 

@@ -17,15 +17,15 @@ public class PlaceController {
 
     @Operation(summary = "장소 상세정보", description = "장소 상세정보를 불러옵니다.")
     @GetMapping("/{placeId}")
-    public ResponseEntity<?> getPlaceDetails(@PathVariable final Long placeId) {
+    public ResponseEntity<?> placeDetails(@PathVariable final Long placeId) {
         return ResponseEntity.ok().body(placeService.getPlaceDetails(placeId));
     }
 
     @Operation(summary = "장소 검색", description = "장소 검색 결과를 선택한 정렬 기준에 따라 페이징으로 불러옵니다.")
     @GetMapping
-    public ResponseEntity<?> searchPlaces(@RequestParam final String keyword,
-                                          @RequestParam(required = false, defaultValue = "ACCURACY") final SortBy sortBy,
-                                          @RequestParam final int offset) { // offset 자료형 확인 필요
+    public ResponseEntity<?> placeSearch(@RequestParam final String keyword,
+                                          @RequestParam(defaultValue = "ACCURACY") final SortBy sortBy,
+                                          @RequestParam(defaultValue = "0") final int offset) { // offset 자료형 확인 필요
         return ResponseEntity.ok().body(placeService.searchPlaces(keyword, sortBy, offset));
     }
 }
