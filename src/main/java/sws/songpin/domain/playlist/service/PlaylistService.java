@@ -18,6 +18,7 @@ import sws.songpin.domain.playlist.entity.Playlist;
 import sws.songpin.domain.playlist.repository.PlaylistRepository;
 import sws.songpin.domain.playlistpin.entity.PlaylistPin;
 import sws.songpin.domain.playlistpin.repository.PlaylistPinRepository;
+import sws.songpin.domain.song.dto.response.SongInfoResponseDto;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
@@ -92,13 +93,7 @@ public class PlaylistService {
                 .sorted(Comparator.comparingInt(PlaylistPin::getPinIndex).reversed())
                 .forEach(playlistPin -> {
                     // SongInfo
-                    PlaylistResponseDto.SongInfo songInfo = new PlaylistResponseDto.SongInfo(
-                            playlistPin.getPin().getSong().getSongId(),
-                            playlistPin.getPin().getSong().getTitle(),
-                            playlistPin.getPin().getSong().getArtist(),
-                            playlistPin.getPin().getSong().getImgPath()
-                    );
-                    // PlaylistPinListDto
+                    SongInfoResponseDto songInfo = SongInfoResponseDto.from(playlistPin.getPin().getSong());
                     PlaylistResponseDto.PlaylistPinListDto pinListDto = new PlaylistResponseDto.PlaylistPinListDto(
                             playlistPin.getPlaylistPinId(),
                             playlistPin.getPin().getPinId(),
