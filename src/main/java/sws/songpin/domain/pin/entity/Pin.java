@@ -66,4 +66,11 @@ public class Pin extends BaseTimeEntity {
         this.genre = genre;
     }
 
+    public void updatePin(LocalDate listenedDate, String memo, Visibility visibility, Genre genre) {
+        this.listenedDate = listenedDate;
+        this.memo = memo;
+        this.visibility = visibility;
+        this.genre = genre;
+    }
+
 }

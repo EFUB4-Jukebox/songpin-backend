@@ -1,8 +1,6 @@
 package sws.songpin.domain.song.spotify;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
@@ -11,6 +9,8 @@ import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
+import sws.songpin.global.exception.CustomException;
+import sws.songpin.global.exception.ErrorCode;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +21,6 @@ import java.util.List;
 public class SpotifyUtil {
 
     private final SpotifyApi spotifyApi;
-    private static final Logger logger = LoggerFactory.getLogger(SpotifyUtil.class);
 
     // 페이징 설정
     private static final int LIMIT = 20;
@@ -32,17 +31,14 @@ public class SpotifyUtil {
         try {
             final ClientCredentials clientCredentials = clientCredentialsRequest.execute();
             spotifyApi.setAccessToken(clientCredentials.getAccessToken());
-            logger.info("Spotify Access Token: " + clientCredentials.getAccessToken());
             return spotifyApi.getAccessToken();
         } catch (IOException | SpotifyWebApiException | org.apache.hc.core5.http.ParseException e) {
-            logger.error("Spotify Error: " + e.getMessage());
-            return "error";
+            throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);
         }
     }
 
     public List<Track> searchTracks(String query, int offset) {
         authenticate();
-        logger.info("Search Query: " + query + ", Offset: " + offset);
 
         List<Track> allTracks = new ArrayList<>();
         SearchTracksRequest searchTracksRequest = spotifyApi.searchTracks(query)
@@ -59,7 +55,7 @@ public class SpotifyUtil {
             }
 
         } catch (IOException | SpotifyWebApiException | org.apache.hc.core5.http.ParseException e) {
-            logger.error("Spotify Error: " + e.getMessage());
+            throw new CustomException(ErrorCode.EXTERNAL_API_ERROR);
         }
 
         // 쿼리에서 공백을 제거하고 소문자로 변환
@@ -84,7 +80,6 @@ public class SpotifyUtil {
 
             if (allWordsMatch) {
                 matchedTracks.add(track);
-                logger.info("Exact Match Found: " + track.getName() + " by " + getArtistNames(track));
             }
         }
 
