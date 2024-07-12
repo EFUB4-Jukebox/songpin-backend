@@ -10,9 +10,9 @@ public record PlaceSearchResponseDto(
         List<PlaceUnitDto> placeList
 ) {
     public static PlaceSearchResponseDto from(int placeCount, List<Place> placeList) {
-        List<PlaceUnitDto> placeInfoDtos = placeList.stream()
+        List<PlaceUnitDto> placeUnitDtos = placeList.stream()
                 .map(p -> PlaceUnitDto.from(p, p.getPins().size()))
                 .collect(Collectors.toList());
-        return new PlaceSearchResponseDto(placeCount, placeInfoDtos);
+        return new PlaceSearchResponseDto(placeCount, placeUnitDtos);
     }
 }
