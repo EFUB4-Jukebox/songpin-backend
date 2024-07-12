@@ -110,7 +110,7 @@ public class PinService {
 
         Long currentMemberId = includeMyPins ? memberService.getCurrentMember().getMemberId() : null;
         if (includeMyPins && currentMemberId != null) {
-            // includeMyPins가 false(default값)이고, 로그인된 유저가 있을 때
+            // includeMyPins가 true이고, 로그인된 유저가 있을 때
             Member currentMember = memberService.getCurrentMember();
             pins = pinRepository.findAllBySongAndMember(song, currentMember);
         } else {

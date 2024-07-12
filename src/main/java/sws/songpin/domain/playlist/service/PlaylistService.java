@@ -93,13 +93,6 @@ public class PlaylistService {
                 .forEach(playlistPin -> {
                     // SongInfo
                     SongInfoResponseDto songInfo = SongInfoResponseDto.from(playlistPin.getPin().getSong());
-//                    PlaylistResponseDto.SongInfo songInfo = new PlaylistResponseDto.SongInfo(
-//                            playlistPin.getPin().getSong().getSongId(),
-//                            playlistPin.getPin().getSong().getTitle(),
-//                            playlistPin.getPin().getSong().getArtist(),
-//                            playlistPin.getPin().getSong().getImgPath()
-//                    );
-                    // PlaylistPinListDto
                     PlaylistResponseDto.PlaylistPinListDto pinListDto = new PlaylistResponseDto.PlaylistPinListDto(
                             playlistPin.getPlaylistPinId(),
                             playlistPin.getPin().getPinId(),
