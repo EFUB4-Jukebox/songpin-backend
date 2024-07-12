@@ -10,9 +10,9 @@ import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.pin.service.PinService;
-import sws.songpin.domain.playlist.dto.request.PlaylistPinRequestDto;
+import sws.songpin.domain.playlist.dto.request.PlaylistPinAddRequestDto;
 import sws.songpin.domain.playlist.dto.response.*;
-import sws.songpin.domain.playlist.dto.request.PlaylistRequestDto;
+import sws.songpin.domain.playlist.dto.request.PlaylistAddRequestDto;
 import sws.songpin.domain.playlist.dto.request.PlaylistUpdateRequestDto;
 import sws.songpin.domain.playlist.entity.Playlist;
 import sws.songpin.domain.playlist.repository.PlaylistRepository;
@@ -25,7 +25,6 @@ import sws.songpin.global.exception.ErrorCode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -40,11 +39,11 @@ public class PlaylistService {
     private final BookmarkService bookmarkService;
 
     // 플레이리스트 생성
-    public PlaylistCreateResponseDto createPlaylist(PlaylistRequestDto requestDto) {
+    public PlaylistAddResponseDto createPlaylist(PlaylistAddRequestDto requestDto) {
         Member member = memberService.getCurrentMember();
         Playlist playlist = requestDto.toEntity(member);
         Playlist savedPlaylist = playlistRepository.save(playlist);
-        return PlaylistCreateResponseDto.from(savedPlaylist);
+        return PlaylistAddResponseDto.from(savedPlaylist);
     }
 
     @Transactional(readOnly = true)
@@ -54,7 +53,7 @@ public class PlaylistService {
     }
 
     // 플레이리스트에 핀 추가
-    public void addPlaylistPin(PlaylistPinRequestDto requestDto) {
+    public void addPlaylistPin(PlaylistPinAddRequestDto requestDto) {
         Playlist playlist = findPlaylistById(requestDto.playlistId());
         Pin pin = pinService.getPinById(requestDto.pinId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PIN_NOT_FOUND));
@@ -81,12 +80,12 @@ public class PlaylistService {
 
     // 플레이리스트 상세 정보 가져오기
     @Transactional(readOnly = true)
-    public PlaylistResponseDto getPlaylist(Long playlistId) {
+    public PlaylistDetailsResponseDto getPlaylist(Long playlistId) {
         Member currentMember = memberService.getCurrentMember();
         Playlist playlist = findPlaylistById(playlistId);
         List<PlaylistPin> playlistPinList = playlist.getPlaylistPins();
         // imgPathList, pinList
-        List<PlaylistResponseDto.PlaylistPinListDto> pinList = new ArrayList<>();
+        List<PlaylistDetailsResponseDto.PlaylistPinListDto> pinList = new ArrayList<>();
         List<String> imgPathList = new ArrayList<>();
 
         playlistPinList.stream()
@@ -94,7 +93,7 @@ public class PlaylistService {
                 .forEach(playlistPin -> {
                     // SongInfo
                     SongInfoResponseDto songInfo = SongInfoResponseDto.from(playlistPin.getPin().getSong());
-                    PlaylistResponseDto.PlaylistPinListDto pinListDto = new PlaylistResponseDto.PlaylistPinListDto(
+                    PlaylistDetailsResponseDto.PlaylistPinListDto pinListDto = new PlaylistDetailsResponseDto.PlaylistPinListDto(
                             playlistPin.getPlaylistPinId(),
                             playlistPin.getPin().getPinId(),
                             songInfo,
@@ -116,7 +115,7 @@ public class PlaylistService {
         Long bookmarkId = bookmarkService.getBookmarkByPlaylistAndMember(playlist, currentMember)
                 .map(Bookmark::getBookmarkId)
                 .orElse(null);
-        return PlaylistResponseDto.from(playlist, imgPathList, pinList, isMine, bookmarkId);
+        return PlaylistDetailsResponseDto.from(playlist, imgPathList, pinList, isMine, bookmarkId);
     }
 
     // 플레이리스트 편집

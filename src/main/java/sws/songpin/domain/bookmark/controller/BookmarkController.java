@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sws.songpin.domain.bookmark.dto.request.BookmarkRequestDto;
+import sws.songpin.domain.bookmark.dto.request.BookmarkAddRequestDto;
 import sws.songpin.domain.bookmark.service.BookmarkService;
 
 @RestController
@@ -17,7 +17,7 @@ public class BookmarkController {
 
     @Operation(summary = "북마크 생성", description = "플레이리스트에 북마크 생성")
     @PostMapping
-    public ResponseEntity<?> createBookmark(@RequestBody @Valid BookmarkRequestDto requestDto){
+    public ResponseEntity<?> createBookmark(@RequestBody @Valid BookmarkAddRequestDto requestDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(bookmarkService.createBookmark(requestDto));
     }
 

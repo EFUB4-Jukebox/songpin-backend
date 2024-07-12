@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record PlaylistResponseDto(
+public record PlaylistDetailsResponseDto(
         Boolean isMine,
         String playlistName,
         Long creatorId,
@@ -20,8 +20,8 @@ public record PlaylistResponseDto(
         Long bookmarkId,
         List<PlaylistPinListDto> pinList) {
 
-    public static PlaylistResponseDto from(Playlist playlist, List<String> imgPathList, List<PlaylistPinListDto> pinList, Boolean isMine, Long bookmarkId) {
-        return new PlaylistResponseDto(
+    public static PlaylistDetailsResponseDto from(Playlist playlist, List<String> imgPathList, List<PlaylistPinListDto> pinList, Boolean isMine, Long bookmarkId) {
+        return new PlaylistDetailsResponseDto(
                 isMine,
                 playlist.getPlaylistName(),
                 playlist.getCreator().getMemberId(),

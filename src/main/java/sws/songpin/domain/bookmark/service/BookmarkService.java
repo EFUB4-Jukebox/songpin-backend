@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sws.songpin.domain.bookmark.dto.request.BookmarkRequestDto;
-import sws.songpin.domain.bookmark.dto.response.BookmarkResponseDto;
+import sws.songpin.domain.bookmark.dto.request.BookmarkAddRequestDto;
+import sws.songpin.domain.bookmark.dto.response.BookmarkAddResponseDto;
 import sws.songpin.domain.bookmark.entity.Bookmark;
 import sws.songpin.domain.bookmark.repository.BookmarkRepository;
 import sws.songpin.domain.member.entity.Member;
@@ -28,7 +28,7 @@ public class BookmarkService {
     private final BookmarkRepository bookmarkRepository;
 
     // 북마크 생성
-    public BookmarkResponseDto createBookmark(BookmarkRequestDto requestDto) {
+    public BookmarkAddResponseDto createBookmark(BookmarkAddRequestDto requestDto) {
         Member member = memberService.getCurrentMember();
         Playlist playlist = playlistRepository.findById(requestDto.playlistId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PLAYLIST_NOT_FOUND));
@@ -37,7 +37,7 @@ public class BookmarkService {
         });
         Bookmark bookmark = requestDto.toEntity(member, playlist);
         Bookmark savedBookmark = bookmarkRepository.save(bookmark);
-        return BookmarkResponseDto.from(savedBookmark);
+        return BookmarkAddResponseDto.from(savedBookmark);
     }
 
     // 북마크 삭제
