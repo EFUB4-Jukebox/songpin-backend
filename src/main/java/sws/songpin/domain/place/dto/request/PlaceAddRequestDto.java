@@ -3,7 +3,7 @@ package sws.songpin.domain.place.dto.request;
 import jakarta.validation.constraints.NotNull;
 import sws.songpin.domain.place.entity.Place;
 
-public record PlaceRequestDto(
+public record PlaceAddRequestDto(
         @NotNull String placeName,
         @NotNull String address,
         @NotNull Long providerAddressId,

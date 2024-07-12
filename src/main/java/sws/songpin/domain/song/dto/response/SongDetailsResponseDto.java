@@ -8,7 +8,7 @@ public record SongDetailsResponseDto(
         String title,
         String artist,
         String imgPath,
-        GenreName avgGenre,
+        GenreName avgGenreName,
         int pinCount
 ) {
     public static SongDetailsResponseDto from(Song song, int pinCount) {

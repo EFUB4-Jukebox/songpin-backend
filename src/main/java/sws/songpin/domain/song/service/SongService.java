@@ -6,8 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.pin.repository.PinRepository;
-import sws.songpin.domain.song.dto.request.SongRequestDto;
+import sws.songpin.domain.song.dto.request.SongAddRequestDto;
 import sws.songpin.domain.song.dto.response.SongDetailsResponseDto;
+import sws.songpin.domain.song.dto.response.SpotifySearchDto;
 import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.song.repository.SongRepository;
 import sws.songpin.domain.song.spotify.SpotifyUtil;
@@ -30,21 +31,16 @@ public class SongService {
     private final PinRepository pinRepository;
 
     @Transactional(readOnly = true)
-    public List<SongRequestDto> searchTracks(String keyword, int offset) {
+    public List<SpotifySearchDto> searchTracks(String keyword, int offset) {
         List<Track> tracks = spotifyUtil.searchTracks(keyword, offset);
         return tracks.stream()
-                .map(track -> new SongRequestDto(
+                .map(track -> new SpotifySearchDto(
                         track.getName(),
                         spotifyUtil.getArtistNames(track),
                         track.getAlbum().getImages().length > 0 ? track.getAlbum().getImages()[0].getUrl() : null,
                         track.getId()
                 ))
                 .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<Song> getSongByProviderTrackCode(String providerTrackCode) {
-        return songRepository.findByProviderTrackCode(providerTrackCode);
     }
 
     @Transactional(readOnly = true)
@@ -59,9 +55,19 @@ public class SongService {
                 .findFirst();
     }
 
-    public Song createSong(SongRequestDto songRequestDto) {
+    public Song createSong(SongAddRequestDto songRequestDto) {
         Song song = songRequestDto.toEntity();
         return songRepository.save(song);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Song> getSongByProviderTrackCode(String providerTrackCode) {
+        return songRepository.findByProviderTrackCode(providerTrackCode);
+    }
+
+    public Song getOrCreateSong(SongAddRequestDto songRequestDto) {
+        return getSongByProviderTrackCode(songRequestDto.providerTrackCode())
+                .orElseGet(() -> createSong(songRequestDto));
     }
 
     @Transactional(readOnly = true)

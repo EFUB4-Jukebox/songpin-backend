@@ -3,24 +3,24 @@ package sws.songpin.domain.pin.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sws.songpin.domain.pin.dto.request.PinRequestDto;
-import sws.songpin.domain.pin.dto.request.PinUpdateRequestDto;
-import sws.songpin.domain.pin.dto.response.PinResponseDto;
-import sws.songpin.domain.pin.repository.PinRepository;
-import sws.songpin.domain.pin.entity.Pin;
-import sws.songpin.domain.place.dto.request.PlaceRequestDto;
-import sws.songpin.domain.song.dto.request.SongRequestDto;
-import sws.songpin.domain.song.dto.response.SongDetailsResponseDto;
-import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.genre.entity.Genre;
+import sws.songpin.domain.genre.entity.GenreName;
+import sws.songpin.domain.genre.service.GenreService;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
+import sws.songpin.domain.pin.dto.request.PinAddRequestDto;
+import sws.songpin.domain.pin.dto.request.PinUpdateRequestDto;
+import sws.songpin.domain.pin.entity.Pin;
+import sws.songpin.domain.pin.repository.PinRepository;
+import sws.songpin.domain.place.dto.request.PlaceAddRequestDto;
 import sws.songpin.domain.place.entity.Place;
 import sws.songpin.domain.place.service.PlaceService;
+import sws.songpin.domain.song.dto.request.SongAddRequestDto;
+import sws.songpin.domain.song.dto.response.SongDetailsPinDto;
+import sws.songpin.domain.song.dto.response.SongDetailsResponseDto;
+import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.song.repository.SongRepository;
 import sws.songpin.domain.song.service.SongService;
-import sws.songpin.domain.genre.service.GenreService;
-import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
@@ -40,16 +40,16 @@ public class PinService {
     private final GenreService genreService;
 
     // 음악 핀 생성 - 노래, 장소가 없다면 추가하기
-    public SongDetailsResponseDto createPin(PinRequestDto pinRequestDto) {
+    public Long createPin(PinAddRequestDto pinAddRequestDto) {
         Member member = memberService.getCurrentMember();
-        Song finalSong = getOrCreateSong(pinRequestDto.song());
-        Place finalPlace = getOrCreatePlace(pinRequestDto.place());
-        Genre genre = genreService.getGenreByGenreName(pinRequestDto.genreName());
+        Song finalSong = songService.getOrCreateSong(pinAddRequestDto.song());
+        Place finalPlace = placeService.getOrCreatePlace(pinAddRequestDto.place());
+        Genre genre = genreService.getGenreByGenreName(pinAddRequestDto.genreName());
 
         Pin pin = Pin.builder()
-                .listenedDate(pinRequestDto.listenedDate())
-                .memo(pinRequestDto.memo())
-                .visibility(pinRequestDto.visibility())
+                .listenedDate(pinAddRequestDto.listenedDate())
+                .memo(pinAddRequestDto.memo())
+                .visibility(pinAddRequestDto.visibility())
                 .member(member)
                 .song(finalSong)
                 .place(finalPlace)
@@ -60,17 +60,7 @@ public class PinService {
         updateSongAvgGenreName(finalSong);
 
         // 노래 상세정보 페이지로 이동
-        return songService.getSongDetails(finalSong.getSongId());
-    }
-
-    private Song getOrCreateSong(SongRequestDto songRequestDto) {
-        return songService.getSongByProviderTrackCode(songRequestDto.getProviderTrackCode())
-                .orElseGet(() -> songService.createSong(songRequestDto));
-    }
-
-    private Place getOrCreatePlace(PlaceRequestDto placeRequestDto) {
-        return placeService.getPlaceByProviderAddressId(placeRequestDto.providerAddressId())
-                .orElseGet(() -> placeService.createPlace(placeRequestDto));
+        return finalSong.getSongId();
     }
 
     private void updateSongAvgGenreName(Song song) {
@@ -84,7 +74,7 @@ public class PinService {
     }
 
     // 음악 핀 수정
-    public SongDetailsResponseDto updatePin(Long pinId, PinUpdateRequestDto pinUpdateRequestDto) {
+    public Long updatePin(Long pinId, PinUpdateRequestDto pinUpdateRequestDto) {
         Pin pin = pinRepository.findById(pinId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PIN_NOT_FOUND));
 
@@ -98,12 +88,12 @@ public class PinService {
         pin.updatePin(pinUpdateRequestDto.listenedDate(), pinUpdateRequestDto.memo(), pinUpdateRequestDto.visibility(), genre);
         pinRepository.save(pin);
 
-        return songService.getSongDetails(pin.getSong().getSongId());
+        return pin.getSong().getSongId();
     }
 
 
     @Transactional(readOnly = true)
-    public List<PinResponseDto> getPinsForSong(Long songId, boolean includeMyPins) {
+    public List<SongDetailsPinDto> getPinsForSong(Long songId, boolean includeMyPins) {
         Song song = songRepository.findById(songId)
                 .orElseThrow(() -> new CustomException(ErrorCode.SONG_NOT_FOUND));
         List<Pin> pins;
@@ -118,7 +108,7 @@ public class PinService {
         }
 
         return pins.stream()
-                .map(pin -> PinResponseDto.from(pin, currentMemberId))
+                .map(pin -> SongDetailsPinDto.from(pin, currentMemberId))
                 .collect(Collectors.toList());
     }
 

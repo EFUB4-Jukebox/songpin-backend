@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import sws.songpin.domain.song.dto.request.SongRequestDto;
+import sws.songpin.domain.song.dto.response.SpotifySearchDto;
 import sws.songpin.domain.song.service.SongService;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public class SpotifyController {
     private final SongService songService;
 
     @GetMapping("/external/songs")
-    public List<SongRequestDto> searchTracks(
+    public List<SpotifySearchDto> searchTracks(
             @RequestParam("keyword") String keyword,
             @RequestParam(value = "offset", defaultValue = "0") int offset) {
         return songService.searchTracks(keyword, offset);
