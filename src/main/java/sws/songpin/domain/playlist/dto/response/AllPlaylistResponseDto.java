@@ -14,15 +14,4 @@ public record AllPlaylistResponseDto(
                 playlistList
         );
     }
-
-//    public record UserPlaylistDto(
-//            Long playlistId,
-//            String playlistName,
-//            String creatorNickname,
-//            int pinCount,
-//            LocalDateTime updatedDate,
-//            Visibility visibility,
-//            List<String> imgPathList,
-//            boolean isBookmarked) {
-//    }
 }

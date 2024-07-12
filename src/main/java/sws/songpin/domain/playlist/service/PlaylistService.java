@@ -9,6 +9,7 @@ import sws.songpin.domain.bookmark.service.BookmarkService;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.pin.entity.Pin;
+import sws.songpin.domain.pin.entity.Visibility;
 import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.playlist.dto.request.PlaylistPinAddRequestDto;
 import sws.songpin.domain.playlist.dto.response.*;
@@ -171,33 +172,41 @@ public class PlaylistService {
     @Transactional(readOnly = true)
     public AllPlaylistResponseDto getAllPlaylists(){
         Member currentMember = memberService.getCurrentMember();
-        return getAllPlaylists(currentMember.getMemberId());
+        return getAllPlaylists(currentMember.getMemberId(), true);
     }
 
-    // 유저 플레이리스트 조회
+    // 타 유저 플레이리스트 조회
     @Transactional(readOnly = true)
     public AllPlaylistResponseDto getAllPlaylists(Long memberId) {
+        return getAllPlaylists(memberId, false);
+    }
+
+    @Transactional(readOnly = true)
+    public AllPlaylistResponseDto getAllPlaylists(Long memberId, boolean isMine) {
         Member creator = memberService.getMemberById(memberId);
+        Member currentMember = memberService.getCurrentMember();
         List<Playlist> playlists = playlistRepository.findAllByCreator(creator);
-        List<PlaylistListDto> playlistList = playlists.stream().map(playlist -> {
-            // imgPathList
-            List<String> imgPathList = playlist.getPlaylistPins().stream()
-                    .map(playlistPin -> playlistPin.getPin().getSong().getImgPath())
-                    .limit(3)
-                    .collect(Collectors.toList());
-            // isBookmarked
-            boolean isBookmarked = bookmarkService.getBookmarkByPlaylistAndMember(playlist, creator).isPresent();
-            return new PlaylistListDto(
-                    playlist.getPlaylistId(),
-                    playlist.getPlaylistName(),
-                    playlist.getCreator().getNickname(),
-                    playlist.getPlaylistPins().size(),
-                    playlist.getModifiedTime(),
-                    playlist.getVisibility(),
-                    imgPathList,
-                    isBookmarked
-            );
-        }).collect(Collectors.toList());
+        List<PlaylistListDto> playlistList = playlists.stream()
+                .filter(playlist -> isMine || playlist.getVisibility() == Visibility.PUBLIC)
+                .map(playlist -> {
+                    // imgPathList
+                    List<String> imgPathList = playlist.getPlaylistPins().stream()
+                            .map(playlistPin -> playlistPin.getPin().getSong().getImgPath())
+                            .limit(3)
+                            .collect(Collectors.toList());
+                    // isBookmarked
+                    boolean isBookmarked = bookmarkService.getBookmarkByPlaylistAndMember(playlist, creator).isPresent();
+                    return new PlaylistListDto(
+                            playlist.getPlaylistId(),
+                            playlist.getPlaylistName(),
+                            playlist.getCreator().getNickname(),
+                            playlist.getPlaylistPins().size(),
+                            playlist.getModifiedTime(),
+                            playlist.getVisibility(),
+                            imgPathList,
+                            isBookmarked
+                    );
+                }).collect(Collectors.toList());
         return AllPlaylistResponseDto.from(playlistList);
     }
 
