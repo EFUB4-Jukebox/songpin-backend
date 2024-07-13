@@ -6,8 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.follow.dto.request.FollowAddRequestDto;
 import sws.songpin.domain.follow.dto.response.FollowAddResponseDto;
 import sws.songpin.domain.follow.dto.response.FollowDto;
-import sws.songpin.domain.follow.dto.response.FollowerListResponseDto;
-import sws.songpin.domain.follow.dto.response.FollowingListResponseDto;
+import sws.songpin.domain.follow.dto.response.FollowListResponseDto;
 import sws.songpin.domain.follow.entity.Follow;
 import sws.songpin.domain.follow.repository.FollowRepository;
 import sws.songpin.domain.member.entity.Member;
@@ -54,65 +53,33 @@ public class FollowService {
         followRepository.delete(follow);
     }
 
-    // 특정 사용자의 팔로워 목록 조회
-    public FollowerListResponseDto getFollowerList(Long memberId) {
+    // 특정 사용자의 팔로잉 목록 또는 팔로워 목록 조회
+    public FollowListResponseDto getFollowList(Long memberId, Boolean isFollowingList) {
         Member targetMember = memberService.getMemberById(memberId);
-        List<Follow> followerList = findAllFollowersOfMember(targetMember);
         Member currentMember = memberService.getCurrentMember();
         Map<Member, Long> currentMemberFollowingCache = getMemberFollowingCache(currentMember);
+        List<Follow> followList = isFollowingList ? findAllFollowingOfMember(targetMember) : findAllFollowersOfMember(targetMember);
 
-        List<FollowDto> followDtoList = followerList.stream()
+        List<FollowDto> followDtoList = followList.stream()
                 .map(follow -> {
-                    Member follower = follow.getFollower();
-                    Long followId = currentMemberFollowingCache.get(follower);
-                    Boolean isFollowing = follower.equals(currentMember) ? null : followId != null;
+                    Member member = isFollowingList ? follow.getFollowing() : follow.getFollower();
+                    Long followId = currentMemberFollowingCache.get(member);
+                    Boolean isFollowing = member.equals(currentMember) ? null : followId != null;
                     return new FollowDto(
-                            follower.getMemberId(),
-                            follower.getProfileImg(),
-                            follower.getNickname(),
-                            follower.getHandle(),
+                            member.getMemberId(),
+                            member.getProfileImg(),
+                            member.getNickname(),
+                            member.getHandle(),
                             isFollowing,
                             followId // currentMember가 팔로잉하는 경우 currentMember와의 followId 삽입
                     );
                 })
                 // 우선순위대로 정렬
                 // 1차: null > true > false, 2차: followId 높은 것부터
-                .sorted(Comparator.comparing((FollowDto dto) -> dto.isFollowing(), Comparator.nullsFirst(Comparator.reverseOrder()))
-                        .thenComparing(Comparator.comparing(FollowDto::followId).reversed()))
+                .sorted(Comparator.comparing(FollowDto::isFollowing, Comparator.nullsFirst(Comparator.reverseOrder()))
+                        .thenComparing(FollowDto::followId, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
-        return FollowerListResponseDto.from(targetMember.equals(currentMember), targetMember.getHandle(), followDtoList);
-    }
-
-    // 특정 사용자의 팔로잉 목록 조회
-    public FollowingListResponseDto getFollowingList(Long memberId) {
-        Member targetMember = memberService.getMemberById(memberId);
-        List<Follow> followingList = findAllFollowingOfMember(targetMember);
-        Member currentMember = memberService.getCurrentMember();
-        Map<Member, Long> currentMemberFollowingCache = getMemberFollowingCache(currentMember);
-
-        Boolean isMe = targetMember.equals(currentMember);
-
-        List<FollowDto> followDtoList = followingList.stream()
-                .map(follow -> {
-                    Member following = follow.getFollowing();
-                    Long followId = currentMemberFollowingCache.get(following);
-                    Boolean isFollowing = following.equals(currentMember) ? null : followId != null;
-                    return new FollowDto(
-                            following.getMemberId(),
-                            following.getProfileImg(),
-                            following.getNickname(),
-                            following.getHandle(),
-                            isFollowing,
-                            followId // currentMember가 팔로잉하는 경우 currentMember와의 followId 삽입
-                    );
-                })
-                // 우선순위대로 정렬
-                // 1차: null > true > false, 2차: followId 높은 것부터
-                .sorted(Comparator.comparing((FollowDto dto) -> dto.isFollowing(), Comparator.nullsFirst(Comparator.reverseOrder()))
-                        .thenComparing(Comparator.comparing(FollowDto::followId).reversed()))
-                .collect(Collectors.toList());
-
-        return FollowingListResponseDto.from(isMe, targetMember.getHandle(), followDtoList);
+        return FollowListResponseDto.from(targetMember.equals(currentMember), targetMember.getHandle(), followDtoList);
     }
 
     // Member의 팔로잉을 키로 followId를 가져오기 위한 캐시를 생성 (팔로워 목록 조회, 팔로잉 목록 조회 시 사용)
