@@ -70,11 +70,15 @@ public class SongService {
                 .orElseGet(() -> createSong(songRequestDto));
     }
 
-    @Transactional(readOnly = true)
     public SongDetailsResponseDto getSongDetails(Long songId) {
-        Song song = songRepository.findById(songId)
-                .orElseThrow(() -> new CustomException(ErrorCode.SONG_NOT_FOUND));
+        Song song = getSongById(songId);
         int pinCount = pinRepository.countBySong(song);
         return SongDetailsResponseDto.from(song, pinCount);
+    }
+
+    @Transactional(readOnly = true)
+    public Song getSongById(Long songId) {
+        return songRepository.findById(songId)
+                .orElseThrow(() -> new CustomException(ErrorCode.SONG_NOT_FOUND));
     }
 }
