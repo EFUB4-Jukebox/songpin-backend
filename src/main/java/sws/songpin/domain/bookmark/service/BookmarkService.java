@@ -10,13 +10,16 @@ import sws.songpin.domain.bookmark.entity.Bookmark;
 import sws.songpin.domain.bookmark.repository.BookmarkRepository;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
+import sws.songpin.domain.bookmark.dto.response.BookmarkListResponseDto;
+import sws.songpin.domain.playlist.dto.response.PlaylistUnitDto;
 import sws.songpin.domain.playlist.entity.Playlist;
-import sws.songpin.domain.playlist.repository.PlaylistRepository;
+import sws.songpin.domain.playlist.service.PlaylistService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -24,14 +27,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BookmarkService {
     private final MemberService memberService;
-    private final PlaylistRepository playlistRepository;
+    private final PlaylistService playlistService;
     private final BookmarkRepository bookmarkRepository;
 
     // 북마크 생성
     public BookmarkAddResponseDto createBookmark(BookmarkAddRequestDto requestDto) {
         Member member = memberService.getCurrentMember();
-        Playlist playlist = playlistRepository.findById(requestDto.playlistId())
-                .orElseThrow(() -> new CustomException(ErrorCode.PLAYLIST_NOT_FOUND));
+        Playlist playlist = playlistService.findPlaylistById(requestDto.playlistId());
         getBookmarkByPlaylistAndMember(playlist, member).ifPresent(bookmark -> {
             throw new CustomException(ErrorCode.BOOKMARK_ALREADY_EXISTS);
         });
@@ -42,13 +44,25 @@ public class BookmarkService {
 
     // 북마크 삭제
     public void deleteBookmark(Long bookmarkId) {
-        Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
-                .orElseThrow(() -> new CustomException(ErrorCode.BOOKMARK_NOT_FOUND));
+        Bookmark bookmark = findBookmarkById(bookmarkId);
         Member currentMember = memberService.getCurrentMember();
         if (!bookmark.getMember().equals(currentMember)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
         bookmarkRepository.delete(bookmark);
+    }
+
+    // 내 모든 북마크된 플레이리스트 조회
+    @Transactional(readOnly = true)
+    public BookmarkListResponseDto getAllBookmarks() {
+        Member currentMember = memberService.getCurrentMember();
+        List<Bookmark> bookmarks = bookmarkRepository.findAllByMember(currentMember);
+        List<PlaylistUnitDto> bookmarkList = bookmarks.stream().map(bookmark -> {
+            Playlist playlist = bookmark.getPlaylist();
+            List<String> imgPathList = playlistService.getPlaylistThumbnailImgPathList(playlist);
+            return PlaylistUnitDto.from(playlist, imgPathList, true);
+        }).collect(Collectors.toList());
+        return BookmarkListResponseDto.from(bookmarkList);
     }
 
     @Transactional(readOnly = true)
@@ -57,7 +71,8 @@ public class BookmarkService {
     }
 
     @Transactional(readOnly = true)
-    public List<Bookmark> getBookmarksByMember(Member member) {
-        return bookmarkRepository.findByMember(member);
+    public Bookmark findBookmarkById(Long bookmarkId) {
+        return bookmarkRepository.findById(bookmarkId)
+                .orElseThrow(() -> new CustomException(ErrorCode.BOOKMARK_NOT_FOUND));
     }
 }
