@@ -6,12 +6,11 @@ import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.playlist.entity.Playlist;
 
 public record BookmarkAddRequestDto(
-    @NotNull
-    Long playlistId){
+    @NotNull Long playlistId
+){
 
     public Bookmark toEntity(Member member, Playlist playlist){
         return Bookmark.builder()
-                .bookmarkId(null)
                 .member(member)
                 .playlist(playlist)
                 .build();

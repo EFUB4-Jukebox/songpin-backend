@@ -3,7 +3,7 @@ package sws.songpin.domain.playlist.dto.response;
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.pin.entity.Visibility;
 import sws.songpin.domain.playlist.entity.Playlist;
-import sws.songpin.domain.song.dto.response.SongInfoResponseDto;
+import sws.songpin.domain.song.dto.response.SongInfoDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,7 +37,7 @@ public record PlaylistDetailsResponseDto(
     public record PlaylistPinListDto(
             Long playlistPinId,
             Long pinId,
-            SongInfoResponseDto songInfo,
+            SongInfoDto songInfo,
             LocalDate listenedDate,
             String placeName,
             Long providerAddressId,
