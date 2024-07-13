@@ -1,6 +1,7 @@
 package sws.songpin.domain.bookmark.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.bookmark.dto.request.BookmarkAddRequestDto;
 import sws.songpin.domain.bookmark.service.BookmarkService;
 
+@Tag(name = "Bookmark", description = "Bookmark 관련 API입니다.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/bookmarks")
@@ -27,6 +29,4 @@ public class BookmarkController {
         bookmarkService.deleteBookmark(bookmarkId);
         return ResponseEntity.ok().build();
     }
-
-
 }
