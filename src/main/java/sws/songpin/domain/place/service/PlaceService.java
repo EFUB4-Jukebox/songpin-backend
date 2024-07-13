@@ -37,7 +37,6 @@ public class PlaceService {
 
     // 장소 상세보기
     public PlaceDetailsResponseDto getPlaceDetails(Long placeId) {
-        log.info("1단계");
         // 해당 Place의 Pin들을 가져와 Song끼리 grouping
         Place place = getPlaceById(placeId);
         List<Pin> pins = place.getPins();
