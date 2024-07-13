@@ -6,32 +6,26 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sws.songpin.domain.pin.entity.Pin;
-import sws.songpin.domain.pin.service.PinService;
-import sws.songpin.domain.playlist.dto.request.PlaylistRequestDto;
+import sws.songpin.domain.playlist.dto.request.PlaylistAddRequestDto;
 import sws.songpin.domain.playlist.dto.request.PlaylistUpdateRequestDto;
-import sws.songpin.domain.playlist.dto.request.PlaylistPinRequestDto;
-import sws.songpin.domain.playlist.entity.Playlist;
+import sws.songpin.domain.playlist.dto.request.PlaylistPinAddRequestDto;
 import sws.songpin.domain.playlist.service.PlaylistService;
-
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/playlists")
 public class PlaylistController {
     private final PlaylistService playlistService;
-    private final PinService pinService;
 
     @Operation(summary = "플레이리스트 생성", description = "로그인한 사용자의 새로운 플레이리스트 생성")
     @PostMapping
-    public ResponseEntity<?> createPlaylist(@RequestBody @Valid PlaylistRequestDto requestDto){
+    public ResponseEntity<?> createPlaylist(@RequestBody @Valid PlaylistAddRequestDto requestDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(playlistService.createPlaylist(requestDto));
     }
 
     @Operation(summary = "플레이리스트에 핀 추가", description = "플레이리스트에 특정 핀 추가")
     @PostMapping("/pins")
-    public ResponseEntity<?> addPlaylistPin(@RequestBody @Valid PlaylistPinRequestDto requestDto) {
+    public ResponseEntity<?> addPlaylistPin(@RequestBody @Valid PlaylistPinAddRequestDto requestDto) {
         playlistService.addPlaylistPin(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

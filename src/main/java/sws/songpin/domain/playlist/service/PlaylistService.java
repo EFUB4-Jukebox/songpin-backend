@@ -4,17 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sws.songpin.domain.bookmark.entity.Bookmark;
+import sws.songpin.domain.bookmark.service.BookmarkService;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.pin.entity.Pin;
-import sws.songpin.domain.pin.repository.PinRepository;
+import sws.songpin.domain.pin.entity.Visibility;
 import sws.songpin.domain.pin.service.PinService;
-import sws.songpin.domain.playlist.dto.request.PlaylistPinRequestDto;
-import sws.songpin.domain.playlist.dto.response.PlaylistCreateResponseDto;
-import sws.songpin.domain.playlist.dto.response.PlaylistPinUpdateDto;
-import sws.songpin.domain.playlist.dto.request.PlaylistRequestDto;
+import sws.songpin.domain.playlist.dto.request.PlaylistPinAddRequestDto;
+import sws.songpin.domain.playlist.dto.response.*;
+import sws.songpin.domain.playlist.dto.request.PlaylistAddRequestDto;
 import sws.songpin.domain.playlist.dto.request.PlaylistUpdateRequestDto;
-import sws.songpin.domain.playlist.dto.response.PlaylistResponseDto;
 import sws.songpin.domain.playlist.entity.Playlist;
 import sws.songpin.domain.playlist.repository.PlaylistRepository;
 import sws.songpin.domain.playlistpin.entity.PlaylistPin;
@@ -35,16 +35,16 @@ import java.util.stream.Collectors;
 public class PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final PlaylistPinRepository playlistPinRepository;
-    private final PinRepository pinRepository;
     private final MemberService memberService;
     private final PinService pinService;
+    private final BookmarkService bookmarkService;
 
     // 플레이리스트 생성
-    public PlaylistCreateResponseDto createPlaylist(PlaylistRequestDto requestDto) {
+    public PlaylistAddResponseDto createPlaylist(PlaylistAddRequestDto requestDto) {
         Member member = memberService.getCurrentMember();
         Playlist playlist = requestDto.toEntity(member);
         Playlist savedPlaylist = playlistRepository.save(playlist);
-        return PlaylistCreateResponseDto.from(savedPlaylist);
+        return PlaylistAddResponseDto.from(savedPlaylist);
     }
 
     @Transactional(readOnly = true)
@@ -54,7 +54,7 @@ public class PlaylistService {
     }
 
     // 플레이리스트에 핀 추가
-    public void addPlaylistPin(PlaylistPinRequestDto requestDto) {
+    public void addPlaylistPin(PlaylistPinAddRequestDto requestDto) {
         Playlist playlist = findPlaylistById(requestDto.playlistId());
         Pin pin = pinService.getPinById(requestDto.pinId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PIN_NOT_FOUND));
@@ -81,11 +81,12 @@ public class PlaylistService {
 
     // 플레이리스트 상세 정보 가져오기
     @Transactional(readOnly = true)
-    public PlaylistResponseDto getPlaylist(Long playlistId) {
+    public PlaylistDetailsResponseDto getPlaylist(Long playlistId) {
+        Member currentMember = memberService.getCurrentMember();
         Playlist playlist = findPlaylistById(playlistId);
         List<PlaylistPin> playlistPinList = playlist.getPlaylistPins();
         // imgPathList, pinList
-        List<PlaylistResponseDto.PlaylistPinListDto> pinList = new ArrayList<>();
+        List<PlaylistDetailsResponseDto.PlaylistPinListDto> pinList = new ArrayList<>();
         List<String> imgPathList = new ArrayList<>();
 
         playlistPinList.stream()
@@ -93,7 +94,7 @@ public class PlaylistService {
                 .forEach(playlistPin -> {
                     // SongInfo
                     SongInfoResponseDto songInfo = SongInfoResponseDto.from(playlistPin.getPin().getSong());
-                    PlaylistResponseDto.PlaylistPinListDto pinListDto = new PlaylistResponseDto.PlaylistPinListDto(
+                    PlaylistDetailsResponseDto.PlaylistPinListDto pinListDto = new PlaylistDetailsResponseDto.PlaylistPinListDto(
                             playlistPin.getPlaylistPinId(),
                             playlistPin.getPin().getPinId(),
                             songInfo,
@@ -109,7 +110,13 @@ public class PlaylistService {
                         imgPathList.add(playlistPin.getPin().getSong().getImgPath());
                     }
                 });
-        return PlaylistResponseDto.from(playlist, imgPathList, pinList);
+        // isMine
+        boolean isMine = playlist.getCreator().equals(currentMember);
+        // bookmarkId
+        Long bookmarkId = bookmarkService.getBookmarkByPlaylistAndMember(playlist, currentMember)
+                .map(Bookmark::getBookmarkId)
+                .orElse(null);
+        return PlaylistDetailsResponseDto.from(playlist, imgPathList, pinList, isMine, bookmarkId);
     }
 
     // 플레이리스트 편집
@@ -154,10 +161,80 @@ public class PlaylistService {
     // 플레이리스트 삭제
     public void deletePlaylist(Long playlistId) {
         Playlist playlist = findPlaylistById(playlistId);
-        Member currentmember = memberService.getCurrentMember();
-        if(!currentmember.equals(playlist.getCreator())){
+        Member currentMember = memberService.getCurrentMember();
+        if(!currentMember.equals(playlist.getCreator())){
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
         playlistRepository.delete(playlist);
+    }
+
+    // 내 플레이리스트 조회
+    @Transactional(readOnly = true)
+    public AllPlaylistResponseDto getAllPlaylists(){
+        Member currentMember = memberService.getCurrentMember();
+        return getAllPlaylists(currentMember.getMemberId(), true);
+    }
+
+    // 타 유저 플레이리스트 조회
+    @Transactional(readOnly = true)
+    public AllPlaylistResponseDto getAllPlaylists(Long memberId) {
+        return getAllPlaylists(memberId, false);
+    }
+
+    @Transactional(readOnly = true)
+    public AllPlaylistResponseDto getAllPlaylists(Long memberId, boolean isMine) {
+        Member creator = memberService.getMemberById(memberId);
+        Member currentMember = memberService.getCurrentMember();
+        List<Playlist> playlists = playlistRepository.findAllByCreator(creator);
+        List<PlaylistListDto> playlistList = playlists.stream()
+                .filter(playlist -> isMine || playlist.getVisibility() == Visibility.PUBLIC)
+                .map(playlist -> {
+                    // imgPathList
+                    List<String> imgPathList = playlist.getPlaylistPins().stream()
+                            .map(playlistPin -> playlistPin.getPin().getSong().getImgPath())
+                            .limit(3)
+                            .collect(Collectors.toList());
+                    // isBookmarked
+                    boolean isBookmarked = bookmarkService.getBookmarkByPlaylistAndMember(playlist, creator).isPresent();
+                    return new PlaylistListDto(
+                            playlist.getPlaylistId(),
+                            playlist.getPlaylistName(),
+                            playlist.getCreator().getNickname(),
+                            playlist.getPlaylistPins().size(),
+                            playlist.getModifiedTime(),
+                            playlist.getVisibility(),
+                            imgPathList,
+                            isBookmarked
+                    );
+                }).collect(Collectors.toList());
+        return AllPlaylistResponseDto.from(playlistList);
+    }
+
+    // 북마크된 플레이리스트 조회
+    @Transactional(readOnly = true)
+    public AllBookmarkResponseDto getAllBookmarks() {
+        Member currentMember = memberService.getCurrentMember();
+        List<Bookmark> bookmarks = bookmarkService.getBookmarksByMember(currentMember);
+        List<PlaylistListDto> bookmarkList = bookmarks.stream().map(bookmark -> {
+            Playlist playlist = bookmark.getPlaylist();
+            // imgPathList
+            List<String> imgPathList = playlist.getPlaylistPins().stream()
+                    .map(playlistPin -> playlistPin.getPin().getSong().getImgPath())
+                    .limit(3)
+                    .collect(Collectors.toList());
+            // isBookmarked
+            boolean isBookmarked = true;
+            return new PlaylistListDto(
+                    playlist.getPlaylistId(),
+                    playlist.getPlaylistName(),
+                    playlist.getCreator().getNickname(),
+                    playlist.getPlaylistPins().size(),
+                    playlist.getModifiedTime(),
+                    playlist.getVisibility(),
+                    imgPathList,
+                    isBookmarked
+            );
+        }).collect(Collectors.toList());
+        return AllBookmarkResponseDto.from(bookmarkList);
     }
 }
