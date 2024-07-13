@@ -15,6 +15,7 @@ import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -74,6 +75,10 @@ public class FollowService {
                             followId // currentMember가 팔로잉하는 경우 currentMember와의 followId 삽입
                     );
                 })
+                // 우선순위대로 정렬
+                // 1차: null > true > false, 2차: followId 높은 것부터
+                .sorted(Comparator.comparing((FollowDto dto) -> dto.isFollowing(), Comparator.nullsFirst(Comparator.reverseOrder()))
+                        .thenComparing(Comparator.comparing(FollowDto::followId).reversed()))
                 .collect(Collectors.toList());
         return FollowerListResponseDto.from(targetMember.equals(currentMember), targetMember.getHandle(), followDtoList);
     }
@@ -101,7 +106,12 @@ public class FollowService {
                             followId // currentMember가 팔로잉하는 경우 currentMember와의 followId 삽입
                     );
                 })
+                // 우선순위대로 정렬
+                // 1차: null > true > false, 2차: followId 높은 것부터
+                .sorted(Comparator.comparing((FollowDto dto) -> dto.isFollowing(), Comparator.nullsFirst(Comparator.reverseOrder()))
+                        .thenComparing(Comparator.comparing(FollowDto::followId).reversed()))
                 .collect(Collectors.toList());
+
         return FollowingListResponseDto.from(isMe, targetMember.getHandle(), followDtoList);
     }
 
