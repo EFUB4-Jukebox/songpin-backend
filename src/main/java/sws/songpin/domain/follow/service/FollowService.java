@@ -54,7 +54,7 @@ public class FollowService {
     }
 
     // 특정 사용자의 팔로잉/팔로워 목록 조회
-    public FollowListResponseDto getFollowList(Long memberId, Boolean isFollowingList) {
+    public FollowListResponseDto getFollowList(Long memberId, boolean isFollowingList) {
         Member targetMember = memberService.getMemberById(memberId);
         Member currentMember = memberService.getCurrentMember();
         Map<Member, Long> currentMemberFollowingCache = getMemberFollowingCache(currentMember);
