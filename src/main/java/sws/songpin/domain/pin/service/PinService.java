@@ -113,8 +113,9 @@ public class PinService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Pin> getPinById(Long pinId) {
-        return pinRepository.findById(pinId);
+    public Pin getPinById(Long pinId) {
+        return pinRepository.findById(pinId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PIN_NOT_FOUND));
     }
 
 }
