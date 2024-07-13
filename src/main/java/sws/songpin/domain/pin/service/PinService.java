@@ -103,8 +103,7 @@ public class PinService {
 
     @Transactional(readOnly = true)
     public List<SongDetailsPinDto> getPinsForSong(Long songId, boolean includeMyPins) {
-        Song song = songRepository.findById(songId)
-                .orElseThrow(() -> new CustomException(ErrorCode.SONG_NOT_FOUND));
+        Song song = songService.getSongById(songId);
         List<Pin> pins;
 
         Long currentMemberId = includeMyPins ? memberService.getCurrentMember().getMemberId() : null;
