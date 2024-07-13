@@ -2,7 +2,7 @@ package sws.songpin.domain.playlist.dto.request;
 
 import jakarta.validation.constraints.*;
 import sws.songpin.domain.member.entity.Member;
-import sws.songpin.domain.pin.entity.Visibility;
+import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.playlist.entity.Playlist;
 
 public record PlaylistAddRequestDto(

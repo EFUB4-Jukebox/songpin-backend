@@ -1,6 +1,6 @@
 package sws.songpin.domain.playlist.dto.response;
 
-import sws.songpin.domain.pin.entity.Visibility;
+import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.playlist.entity.Playlist;
 
 import java.time.LocalDateTime;

@@ -8,7 +8,7 @@ import sws.songpin.domain.bookmark.entity.Bookmark;
 import sws.songpin.domain.bookmark.repository.BookmarkRepository;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
-import sws.songpin.domain.pin.entity.Visibility;
+import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.playlist.dto.response.*;
 import sws.songpin.domain.playlist.dto.request.PlaylistAddRequestDto;
 import sws.songpin.domain.playlist.dto.request.PlaylistUpdateRequestDto;
