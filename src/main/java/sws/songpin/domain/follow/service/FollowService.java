@@ -63,12 +63,15 @@ public class FollowService {
         List<FollowDto> followDtoList = followerList.stream()
                 .map(follow -> {
                     Member follower = follow.getFollower();
+                    Long followId = currentMemberFollowingCache.get(follower);
+                    Boolean isFollowing = follower.equals(currentMember) ? null : followId != null;
                     return new FollowDto(
                             follower.getMemberId(),
                             follower.getProfileImg(),
                             follower.getNickname(),
                             follower.getHandle(),
-                            currentMemberFollowingCache.get(follower) // currentMember가 팔로잉하는 경우 currentMember와의 followId 삽입
+                            isFollowing,
+                            followId // currentMember가 팔로잉하는 경우 currentMember와의 followId 삽입
                     );
                 })
                 .collect(Collectors.toList());
@@ -82,26 +85,31 @@ public class FollowService {
         Member currentMember = memberService.getCurrentMember();
         Map<Member, Long> currentMemberFollowingCache = getMemberFollowingCache(currentMember);
 
+        Boolean isMe = targetMember.equals(currentMember);
+
         List<FollowDto> followDtoList = followingList.stream()
                 .map(follow -> {
                     Member following = follow.getFollowing();
+                    Long followId = currentMemberFollowingCache.get(following);
+                    Boolean isFollowing = following.equals(currentMember) ? null : followId != null;
                     return new FollowDto(
                             following.getMemberId(),
                             following.getProfileImg(),
                             following.getNickname(),
                             following.getHandle(),
-                            currentMemberFollowingCache.get(following) // currentMember가 팔로잉하는 경우 currentMember와의 followId 삽입
+                            isFollowing,
+                            followId // currentMember가 팔로잉하는 경우 currentMember와의 followId 삽입
                     );
                 })
                 .collect(Collectors.toList());
-        return FollowingListResponseDto.from(targetMember.equals(currentMember), targetMember.getHandle(), followDtoList);
+        return FollowingListResponseDto.from(isMe, targetMember.getHandle(), followDtoList);
     }
 
-    // Member가 팔로잉중인지 확인하고 followId를 가져오기 위한 캐시를 생성해 반환 (팔로워 목록 조회, 팔로잉 목록 조회 시 사용)
+    // Member의 팔로잉을 키로 followId를 가져오기 위한 캐시를 생성 (팔로워 목록 조회, 팔로잉 목록 조회 시 사용)
     public Map<Member, Long> getMemberFollowingCache(Member member) {
         List<Follow> followingList = findAllFollowingOfMember(member);
         return followingList.stream()
-                .collect(Collectors.toMap(Follow::getFollower, Follow::getFollowId));
+                .collect(Collectors.toMap(Follow::getFollowing, Follow::getFollowId));
     }
 
     @Transactional(readOnly = true)

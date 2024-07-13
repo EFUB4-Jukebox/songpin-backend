@@ -7,5 +7,6 @@ public record FollowDto( // FollowerListResponseDto, FollowingListResponseDto에
     ProfileImg profileImg,
     String nickname,
     String handle,
-    Long myFollowId // null이면 currentMember가 팔로잉 중이 아님
+    Boolean isFollowing,
+    Long followId
 ) {}
