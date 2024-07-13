@@ -16,10 +16,3 @@ public record SongUnitDto(
         );
     }
 }
-
-record SongInfoDto () {
-    public static SongInfoDto from(Song song) {
-        // TODO: SongInfoDto rename 변경사항 merge된 후 삭제 예정
-        return null;
-    }
-}
