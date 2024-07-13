@@ -24,8 +24,8 @@ public class PlaceController {
     @Operation(summary = "장소 검색", description = "장소 검색 결과를 선택한 정렬 기준에 따라 페이징으로 불러옵니다.")
     @GetMapping
     public ResponseEntity<?> placeSearch(@RequestParam final String keyword,
-                                          @RequestParam(defaultValue = "ACCURACY") final SortBy sortBy,
-                                          @RequestParam(defaultValue = "0") final int offset) { // offset 자료형 확인 필요
-        return ResponseEntity.ok().body(placeService.searchPlaces(keyword, sortBy, offset));
+                                          @RequestParam(defaultValue = "ACCURACY") final String sortBy,
+                                          @RequestParam(defaultValue = "0") final int offset) {
+        return ResponseEntity.ok().body(placeService.searchPlaces(keyword, SortBy.from(sortBy), offset));
     }
 }

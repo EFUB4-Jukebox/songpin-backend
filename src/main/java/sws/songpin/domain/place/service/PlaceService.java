@@ -1,6 +1,7 @@
 package sws.songpin.domain.place.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -35,6 +37,7 @@ public class PlaceService {
 
     // 장소 상세보기
     public PlaceDetailsResponseDto getPlaceDetails(Long placeId) {
+        log.info("1단계");
         // 해당 Place의 Pin들을 가져와 Song끼리 grouping
         Place place = getPlaceById(placeId);
         List<Pin> pins = place.getPins();
@@ -53,24 +56,22 @@ public class PlaceService {
         return PlaceDetailsResponseDto.from(place, latestPin, pins.size(), songUnitDtos);
     }
 
-    // 장소 검색
+    // 장소 검색 (네이티브 쿼리 이용)
     public PlaceSearchResponseDto searchPlaces(String keyword, SortBy sortBy, int pageNumber) {
         final int pageLimit = 30; // 단일 페이지 크기
-        Pageable pageable = PageRequest.of(pageNumber, pageLimit, getSortForPlace(sortBy)); // 정렬 기준 선택
+        Pageable pageable = PageRequest.of(pageNumber, pageLimit);
 
         // 키워드의 띄어쓰기를 제거하여 띄어쓰기 없앤 장소이름을 검색
         String keywordNoSpaces = keyword.replace(" ", "");
-        Page<Place> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpaces(keywordNoSpaces, pageable);
-        return PlaceSearchResponseDto.from((int) placePage.getTotalElements(), placePage.getContent());
-    }
 
-    // 장소 검색 - 페이징 위해 JPA 이용
-    public Sort getSortForPlace(SortBy sortBy) {
-        return switch (sortBy) {
-            case ACCURACY -> Sort.by(Sort.Order.asc("placeName")); // 사전순
-            case COUNT -> Sort.by(Sort.Order.desc("pins.size"), Sort.Order.asc("placeName")); // 1차 pins 크기순, 2차 사전순
-            case NEWEST -> Sort.by(Sort.Order.desc("pins.createdTime")); // pins 생성일순
-        };
+        Page<Place> placePage;
+        switch (sortBy) {
+            case COUNT -> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByCount(keywordNoSpaces, pageable);
+            case NEWEST -> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByNewest(keywordNoSpaces, pageable);
+            case ACCURACY -> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByAccuracy(keywordNoSpaces, pageable);
+            default -> throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
+        }
+        return PlaceSearchResponseDto.from((int) placePage.getTotalElements(), placePage.getContent());
     }
 
     // Place를 providerAddressId로 찾아 가져오거나 생성
