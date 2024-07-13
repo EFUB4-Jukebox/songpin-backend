@@ -39,4 +39,10 @@ public class PinController {
         return ResponseEntity.ok().location(location).build();
     }
 
+    @DeleteMapping("/{pinId}")
+    @Operation(summary = "핀 삭제", description = "핀을 삭제합니다.")
+    public ResponseEntity<?> deletePin(@PathVariable("pinId") final Long pinId){
+        pinService.deletePin(pinId);
+        return ResponseEntity.ok().build();
+    }
 }
