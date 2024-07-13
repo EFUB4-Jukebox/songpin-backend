@@ -112,8 +112,7 @@ public class FollowService {
 
     @Transactional(readOnly = true)
     public boolean checkFollowExists(Member follower, Member following) {
-        return followRepository.existsByFollowerAndFollowing(follower, following)
-                .isPresent();
+        return followRepository.existsByFollowerAndFollowing(follower, following).booleanValue();
     }
 
     @Transactional(readOnly = true)
