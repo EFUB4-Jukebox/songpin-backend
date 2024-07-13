@@ -3,13 +3,13 @@ package sws.songpin.domain.playlist.dto.response;
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.pin.entity.Visibility;
 import sws.songpin.domain.playlist.entity.Playlist;
-import sws.songpin.domain.song.dto.response.SongInfoResponseDto;
+import sws.songpin.domain.song.dto.response.SongInfoDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record PlaylistResponseDto(
+public record PlaylistDetailsResponseDto(
         Boolean isMine,
         String playlistName,
         Long creatorId,
@@ -20,16 +20,16 @@ public record PlaylistResponseDto(
         Long bookmarkId,
         List<PlaylistPinListDto> pinList) {
 
-    public static PlaylistResponseDto from(Playlist playlist, List<String> imgPathList, List<PlaylistPinListDto> pinList) {
-        return new PlaylistResponseDto(
-                false, // isMine (추후 추가)
+    public static PlaylistDetailsResponseDto from(Playlist playlist, List<String> imgPathList, List<PlaylistPinListDto> pinList, Boolean isMine, Long bookmarkId) {
+        return new PlaylistDetailsResponseDto(
+                isMine,
                 playlist.getPlaylistName(),
                 playlist.getCreator().getMemberId(),
                 playlist.getCreator().getNickname(),
                 playlist.getModifiedTime(),
                 playlist.getVisibility(),
                 imgPathList,
-                null, // bookmarkId (추후 추가)
+                bookmarkId,
                 pinList
         );
     }
@@ -37,7 +37,7 @@ public record PlaylistResponseDto(
     public record PlaylistPinListDto(
             Long playlistPinId,
             Long pinId,
-            SongInfoResponseDto songInfo,
+            SongInfoDto songInfo,
             LocalDate listenedDate,
             String placeName,
             Long providerAddressId,

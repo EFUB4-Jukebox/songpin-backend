@@ -1,16 +1,15 @@
 package sws.songpin.domain.song.dto.response;
 
-import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.song.entity.Song;
 
-public record SongInfoResponseDto(
+public record SongInfoDto(
         Long songId,
         String title,
         String artist,
         String imgPath
 ) {
-    public static SongInfoResponseDto from(Song song) {
-        return new SongInfoResponseDto(
+    public static SongInfoDto from(Song song) {
+        return new SongInfoDto(
                 song.getSongId(),
                 song.getTitle(),
                 song.getArtist(),
