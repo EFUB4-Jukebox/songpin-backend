@@ -64,16 +64,9 @@ public class FollowService {
                 .map(follow -> {
                     Member member = isFollowingList ? follow.getFollowing() : follow.getFollower();
                     Long followId = currentMemberFollowingCache.get(member);
-                    // 내가 해당 member를 팔로잉 중인지 여부 (null: 자신)
+                    // isFollowing: 로그인한 사용자의 member 팔로잉 여부 (null: 자신)
                     Boolean isFollowing = member.equals(currentMember) ? null : followId != null;
-                    return new FollowDto(
-                            member.getMemberId(),
-                            member.getProfileImg(),
-                            member.getNickname(),
-                            member.getHandle(),
-                            isFollowing,
-                            followId // currentMember가 팔로잉하는 경우 currentMember와의 followId 삽입
-                    );
+                    return FollowDto.from(member, isFollowing, followId);
                 })
                 // 우선순위대로 정렬 (1차: null > true > false, 2차: followId 높은 것부터)
                 .sorted(Comparator.comparing(FollowDto::isFollowing, Comparator.nullsFirst(Comparator.reverseOrder()))
