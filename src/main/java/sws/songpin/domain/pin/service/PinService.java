@@ -66,7 +66,7 @@ public class PinService {
 
     // 음악 핀 수정
     public Long updatePin(Long pinId, PinUpdateRequestDto pinUpdateRequestDto) {
-        Pin pin = getPinByIdAndCreator(pinId);
+        Pin pin = validatePinCreator(pinId);
 
         Genre genre = genreService.getGenreByGenreName(pinUpdateRequestDto.genreName());
         pin.updatePin(pinUpdateRequestDto.listenedDate(), pinUpdateRequestDto.memo(), pinUpdateRequestDto.visibility(), genre);
@@ -77,7 +77,7 @@ public class PinService {
 
     // 음악 핀 삭제
     public void deletePin(Long pinId) {
-        Pin pin = getPinByIdAndCreator(pinId);
+        Pin pin = validatePinCreator(pinId);
         pinRepository.delete(pin);
     }
 
@@ -93,7 +93,7 @@ public class PinService {
 
     // 현재 로그인된 사용자가 핀의 생성자인지 확인
     @Transactional(readOnly = true)
-    private Pin getPinByIdAndCreator(Long pinId) {
+    private Pin validatePinCreator(Long pinId) {
         Pin pin = getPinById(pinId);
         Member currentMember = memberService.getCurrentMember();
         if (!pin.getMember().getMemberId().equals(currentMember.getMemberId())){
