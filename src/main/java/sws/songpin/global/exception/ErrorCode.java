@@ -23,7 +23,7 @@ public enum ErrorCode {
     INVALID_ENUM_VALUE(400, "enum 값이 잘못되었습니다."),
     // 자신과 관련해 불가능한 요청
     MEMBER_BAD_REQUEST(400, "자기 자신은 이 경로를 통해 조회할 수 없습니다."),
-    FOLLOW_BAD_REQUEST(400,"팔로잉을 처리할 수 없습니다."),
+    FOLLOW_BAD_REQUEST(400,"자기 자신은 팔로잉할 수 없습니다."),
 
     // 401 Unauthorized
     // 로그인 상태여야 하는 요청
