@@ -10,7 +10,6 @@ import sws.songpin.domain.playlist.entity.Playlist;
 import sws.songpin.domain.playlist.repository.PlaylistRepository;
 import sws.songpin.domain.playlist.service.PlaylistService;
 import sws.songpin.domain.playlistpin.entity.PlaylistPin;
-import sws.songpin.domain.playlistpin.repository.PlaylistPinRepository;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
@@ -21,7 +20,6 @@ public class PlaylistPinService {
     private final PlaylistService playlistService;
     private final PinService pinService;
     private final PlaylistRepository playlistRepository;
-    private final PlaylistPinRepository playlistPinRepository;
 
     // 플레이리스트에 핀 추가
     public void addPlaylistPin(PlaylistPinAddRequestDto requestDto) {
@@ -41,17 +39,15 @@ public class PlaylistPinService {
         // 핀 추가
         playlist.addPlaylistPin(playlistPin);
         playlistRepository.save(playlist);
-        playlistPinRepository.save(playlistPin);
     }
 
     private PlaylistPin createPlaylistPin(Playlist playlist, Pin pin) {
         int pinIndex = playlist.getPlaylistPins().size();
-        PlaylistPin playlistPin = PlaylistPin.builder()
+        return PlaylistPin.builder()
                 .pinIndex(pinIndex)
                 .playlist(playlist)
                 .pin(pin)
                 .build();
-        return playlistPinRepository.save(playlistPin);
     }
 
 }
