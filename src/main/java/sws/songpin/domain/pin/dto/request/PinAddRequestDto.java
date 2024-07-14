@@ -3,7 +3,7 @@ package sws.songpin.domain.pin.dto.request;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import sws.songpin.domain.genre.entity.GenreName;
-import sws.songpin.domain.pin.entity.Visibility;
+import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.place.dto.request.PlaceAddRequestDto;
 import sws.songpin.domain.song.dto.request.SongAddRequestDto;
 

@@ -6,11 +6,10 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import sws.songpin.domain.bookmark.entity.Bookmark;
 import sws.songpin.domain.member.entity.Member;
-import sws.songpin.domain.pin.entity.Visibility;
+import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.playlistpin.entity.PlaylistPin;
 import sws.songpin.global.BaseTimeEntity;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import sws.songpin.domain.member.entity.Member;
+import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.place.entity.Place;
