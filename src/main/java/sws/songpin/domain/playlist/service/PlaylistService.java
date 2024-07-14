@@ -2,12 +2,17 @@ package sws.songpin.domain.playlist.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.bookmark.entity.Bookmark;
 import sws.songpin.domain.bookmark.repository.BookmarkRepository;
+import sws.songpin.domain.follow.service.FollowService;
 import sws.songpin.domain.member.entity.Member;
+import sws.songpin.domain.follow.entity.Follow;
 import sws.songpin.domain.member.service.MemberService;
+import sws.songpin.domain.model.SortBy;
 import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.playlist.dto.response.*;
 import sws.songpin.domain.playlist.dto.request.PlaylistAddRequestDto;
@@ -34,6 +39,7 @@ public class PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final PlaylistPinRepository playlistPinRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final FollowService followService;
 
     // 플레이리스트 생성
     public PlaylistAddResponseDto createPlaylist(PlaylistAddRequestDto requestDto) {
@@ -185,5 +191,66 @@ public class PlaylistService {
                 .map(playlistPin -> playlistPin.getPin().getSong().getImgPath())
                 .limit(3)
                 .collect(Collectors.toList());
+    }
+
+    // 플레이리스트 메인 페이지 조회
+    @Transactional(readOnly = true)
+    public PlaylistMainResponseDto getPlaylistMain() {
+        Member currentMember = memberService.getCurrentMember();
+        List<Playlist> allPlaylists = playlistRepository.findAll();
+
+        // recentPlaylists
+        List<PlaylistUnitDto> recentPlaylists = allPlaylists.stream()
+                .filter(playlist -> playlist.getVisibility() == Visibility.PUBLIC || playlist.getCreator().equals(currentMember))
+                .sorted((p1, p2) -> Long.compare(p2.getPlaylistId(), p1.getPlaylistId()))
+                .limit(4)
+                .map(playlist -> {
+                    List<String> imgPathList = getPlaylistThumbnailImgPathList(playlist);
+                    boolean isBookmarked = bookmarkRepository.existsByPlaylistAndMember(playlist, currentMember);
+                    return PlaylistUnitDto.from(playlist, imgPathList, isBookmarked);
+                })
+                .collect(Collectors.toList());
+
+        // followingPlaylists
+        List<Follow> followings = followService.findAllFollowingOfMember(currentMember);
+        List<Member> followingMembers = followings.stream()
+                .map(Follow::getFollowing)
+                .collect(Collectors.toList());
+        List<PlaylistUnitDto> followingPlaylists = allPlaylists.stream()
+                .filter(playlist -> followingMembers.contains(playlist.getCreator()) && playlist.getVisibility() == Visibility.PUBLIC)
+                .sorted((p1, p2) -> Long.compare(p2.getPlaylistId(), p1.getPlaylistId()))
+                .limit(4)
+                .map(playlist -> {
+                    List<String> imgPathList = getPlaylistThumbnailImgPathList(playlist);
+                    boolean isBookmarked = bookmarkRepository.existsByPlaylistAndMember(playlist, currentMember);
+                    return PlaylistUnitDto.from(playlist, imgPathList, isBookmarked);
+                })
+                .collect(Collectors.toList());
+
+        return PlaylistMainResponseDto.from(recentPlaylists, followingPlaylists);
+    }
+
+    // 플레이리스트 검색
+    @Transactional(readOnly = true)
+    public Object searchPlaylists(String keyword, SortBy sortBy, Pageable pageable) {
+        String keywordNoSpaces = keyword.replace(" ", "");
+        Page<Object[]> playlistPage;
+        switch (sortBy) {
+            case COUNT -> playlistPage = playlistRepository.findAllByPlaylistNameContainingIgnoreSpacesOrderByCount(keywordNoSpaces, pageable);
+            case NEWEST -> playlistPage = playlistRepository.findAllByPlaylistNameContainingIgnoreSpacesOrderByNewest(keywordNoSpaces, pageable);
+            case ACCURACY -> playlistPage = playlistRepository.findAllByPlaylistNameContainingIgnoreSpacesOrderByAccuracy(keywordNoSpaces, pageable);
+            default -> throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
+        }
+        // Page<Object[]>를 Page<PlaylistUnitDto>로 변환
+        Page<PlaylistUnitDto> playlistUnitPage = playlistPage.map(objects -> {
+            Member currentMember = memberService.getCurrentMember();
+            Long playlistId = ((Number) objects[0]).longValue();
+            Playlist playlist = findPlaylistById(playlistId);
+            List<String> imgPathList = getPlaylistThumbnailImgPathList(playlist);
+            boolean isBookmarked = bookmarkRepository.existsByPlaylistAndMember(playlist, currentMember);
+            return PlaylistUnitDto.from(playlist, imgPathList, isBookmarked);
+        });
+        // PlaylistSearchResponseDto를 반환
+        return PlaylistSearchResponseDto.from(playlistPage.getTotalElements(), playlistUnitPage);
     }
 }
