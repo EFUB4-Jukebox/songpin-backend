@@ -1,6 +1,7 @@
 package sws.songpin.domain.playlist.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import sws.songpin.domain.playlist.dto.request.PlaylistPinAddRequestDto;
 import sws.songpin.domain.playlist.service.PlaylistService;
 import sws.songpin.domain.playlistpin.service.PlaylistPinService;
 
+@Tag(name = "Playlist", description = "Playlist 관련 API입니다.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/playlists")
