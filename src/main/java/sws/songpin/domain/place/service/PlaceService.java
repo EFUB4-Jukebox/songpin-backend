@@ -3,9 +3,7 @@ package sws.songpin.domain.place.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.pin.entity.Pin;
@@ -13,6 +11,7 @@ import sws.songpin.domain.place.dto.request.PlaceAddRequestDto;
 import sws.songpin.domain.model.SortBy;
 import sws.songpin.domain.place.dto.response.PlaceDetailsResponseDto;
 import sws.songpin.domain.place.dto.response.PlaceSearchResponseDto;
+import sws.songpin.domain.place.dto.response.PlaceUnitDto;
 import sws.songpin.domain.place.entity.Place;
 import sws.songpin.domain.place.repository.PlaceRepository;
 import sws.songpin.domain.song.dto.response.SongUnitDto;
@@ -56,21 +55,27 @@ public class PlaceService {
     }
 
     // 장소 검색 (네이티브 쿼리 이용)
-    public PlaceSearchResponseDto searchPlaces(String keyword, SortBy sortBy, int pageNumber) {
-        final int pageLimit = 30; // 단일 페이지 크기
-        Pageable pageable = PageRequest.of(pageNumber, pageLimit);
-
+    public PlaceSearchResponseDto searchPlaces(String keyword, SortBy sortBy, Pageable pageable) {
         // 키워드의 띄어쓰기를 제거하여 띄어쓰기 없앤 장소이름을 검색
         String keywordNoSpaces = keyword.replace(" ", "");
-
-        Page<Place> placePage;
+        Page<Object[]> placePage;
         switch (sortBy) {
             case COUNT -> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByCount(keywordNoSpaces, pageable);
             case NEWEST -> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByNewest(keywordNoSpaces, pageable);
             case ACCURACY -> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByAccuracy(keywordNoSpaces, pageable);
             default -> throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
         }
-        return PlaceSearchResponseDto.from((int) placePage.getTotalElements(), placePage.getContent());
+
+        // Page<Object[]>를 Page<PlaceUnitDto>로 변환
+        Page<PlaceUnitDto> placeUnitPage = placePage.map(objects -> {
+            Long placeId = ((Number) objects[0]).longValue();
+            String placeName = (String) objects[1];
+            int pinCount = ((Number) objects[2]).intValue();
+            return new PlaceUnitDto(placeId, placeName, pinCount);
+        });
+
+        // PlaceSearchResponseDto를 반환
+        return PlaceSearchResponseDto.from(placeUnitPage);
     }
 
     // Place를 providerAddressId로 찾아 가져오거나 생성

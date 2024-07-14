@@ -13,12 +13,31 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     Optional<Place> findByProviderAddressId(Long providerAddressId);
 
     // 페이징 방식으로 장소 검색
-    @Query(value = "SELECT p.* FROM place p LEFT JOIN pin pin ON p.place_id = pin.place_id WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces% GROUP BY p.place_id ORDER BY COUNT(pin.pin_id) DESC, p.place_name ASC", nativeQuery = true)
-    Page<Place> findAllByPlaceNameContainingIgnoreSpacesOrderByCount(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
 
-    @Query(value = "SELECT p.* FROM place p LEFT JOIN pin pin ON p.place_id = pin.place_id WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces% GROUP BY p.place_id ORDER BY MAX(pin.created_time) DESC", nativeQuery = true)
-    Page<Place> findAllByPlaceNameContainingIgnoreSpacesOrderByNewest(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
+    @Query(value = "SELECT p.place_id, p.place_name, COUNT(pin.pin_id) AS pin_count " +
+            "FROM place p " +
+            "LEFT JOIN pin pin ON p.place_id = pin.place_id " +
+            "WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces% " +
+            "GROUP BY p.place_id " +
+            "ORDER BY pin_count DESC, p.place_name ASC",
+            nativeQuery = true)
+    Page<Object[]> findAllByPlaceNameContainingIgnoreSpacesOrderByCount(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
 
-    @Query(value = "SELECT p.* FROM place p WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces% ORDER BY p.place_name ASC", nativeQuery = true)
-    Page<Place> findAllByPlaceNameContainingIgnoreSpacesOrderByAccuracy(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
+    @Query(value = "SELECT p.place_id, p.place_name, COUNT(pin.pin_id) AS pin_count " +
+            "FROM place p " +
+            "LEFT JOIN pin pin ON p.place_id = pin.place_id " +
+            "WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces% " +
+            "GROUP BY p.place_id " +
+            "ORDER BY MAX(pin.created_time) DESC",
+            nativeQuery = true)
+    Page<Object[]> findAllByPlaceNameContainingIgnoreSpacesOrderByNewest(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
+
+    @Query(value = "SELECT p.place_id, p.place_name, COUNT(pin.pin_id) AS pin_count " +
+            "FROM place p " +
+            "LEFT JOIN pin pin ON p.place_id = pin.place_id " +
+            "WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces% " +
+            "GROUP BY p.place_id " +
+            "ORDER BY p.place_name ASC",
+            nativeQuery = true)
+    Page<Object[]> findAllByPlaceNameContainingIgnoreSpacesOrderByAccuracy(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
 }

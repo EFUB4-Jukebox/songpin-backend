@@ -1,18 +1,23 @@
 package sws.songpin.domain.place.dto.response;
 
-import sws.songpin.domain.place.entity.Place;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public record PlaceSearchResponseDto(
-        int placeCount,
+        int currentPage,
+        int pageSize, // 현재 페이지 크기 (명확화 위해)
+        long totalElements,
+        int totalPages,
         List<PlaceUnitDto> placeList
 ) {
-    public static PlaceSearchResponseDto from(int placeCount, List<Place> placeList) {
-        List<PlaceUnitDto> placeUnitDtos = placeList.stream()
-                .map(p -> PlaceUnitDto.from(p, p.getPins().size()))
-                .collect(Collectors.toList());
-        return new PlaceSearchResponseDto(placeCount, placeUnitDtos);
+    public static PlaceSearchResponseDto from(Page<PlaceUnitDto> placePage) {
+        return new PlaceSearchResponseDto(
+                placePage.getNumber(),
+                placePage.getSize(),
+                placePage.getTotalElements(),
+                placePage.getTotalPages(),
+                placePage.getContent()
+        );
     }
 }

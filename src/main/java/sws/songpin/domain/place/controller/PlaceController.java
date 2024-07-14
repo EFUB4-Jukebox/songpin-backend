@@ -3,6 +3,8 @@ package sws.songpin.domain.place.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.model.SortBy;
@@ -24,8 +26,8 @@ public class PlaceController {
     @Operation(summary = "장소 검색", description = "장소 검색 결과를 선택한 정렬 기준에 따라 페이징으로 불러옵니다.")
     @GetMapping
     public ResponseEntity<?> placeSearch(@RequestParam final String keyword,
-                                          @RequestParam(defaultValue = "ACCURACY") final String sortBy,
-                                          @RequestParam(defaultValue = "0") final int offset) {
-        return ResponseEntity.ok().body(placeService.searchPlaces(keyword, SortBy.from(sortBy), offset));
+                                         @RequestParam(defaultValue = "ACCURACY") final String sortBy,
+                                         @PageableDefault(size = 20) final Pageable pageable) {
+        return ResponseEntity.ok().body(placeService.searchPlaces(keyword, SortBy.from(sortBy), pageable));
     }
 }
