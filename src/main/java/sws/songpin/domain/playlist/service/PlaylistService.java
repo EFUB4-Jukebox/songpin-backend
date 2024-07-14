@@ -56,7 +56,7 @@ public class PlaylistService {
         Playlist playlist = findPlaylistById(playlistId);
         List<PlaylistPin> playlistPinList = playlist.getPlaylistPins();
         // imgPathList, pinList
-        List<PlaylistDetailsResponseDto.PlaylistPinListDto> pinList = new ArrayList<>();
+        List<PlaylistPinUnitDto> pinList = new ArrayList<>();
         List<String> imgPathList = new ArrayList<>();
 
         playlistPinList.stream()
@@ -64,7 +64,7 @@ public class PlaylistService {
                 .forEach(playlistPin -> {
                     // SongInfo
                     SongInfoDto songInfo = SongInfoDto.from(playlistPin.getPin().getSong());
-                    PlaylistDetailsResponseDto.PlaylistPinListDto pinListDto = new PlaylistDetailsResponseDto.PlaylistPinListDto(
+                    PlaylistPinUnitDto pinListDto = new PlaylistPinUnitDto(
                             playlistPin.getPlaylistPinId(),
                             playlistPin.getPin().getPinId(),
                             songInfo,
