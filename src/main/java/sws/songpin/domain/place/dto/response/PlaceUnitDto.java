@@ -5,13 +5,13 @@ import sws.songpin.domain.place.entity.Place;
 public record PlaceUnitDto(
         Long placeId,
         String placeName,
-        int pinCount
+        int placePinCount
 ) {
-    public static PlaceUnitDto from(Place place, int pinCount) {
+    public static PlaceUnitDto from(Place place, int placePinCount) {
         return new PlaceUnitDto(
                 place.getPlaceId(),
                 place.getPlaceName(),
-                pinCount
+                placePinCount
         );
     }
 }

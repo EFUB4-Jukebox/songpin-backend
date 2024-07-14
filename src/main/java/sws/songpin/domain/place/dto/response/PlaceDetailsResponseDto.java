@@ -15,7 +15,6 @@ public record PlaceDetailsResponseDto(
         GenreName latestGenreName,
         int pinCount,
         LocalDate updatedDate,
-        int songCount,
         List<SongUnitDto> songList
 ) {
     public static PlaceDetailsResponseDto from(Place place, Pin latestPin, int pinCount, List<SongUnitDto> songUnitDtos) {
@@ -26,7 +25,6 @@ public record PlaceDetailsResponseDto(
                 latestPin != null ? latestPin.getGenre().getGenreName() : null, // 가장 최근 핀의 장르
                 pinCount,
                 latestPin != null ? latestPin.getCreatedTime().toLocalDate() : null, // 가장 최근 핀의 등록 날짜
-                songUnitDtos.size(),
                 songUnitDtos
         );
     }

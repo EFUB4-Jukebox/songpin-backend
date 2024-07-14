@@ -70,8 +70,8 @@ public class PlaceService {
         Page<PlaceUnitDto> placeUnitPage = placePage.map(objects -> {
             Long placeId = ((Number) objects[0]).longValue();
             String placeName = (String) objects[1];
-            int pinCount = ((Number) objects[2]).intValue();
-            return new PlaceUnitDto(placeId, placeName, pinCount);
+            int placePinCount = ((Number) objects[2]).intValue();
+            return new PlaceUnitDto(placeId, placeName, placePinCount);
         });
 
         // PlaceSearchResponseDto를 반환
