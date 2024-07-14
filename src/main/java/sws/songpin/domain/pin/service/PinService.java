@@ -3,6 +3,7 @@ package sws.songpin.domain.pin.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sws.songpin.domain.bookmark.entity.Bookmark;
 import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.genre.service.GenreService;
@@ -63,6 +64,23 @@ public class PinService {
         return finalSong.getSongId();
     }
 
+    // 음악 핀 수정
+    public Long updatePin(Long pinId, PinUpdateRequestDto pinUpdateRequestDto) {
+        Pin pin = validatePinCreator(pinId);
+
+        Genre genre = genreService.getGenreByGenreName(pinUpdateRequestDto.genreName());
+        pin.updatePin(pinUpdateRequestDto.listenedDate(), pinUpdateRequestDto.memo(), pinUpdateRequestDto.visibility(), genre);
+        pinRepository.save(pin);
+
+        return pin.getSong().getSongId();
+    }
+
+    // 음악 핀 삭제
+    public void deletePin(Long pinId) {
+        Pin pin = validatePinCreator(pinId);
+        pinRepository.delete(pin);
+    }
+
     private void updateSongAvgGenreName(Song song) {
         List<Genre> genres = pinRepository.findAllBySong(song).stream()
                 .map(Pin::getGenre)
@@ -73,29 +91,19 @@ public class PinService {
         songRepository.save(song);
     }
 
-    // 음악 핀 수정
-    public Long updatePin(Long pinId, PinUpdateRequestDto pinUpdateRequestDto) {
-        Pin pin = pinRepository.findById(pinId)
-                .orElseThrow(() -> new CustomException(ErrorCode.PIN_NOT_FOUND));
-
-        // 현재 로그인된 사용자가 핀의 생성자인지 확인
+    // 현재 로그인된 사용자가 핀의 생성자인지 확인
+    @Transactional(readOnly = true)
+    private Pin validatePinCreator(Long pinId) {
+        Pin pin = getPinById(pinId);
         Member currentMember = memberService.getCurrentMember();
-        if (!pin.getMember().getMemberId().equals(currentMember.getMemberId())) {
+        if (!pin.getMember().getMemberId().equals(currentMember.getMemberId())){
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
-        }
-
-        Genre genre = genreService.getGenreByGenreName(pinUpdateRequestDto.genreName());
-        pin.updatePin(pinUpdateRequestDto.listenedDate(), pinUpdateRequestDto.memo(), pinUpdateRequestDto.visibility(), genre);
-        pinRepository.save(pin);
-
-        return pin.getSong().getSongId();
+        } return pin;
     }
-
 
     @Transactional(readOnly = true)
     public List<SongDetailsPinDto> getPinsForSong(Long songId, boolean includeMyPins) {
-        Song song = songRepository.findById(songId)
-                .orElseThrow(() -> new CustomException(ErrorCode.SONG_NOT_FOUND));
+        Song song = songService.getSongById(songId);
         List<Pin> pins;
 
         Long currentMemberId = includeMyPins ? memberService.getCurrentMember().getMemberId() : null;
