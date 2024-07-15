@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({MissingServletRequestParameterException.class})
     protected ResponseEntity<ErrorDto> handleMissingRequestParamException(MissingServletRequestParameterException e, HttpServletRequest request) {
-        ErrorCode errorCode = ErrorCode.PARAMETER_IS_MISSING;
+        ErrorCode errorCode = ErrorCode.MISSING_PARAMETER;
         ErrorDto errorDto = new ErrorDto(
                 LocalDateTime.now().toString(),
                 errorCode.getStatus(),
