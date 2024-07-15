@@ -28,7 +28,7 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
             "LEFT JOIN playlist_pin pin ON p.playlist_id = pin.playlist_id " +
             "WHERE REPLACE(p.playlist_name, ' ', '') LIKE %:keywordNoSpaces% " +
             "GROUP BY p.playlist_id " +
-            "ORDER BY MAX(pin.created_time) DESC",
+            "ORDER BY MAX(p.modified_time) DESC",
             nativeQuery = true)
     Page<Object[]> findAllByPlaylistNameContainingIgnoreSpacesOrderByNewest(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
 
