@@ -58,7 +58,7 @@ public class FollowService {
         Member targetMember = memberService.getMemberById(memberId);
         Member currentMember = memberService.getCurrentMember();
         Map<Member, Long> currentMemberFollowingCache = getMemberFollowingCache(currentMember);
-        List<Follow> followList = isFollowingList ? findAllFollowingOfMember(targetMember) : findAllFollowersOfMember(targetMember);
+        List<Follow> followList = isFollowingList ? findAllFollowingsOfMember(targetMember) : findAllFollowersOfMember(targetMember);
 
         List<FollowDto> followDtoList = followList.stream()
                 .map(follow -> {
@@ -77,7 +77,7 @@ public class FollowService {
 
     // member의 팔로잉을 key로 followId를 가져오기 위한 캐시를 생성 (팔로잉/팔로워 목록 조회 시 사용)
     public Map<Member, Long> getMemberFollowingCache(Member member) {
-        List<Follow> followingList = findAllFollowingOfMember(member);
+        List<Follow> followingList = findAllFollowingsOfMember(member);
         return followingList.stream()
                 .collect(Collectors.toMap(Follow::getFollowing, Follow::getFollowId));
     }
@@ -101,7 +101,7 @@ public class FollowService {
 
     // member의 팔로잉들
     @Transactional(readOnly = true)
-    public List<Follow> findAllFollowingOfMember(Member member){
+    public List<Follow> findAllFollowingsOfMember(Member member){
         return followRepository.findAllByFollower(member);
     }
 }
