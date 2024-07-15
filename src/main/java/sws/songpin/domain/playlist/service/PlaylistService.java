@@ -9,6 +9,7 @@ import sws.songpin.domain.bookmark.repository.BookmarkRepository;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.model.Visibility;
+import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.playlist.dto.response.*;
 import sws.songpin.domain.playlist.dto.request.PlaylistAddRequestDto;
 import sws.songpin.domain.playlist.dto.request.PlaylistUpdateRequestDto;
@@ -121,11 +122,17 @@ public class PlaylistService {
                 updatedPins.add(currentPin);
             }
         }
-        for (PlaylistPin pin : pinsToDelete) {
-            playlist.removePlaylistPin(pin);
-            playlistPinRepository.delete(pin);
+        for (PlaylistPin playlistPin : pinsToDelete) {
+            removePlaylistPin(playlistPin);
         }
         playlistPinRepository.saveAll(updatedPins);
+    }
+
+    // 플레이리스트에서 핀 삭제
+    public void removePlaylistPin(PlaylistPin playlistPin) {
+        Playlist playlist = playlistPin.getPlaylist();
+        playlist.removePlaylistPin(playlistPin);
+        playlistPinRepository.delete(playlistPin);
     }
 
     // 플레이리스트 삭제
@@ -185,5 +192,14 @@ public class PlaylistService {
                 .map(playlistPin -> playlistPin.getPin().getSong().getImgPath())
                 .limit(3)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlaylistPin> getPlaylistPinsByPin(Pin pin){
+        List<PlaylistPin> playlistPins = playlistPinRepository.findAllByPin(pin);
+        if (playlistPins.isEmpty()) {
+            throw new CustomException((ErrorCode.PLAYLIST_PIN_NOT_FOUND));
+        }
+        return playlistPins;
     }
 }

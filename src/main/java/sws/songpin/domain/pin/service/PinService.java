@@ -16,6 +16,8 @@ import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.place.dto.request.PlaceAddRequestDto;
 import sws.songpin.domain.place.entity.Place;
 import sws.songpin.domain.place.service.PlaceService;
+import sws.songpin.domain.playlist.service.PlaylistService;
+import sws.songpin.domain.playlistpin.entity.PlaylistPin;
 import sws.songpin.domain.song.dto.request.SongAddRequestDto;
 import sws.songpin.domain.song.dto.response.SongDetailsPinDto;
 import sws.songpin.domain.song.dto.response.SongDetailsResponseDto;
@@ -35,6 +37,7 @@ import java.util.stream.Collectors;
 public class PinService {
     private final PinRepository pinRepository;
     private final SongRepository songRepository;
+    private final PlaylistService playlistService;
     private final MemberService memberService;
     private final SongService songService;
     private final PlaceService placeService;
@@ -78,6 +81,10 @@ public class PinService {
     // 음악 핀 삭제
     public void deletePin(Long pinId) {
         Pin pin = validatePinCreator(pinId);
+        List<PlaylistPin> playlistPins = playlistService.getPlaylistPinsByPin(pin);
+        for (PlaylistPin playlistPin : playlistPins) {
+            playlistService.removePlaylistPin(playlistPin);
+        }
         pinRepository.delete(pin);
     }
 
