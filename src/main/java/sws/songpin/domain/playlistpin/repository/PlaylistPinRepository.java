@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface PlaylistPinRepository extends JpaRepository<PlaylistPin, Long> {
     List<PlaylistPin> findAllByPlaylist(Playlist playlist);
     Optional<Boolean> existsByPlaylistAndPin(Playlist playlist, Pin pin);
+    List<PlaylistPin> findAllByPin(Pin pin);
 }
