@@ -128,7 +128,7 @@ public class PlaylistService {
         playlistPinRepository.saveAll(updatedPins);
     }
 
-    // 플레이리스트에서 핀 삭제
+    // 플레이리스트에서 핀 제거
     public void removePlaylistPin(PlaylistPin playlistPin) {
         Playlist playlist = playlistPin.getPlaylist();
         playlist.removePlaylistPin(playlistPin);
