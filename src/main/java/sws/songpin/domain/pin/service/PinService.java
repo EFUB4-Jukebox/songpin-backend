@@ -83,6 +83,7 @@ public class PinService {
             playlist.removePlaylistPin(playlistPin);
         }
         playlistPinRepository.deleteAll(playlistPins);
+        pinRepository.delete(pin);
     }
 
     private void updateSongAvgGenreName(Song song) {
