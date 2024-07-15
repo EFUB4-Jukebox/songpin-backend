@@ -15,10 +15,8 @@ import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.place.entity.Place;
 import sws.songpin.domain.place.service.PlaceService;
 import sws.songpin.domain.playlist.entity.Playlist;
-import sws.songpin.domain.playlist.repository.PlaylistRepository;
 import sws.songpin.domain.playlistpin.entity.PlaylistPin;
 import sws.songpin.domain.playlistpin.repository.PlaylistPinRepository;
-import sws.songpin.domain.playlistpin.service.PlaylistPinService;
 import sws.songpin.domain.song.dto.response.SongDetailsPinDto;
 import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.song.repository.SongRepository;
@@ -37,7 +35,6 @@ public class PinService {
     private final PinRepository pinRepository;
     private final SongRepository songRepository;
     private final PlaylistPinRepository playlistPinRepository;
-    private final PlaylistPinService playlistPinService;
     private final MemberService memberService;
     private final SongService songService;
     private final PlaceService placeService;
@@ -59,8 +56,7 @@ public class PinService {
                 .place(finalPlace)
                 .genre(genre)
                 .build();
-
-        pin = pinRepository.save(pin);
+        pinRepository.save(pin);
         updateSongAvgGenreName(finalSong);
 
         // 노래 상세정보 페이지로 이동
@@ -81,7 +77,7 @@ public class PinService {
     // 음악 핀 삭제
     public void deletePin(Long pinId) {
         Pin pin = validatePinCreator(pinId);
-        List<PlaylistPin> playlistPins = playlistPinService.getPlaylistPinsByPin(pin);
+        List<PlaylistPin> playlistPins = playlistPinRepository.findAllByPin(pin);
         for (PlaylistPin playlistPin : playlistPins) {
             Playlist playlist = playlistPin.getPlaylist();
             playlist.removePlaylistPin(playlistPin);
@@ -101,12 +97,13 @@ public class PinService {
 
     // 현재 로그인된 사용자가 핀의 생성자인지 확인
     @Transactional(readOnly = true)
-    private Pin validatePinCreator(Long pinId) {
+    public Pin validatePinCreator(Long pinId) {
         Pin pin = getPinById(pinId);
         Member currentMember = memberService.getCurrentMember();
         if (!pin.getMember().getMemberId().equals(currentMember.getMemberId())){
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
-        } return pin;
+        }
+        return pin;
     }
 
     @Transactional(readOnly = true)
@@ -133,5 +130,4 @@ public class PinService {
         return pinRepository.findById(pinId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PIN_NOT_FOUND));
     }
-
 }
