@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -45,4 +46,18 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDto,HttpStatusCode.valueOf(errorCode.getStatus()));
     }
+
+    @ExceptionHandler({MissingServletRequestParameterException.class})
+    protected ResponseEntity<ErrorDto> handleMissingRequestParamException(MissingServletRequestParameterException e, HttpServletRequest request) {
+        ErrorCode errorCode = ErrorCode.MISSING_PARAMETER;
+        ErrorDto errorDto = new ErrorDto(
+                LocalDateTime.now().toString(),
+                errorCode.getStatus(),
+                errorCode.name(),
+                e.getMessage(),
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(errorDto, HttpStatusCode.valueOf(errorCode.getStatus()));
+    }
+
 }

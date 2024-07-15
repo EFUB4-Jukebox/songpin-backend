@@ -14,7 +14,6 @@ import sws.songpin.domain.member.dto.request.LoginRequestDto;
 import sws.songpin.domain.member.dto.request.SignUpRequestDto;
 import sws.songpin.domain.member.dto.response.LoginResponseDto;
 import sws.songpin.domain.member.service.AuthService;
-import sws.songpin.domain.member.service.MemberService;
 
 @RestController
 @RequiredArgsConstructor
