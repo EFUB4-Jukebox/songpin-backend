@@ -2,6 +2,8 @@ package sws.songpin.domain.playlist.dto.response;
 
 import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.playlist.entity.Playlist;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -10,7 +12,7 @@ public record PlaylistDetailsResponseDto(
         String playlistName,
         Long creatorId,
         String creatorNickname,
-        LocalDateTime updatedDate,
+        LocalDate updatedDate,
         Visibility visibility,
         List<String> imgPathList,
         Long bookmarkId,
@@ -22,7 +24,7 @@ public record PlaylistDetailsResponseDto(
                 playlist.getPlaylistName(),
                 playlist.getCreator().getMemberId(),
                 playlist.getCreator().getNickname(),
-                playlist.getModifiedTime(),
+                playlist.getModifiedTime().toLocalDate(),
                 playlist.getVisibility(),
                 imgPathList,
                 bookmarkId,
