@@ -10,11 +10,9 @@ import sws.songpin.domain.playlist.entity.Playlist;
 import sws.songpin.domain.playlist.repository.PlaylistRepository;
 import sws.songpin.domain.playlist.service.PlaylistService;
 import sws.songpin.domain.playlistpin.entity.PlaylistPin;
-import sws.songpin.domain.playlistpin.repository.PlaylistPinRepository;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
-import java.util.List;
 
 @Service
 @Transactional
@@ -23,7 +21,6 @@ public class PlaylistPinService {
     private final PlaylistService playlistService;
     private final PinService pinService;
     private final PlaylistRepository playlistRepository;
-    private final PlaylistPinRepository playlistPinRepository;
 
     // 플레이리스트에 핀 추가
     public void addPlaylistPin(PlaylistPinAddRequestDto requestDto) {
@@ -37,7 +34,7 @@ public class PlaylistPinService {
         }
         PlaylistPin playlistPin = createPlaylistPin(playlist, pin);
         // modifiedTime 갱신
-        playlist.updatePlaylistName(playlist.getPlaylistName()+" ");
+        playlist.updatePlaylistName(playlist.getPlaylistName() + " ");
         playlistRepository.saveAndFlush(playlist);
         playlist.updatePlaylistName(playlist.getPlaylistName().trim());
         // 핀 추가
@@ -53,14 +50,4 @@ public class PlaylistPinService {
                 .pin(pin)
                 .build();
     }
-
-    @Transactional(readOnly = true)
-    public List<PlaylistPin> getPlaylistPinsByPin(Pin pin){
-        List<PlaylistPin> playlistPins = playlistPinRepository.findAllByPin(pin);
-        if (playlistPins.isEmpty()) {
-            throw new CustomException((ErrorCode.PLAYLIST_PIN_NOT_FOUND));
-        }
-        return playlistPins;
-    }
-
 }
