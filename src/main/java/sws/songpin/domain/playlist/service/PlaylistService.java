@@ -129,8 +129,8 @@ public class PlaylistService {
         }
         for (PlaylistPin pin : pinsToDelete) {
             playlist.removePlaylistPin(pin);
-            playlistPinRepository.delete(pin);
         }
+        playlistPinRepository.deleteAll(pinsToDelete);
         playlistPinRepository.saveAll(updatedPins);
     }
 
