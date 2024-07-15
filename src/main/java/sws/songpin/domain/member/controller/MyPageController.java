@@ -1,15 +1,18 @@
 package sws.songpin.domain.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.bookmark.service.BookmarkService;
 import sws.songpin.domain.playlist.service.PlaylistService;
 
+@Tag(name = "MyPage", description = "MyPage 관련 API입니다.")
 @RestController
 @RequiredArgsConstructor
-public class MemberProfileController {
+@RequestMapping("/me")
+public class MyPageController {
     private final PlaylistService playlistService;
     private final BookmarkService bookmarkService;
 
@@ -25,9 +28,4 @@ public class MemberProfileController {
         return ResponseEntity.ok(bookmarkService.getAllBookmarks());
     }
 
-    @Operation(summary = "타 유저 플레이리스트 목록 조회", description = "타 유저 페이지에서 플레이리스트 목록 조회")
-    @GetMapping("/members/{memberId}/playlists")
-    public ResponseEntity<?> getAllPlaylists(@PathVariable("memberId") final Long memberId){
-        return ResponseEntity.ok(playlistService.getAllPlaylists(memberId));
-    }
 }
