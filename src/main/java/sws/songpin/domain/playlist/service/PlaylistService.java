@@ -251,6 +251,6 @@ public class PlaylistService {
             return PlaylistUnitDto.from(playlist, imgPathList, isBookmarked);
         });
         // PlaylistSearchResponseDto를 반환
-        return PlaylistSearchResponseDto.from(playlistPage.getTotalElements(), playlistUnitPage);
+        return PlaylistSearchResponseDto.from(playlistUnitPage);
     }
 }
