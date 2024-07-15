@@ -17,6 +17,7 @@ public enum ErrorCode {
     INVALID_INPUT_FORMAT(400, "유효하지 않은 형식입니다."),
     INVALID_INPUT_LENGTH(400, "입력 길이가 잘못되었습니다."),
     INVALID_INPUT_VALUE(400, "입력값이 잘못되었습니다."),
+    PARAMETER_IS_MISSING(400, "필수 쿼리 파라미터가 누락되었습니다."),
     // 비밀번호, 비밀번호 확인이 서로 불일치
     PASSWORD_MISMATCH(400, "비밀번호가 일치하지 않습니다."),
     // enum 값이 잘못됨 (Visibility, GenreName, SortBy)
