@@ -212,7 +212,7 @@ public class PlaylistService {
                 .collect(Collectors.toList());
 
         // followingPlaylists
-        List<Follow> followings = followService.findAllFollowingOfMember(currentMember);
+        List<Follow> followings = followService.findAllFollowingsOfMember(currentMember);
         List<Member> followingMembers = followings.stream()
                 .map(Follow::getFollowing)
                 .collect(Collectors.toList());
