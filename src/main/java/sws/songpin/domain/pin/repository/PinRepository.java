@@ -11,11 +11,11 @@ import java.util.List;
 
 public interface PinRepository extends JpaRepository <Pin, Long> {
     List<Pin> findAllBySong(Song song);
+    List<Pin> findAllByMember(Member member);
     List<Pin> findAllBySongAndMember(Song song, Member member);
-    // 현재 사용자의 비공개 핀 조회
-    List<Pin> findMyPrivatePins(Song song, Member member, Visibility visibility);
-    // 전체 사용자의 공개 핀 조회
-    List<Pin> findAllPublicPins(Song song, Visibility visibility);
+    List<Pin> findAllBySongAndMemberAndVisibility(Song song, Member member, Visibility visibility);
+    List<Pin> findAllBySongAndVisibility(Song song, Visibility visibility);
+    List<Pin> findAllByMemberAndVisibility(Member member, Visibility visibility);
     int countBySong(Song song);
     List<Pin> findAllByPlace(Place place);
 }

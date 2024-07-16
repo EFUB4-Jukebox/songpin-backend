@@ -1,11 +1,8 @@
 package sws.songpin.domain.pin.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sws.songpin.domain.bookmark.dto.response.BookmarkListResponseDto;
-import sws.songpin.domain.bookmark.entity.Bookmark;
 import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.genre.service.GenreService;
@@ -14,11 +11,12 @@ import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.pin.dto.request.PinAddRequestDto;
 import sws.songpin.domain.pin.dto.request.PinUpdateRequestDto;
+import sws.songpin.domain.pin.dto.response.FeedPinListResponseDto;
+import sws.songpin.domain.pin.dto.response.FeedPinUnitDto;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.place.entity.Place;
 import sws.songpin.domain.place.service.PlaceService;
-import sws.songpin.domain.playlist.dto.response.PlaylistUnitDto;
 import sws.songpin.domain.playlist.entity.Playlist;
 import sws.songpin.domain.playlistpin.entity.PlaylistPin;
 import sws.songpin.domain.playlistpin.repository.PlaylistPinRepository;
@@ -118,7 +116,8 @@ public class PinService {
     public List<SongDetailsPinDto> getPinsForSong(Long songId, boolean onlyMyPins) {
         Song song = songService.getSongById(songId);
         List<Pin> pins;
-        Member currentMember = onlyMyPins ? memberService.getCurrentMember() : null;
+        Member currentMember = memberService.getCurrentMember();
+        Long currentMemberId = currentMember != null ? currentMember.getMemberId() : null;
 
         if (onlyMyPins && currentMember != null) {
             // 내 핀만 보기 - 현재 사용자의 모든 핀 가져오기(visibility 상관없음)
@@ -128,31 +127,45 @@ public class PinService {
             // 1. "비공개 핀"에 대해 현재 사용자가 작성한 것만 가져오기
             pins = new ArrayList<>();
             if (currentMember != null) {
-                pins.addAll(pinRepository.findMyPrivatePins(song, currentMember, Visibility.PRIVATE));
+                pins.addAll(pinRepository.findAllBySongAndMemberAndVisibility(song, currentMember, Visibility.PRIVATE));
             }
             // 2. "공개 핀"에 대해 모든 사용자가 작성한 것 가져오기
-            List<Pin> publicPins = pinRepository.findAllPublicPins(song, Visibility.PUBLIC);
-
-//            // Sol2 - 그런데 어차피 데이터베이스 2번 호출은 불가피해서 그냥 위의 방식으로 진행
-//            // Sol3 - 쿼리문 사용
-//            // 모든 사용자의 공개 핀
-//            List<Pin> publicPins = pinRepository.findAllBySongAndVisibility(song, Visibility.PUBLIC);
-//            // 현재 사용자의 모든 핀
-//            List<Pin> myPins = currentMember != null ? pinRepository.findAllBySongAndMember(song, currentMember) : Collections.emptyList();
-//            // 중복 제거
-//            Set<Pin> uniquePins = new HashSet<>(publicPins);
-//            uniquePins.addAll(myPins);
-//            pins = new ArrayList<>(uniquePins);
+            pins.addAll(pinRepository.findAllBySongAndVisibility(song, Visibility.PUBLIC));
         }
 
-        Long currentMemberId = currentMember != null ? currentMember.getMemberId() : null;
         return pins.stream()
                 .map(pin -> {
-                    // currentMemberId와 핀의 생성자가 일치하면 true
-                    Boolean isMine = currentMemberId != null && pin.getMember().getMemberId().equals(currentMemberId);
                     return SongDetailsPinDto.from(pin, currentMemberId);
                 })
                 .collect(Collectors.toList());
+    }
+
+    // 내 핀 피드 조회
+    @Transactional(readOnly = true)
+    public FeedPinListResponseDto getMyFeedPins() {
+        Member currentMember = memberService.getCurrentMember();
+        List<Pin> pins = pinRepository.findAllByMember(currentMember);
+        List<FeedPinUnitDto> feedPinList = pins.stream()
+                .map(pin -> FeedPinUnitDto.from(pin, true))
+                .collect(Collectors.toList());
+        return new FeedPinListResponseDto(feedPinList, feedPinList.size());
+    }
+
+    // 타 유저의 공개 핀 피드 조회
+    @Transactional(readOnly = true)
+    public FeedPinListResponseDto getPublicFeedPins(Long memberId) {
+        return getAllFeedPins(memberId, Visibility.PUBLIC);
+    }
+
+    // 피드 조회 공통 메서드
+    @Transactional(readOnly = true)
+    public FeedPinListResponseDto getAllFeedPins(Long memberId, Visibility visibility) {
+        Member targetMember = memberService.getMemberById(memberId);
+        List<Pin> pins = pinRepository.findAllByMemberAndVisibility(targetMember, visibility);
+        List<FeedPinUnitDto> feedPinList = pins.stream()
+                .map(pin -> FeedPinUnitDto.from(pin, false))
+                .collect(Collectors.toList());
+        return new FeedPinListResponseDto(feedPinList, feedPinList.size());
     }
 
     @Transactional(readOnly = true)

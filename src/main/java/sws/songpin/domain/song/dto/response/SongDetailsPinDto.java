@@ -16,6 +16,9 @@ public record SongDetailsPinDto(
         Boolean isMine) {
 
     public static SongDetailsPinDto from(Pin pin, Long currentMemberId) {
+        // currentMemberId와 핀의 생성자가 일치하면 true
+        // SongDetailsPinDto로 전달해야해서 서비스로직으로 분리 불가
+        Boolean isMine = currentMemberId != null && pin.getMember().getMemberId().equals(currentMemberId);
         return new SongDetailsPinDto(
                 pin.getPinId(),
                 pin.getMember().getMemberId(),

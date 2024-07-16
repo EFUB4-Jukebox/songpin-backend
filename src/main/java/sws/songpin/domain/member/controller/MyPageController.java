@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.bookmark.service.BookmarkService;
+import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.playlist.service.PlaylistService;
 
 @Tag(name = "MyPage", description = "MyPage 관련 API입니다.")
@@ -15,6 +16,7 @@ import sws.songpin.domain.playlist.service.PlaylistService;
 public class MyPageController {
     private final PlaylistService playlistService;
     private final BookmarkService bookmarkService;
+    private final PinService pinService;
 
     @Operation(summary = "내 플레이리스트 목록 조회", description = "마이페이지에서 내 플레이리스트 목록 조회")
     @GetMapping("/playlists")
@@ -26,6 +28,12 @@ public class MyPageController {
     @GetMapping("/bookmarks")
     public ResponseEntity<?> getAllBookmarks(){
         return ResponseEntity.ok(bookmarkService.getAllBookmarks());
+    }
+
+    @Operation(summary = "내 핀 피드 조회", description = "현재 사용자의 모든 핀 피드를 조회합니다.")
+    @GetMapping("/pins")
+    public ResponseEntity<?> getMyFeedPins() {
+        return ResponseEntity.ok(pinService.getMyFeedPins());
     }
 
 }
