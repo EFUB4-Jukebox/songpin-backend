@@ -119,16 +119,14 @@ public class PinService {
         Member currentMember = memberService.getCurrentMember();
         Long currentMemberId = currentMember != null ? currentMember.getMemberId() : null;
 
-        if (onlyMyPins && currentMember != null) {
+        if (onlyMyPins) {
             // 내 핀만 보기 - 현재 사용자의 모든 핀 가져오기(visibility 상관없음)
             pins = pinRepository.findAllBySongAndMember(song, currentMember);
         } else {
             // 전체 핀 보기
             // 1. "비공개 핀"에 대해 현재 사용자가 작성한 것만 가져오기
             pins = new ArrayList<>();
-            if (currentMember != null) {
-                pins.addAll(pinRepository.findAllBySongAndMemberAndVisibility(song, currentMember, Visibility.PRIVATE));
-            }
+            pins.addAll(pinRepository.findAllBySongAndMemberAndVisibility(song, currentMember, Visibility.PRIVATE));
             // 2. "공개 핀"에 대해 모든 사용자가 작성한 것 가져오기
             pins.addAll(pinRepository.findAllBySongAndVisibility(song, Visibility.PUBLIC));
         }
