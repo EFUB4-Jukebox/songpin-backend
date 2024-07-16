@@ -1,6 +1,5 @@
 package sws.songpin.domain.place.dto.response;
 
-
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.place.entity.Place;

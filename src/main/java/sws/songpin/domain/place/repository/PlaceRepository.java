@@ -14,12 +14,22 @@ import java.util.Optional;
 public interface PlaceRepository extends JpaRepository<Place, Long> {
     Optional<Place> findByProviderAddressId(Long providerAddressId);
 
-    // 좌표 범위에 포함되는 장소들 불러오기 (Pageable을 사용하여 최대 100개 결과로 제한)
-    @Query(value = "SELECT p FROM Place p JOIN p.pins pin " +
-            "WHERE p.latitude BETWEEN :swLat AND :neLat AND p.longitude BETWEEN :swLng AND :neLng " +
-            "GROUP BY p HAVING COUNT(pin) > 0 ORDER BY MAX(pin.listenedDate) DESC",
+    // 좌표 범위에 포함되는 장소들 불러오기
+    @Query(value = "SELECT p.* FROM Place p " +
+            "JOIN pin ON p.place_id = pin.place_id " +
+            "WHERE p.latitude BETWEEN :swLat AND :neLat " +
+            "AND p.longitude BETWEEN :swLng AND :neLng " +
+            "GROUP BY p.place_id " +
+            "HAVING COUNT(pin.pin_id) > 0 " +
+            "ORDER BY MAX(pin.listened_date) DESC, p.place_id DESC",
+            countQuery = "SELECT COUNT(DISTINCT p.place_id) FROM Place p " +
+                    "JOIN pin ON p.place_id = pin.place_id " +
+                    "WHERE p.latitude BETWEEN :swLat AND :neLat " +
+                    "AND p.longitude BETWEEN :swLng AND :neLng " +
+                    "GROUP BY p.place_id " +
+                    "HAVING COUNT(pin.pin_id) > 0",
             nativeQuery = true)
-    List<Place> findAllByLatitudeBetweenAndLongitudeBetween(
+    Page<Place> findAllByLatitudeBetweenAndLongitudeBetween(
             @Param("swLat") double swLat,
             @Param("neLat") double neLat,
             @Param("swLng") double swLng,
@@ -27,13 +37,24 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             Pageable pageable
     );
 
-    // 좌표 범위 & 기간 범위에 모두 포함되는 장소들 불러오기 (Pageable을 사용하여 최대 100개 결과로 제한)
-    @Query(value = "SELECT p FROM Place p JOIN p.pins pin " +
-            "WHERE p.latitude BETWEEN :swLat AND :neLat AND p.longitude BETWEEN :swLng AND :neLng AND " +
-            "pin.listenedDate BETWEEN :startDate AND :endDate " +
-            "GROUP BY p HAVING COUNT(pin) > 0 ORDER BY MAX(pin.listenedDate) DESC",
+    // 좌표 범위 & 기간 범위에 모두 포함되는 장소들 불러오기
+    @Query(value = "SELECT p.* FROM Place p " +
+            "JOIN pin ON p.place_id = pin.place_id " +
+            "WHERE p.latitude BETWEEN :swLat AND :neLat " +
+            "AND p.longitude BETWEEN :swLng AND :neLng " +
+            "AND pin.listened_date BETWEEN :startDate AND :endDate " +
+            "GROUP BY p.place_id " +
+            "HAVING COUNT(pin.pin_id) > 0 " +
+            "ORDER BY MAX(pin.listened_date) DESC, p.place_id DESC",
+            countQuery = "SELECT COUNT(DISTINCT p.place_id) FROM Place p " +
+                    "JOIN pin ON p.place_id = pin.place_id " +
+                    "WHERE p.latitude BETWEEN :swLat AND :neLat " +
+                    "AND p.longitude BETWEEN :swLng AND :neLng " +
+                    "AND pin.listened_date BETWEEN :startDate AND :endDate " +
+                    "GROUP BY p.place_id " +
+                    "HAVING COUNT(pin.pin_id) > 0",
             nativeQuery = true)
-    List<Place> findAllByLatitudeBetweenAndLongitudeBetweenAndPinsListenedDateBetween(
+    Page<Place> findAllByLatitudeBetweenAndLongitudeBetweenAndPinsListenedDateBetween(
             @Param("swLat") double swLat,
             @Param("neLat") double neLat,
             @Param("swLng") double swLng,
@@ -44,13 +65,17 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     );
 
     // 페이징 방식으로 장소 검색
-
+    // countQuery 추가함 (total elements 계산시 사용)
     @Query(value = "SELECT p.place_id, p.place_name, COUNT(pin.pin_id) AS pin_count " +
             "FROM place p " +
             "LEFT JOIN pin pin ON p.place_id = pin.place_id " +
             "WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces% " +
             "GROUP BY p.place_id " +
             "ORDER BY pin_count DESC, p.place_name ASC",
+            countQuery = "SELECT COUNT(DISTINCT p.place_id) " +
+                    "FROM place p " +
+                    "LEFT JOIN pin pin ON p.place_id = pin.place_id " +
+                    "WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces%",
             nativeQuery = true)
     Page<Object[]> findAllByPlaceNameContainingIgnoreSpacesOrderByCount(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
 
@@ -60,6 +85,10 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             "WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces% " +
             "GROUP BY p.place_id " +
             "ORDER BY MAX(pin.created_time) DESC",
+            countQuery = "SELECT COUNT(DISTINCT p.place_id) " +
+                    "FROM place p " +
+                    "LEFT JOIN pin pin ON p.place_id = pin.place_id " +
+                    "WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces%",
             nativeQuery = true)
     Page<Object[]> findAllByPlaceNameContainingIgnoreSpacesOrderByNewest(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
 
@@ -69,6 +98,10 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             "WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces% " +
             "GROUP BY p.place_id " +
             "ORDER BY p.place_name ASC",
+            countQuery = "SELECT COUNT(DISTINCT p.place_id) " +
+                    "FROM place p " +
+                    "LEFT JOIN pin pin ON p.place_id = pin.place_id " +
+                    "WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces%",
             nativeQuery = true)
     Page<Object[]> findAllByPlaceNameContainingIgnoreSpacesOrderByAccuracy(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
 }
