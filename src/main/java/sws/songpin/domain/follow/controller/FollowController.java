@@ -18,13 +18,13 @@ public class FollowController {
     @Operation(summary = "유저의 팔로잉 목록 조회", description = "유저의 팔로잉 목록을 불러옵니다.")
     @GetMapping("/members/{memberId}/followings")
     public ResponseEntity<?> followingList(@PathVariable final Long memberId) {
-        return ResponseEntity.ok(followService.getFollowingList(memberId));
+        return ResponseEntity.ok(followService.getFollowList(memberId, true));
     }
 
     @Operation(summary = "유저의 팔로워 목록 조회", description = "유저의 팔로워 목록을 불러옵니다.")
     @GetMapping("/members/{memberId}/followers")
     public ResponseEntity<?> followerList(@PathVariable final Long memberId) {
-        return ResponseEntity.ok(followService.getFollowerList(memberId));
+        return ResponseEntity.ok(followService.getFollowList(memberId, false));
     }
 
     @Operation(summary = "타 유저를 팔로잉", description = "다른 유저를 팔로잉합니다.")

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import sws.songpin.domain.member.entity.Member;
+import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.place.entity.Place;
@@ -63,6 +64,13 @@ public class Pin extends BaseTimeEntity {
         this.member = member;
         this.song = song;
         this.place = place;
+        this.genre = genre;
+    }
+
+    public void updatePin(LocalDate listenedDate, String memo, Visibility visibility, Genre genre) {
+        this.listenedDate = listenedDate;
+        this.memo = memo;
+        this.visibility = visibility;
         this.genre = genre;
     }
 

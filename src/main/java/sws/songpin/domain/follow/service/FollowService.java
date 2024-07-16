@@ -6,8 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.follow.dto.request.FollowAddRequestDto;
 import sws.songpin.domain.follow.dto.response.FollowAddResponseDto;
 import sws.songpin.domain.follow.dto.response.FollowDto;
-import sws.songpin.domain.follow.dto.response.FollowerListResponseDto;
-import sws.songpin.domain.follow.dto.response.FollowingListResponseDto;
+import sws.songpin.domain.follow.dto.response.FollowListResponseDto;
 import sws.songpin.domain.follow.entity.Follow;
 import sws.songpin.domain.follow.repository.FollowRepository;
 import sws.songpin.domain.member.entity.Member;
@@ -15,6 +14,7 @@ import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,55 +53,34 @@ public class FollowService {
         followRepository.delete(follow);
     }
 
-    // 특정 사용자의 팔로워 목록 조회
-    public FollowerListResponseDto getFollowerList(Long memberId) {
+    // 특정 사용자의 팔로잉/팔로워 목록 조회
+    public FollowListResponseDto getFollowList(Long memberId, boolean isFollowingList) {
         Member targetMember = memberService.getMemberById(memberId);
         List<Follow> followerList = findAllFollowersOfMember(targetMember);
         Member currentMember = memberService.getCurrentMember();
         Map<Member, Long> currentMemberFollowingCache = getMemberFollowingCache(currentMember);
+        List<Follow> followList = isFollowingList ? findAllFollowingsOfMember(targetMember) : findAllFollowersOfMember(targetMember);
 
-        List<FollowDto> followDtoList = followerList.stream()
+        List<FollowDto> followDtoList = followList.stream()
                 .map(follow -> {
-                    Member follower = follow.getFollower();
-                    return new FollowDto(
-                            follower.getMemberId(),
-                            follower.getProfileImg(),
-                            follower.getNickname(),
-                            follower.getHandle(),
-                            currentMemberFollowingCache.get(follower) // currentMember가 팔로잉하는 경우 currentMember와의 followId 삽입
-                    );
+                    Member member = isFollowingList ? follow.getFollowing() : follow.getFollower();
+                    Long followId = currentMemberFollowingCache.get(member);
+                    // isFollowing: 로그인한 사용자의 member 팔로잉 여부 (null: 자신)
+                    Boolean isFollowing = member.equals(currentMember) ? null : followId != null;
+                    return FollowDto.from(member, isFollowing, followId);
                 })
+                // 우선순위대로 정렬 (1차: null > true > false, 2차: followId 높은 것부터)
+                .sorted(Comparator.comparing(FollowDto::isFollowing, Comparator.nullsFirst(Comparator.reverseOrder()))
+                        .thenComparing(FollowDto::followId, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
-        return FollowerListResponseDto.from(targetMember.equals(currentMember), targetMember.getHandle(), followDtoList);
+        return FollowListResponseDto.from(targetMember.equals(currentMember), targetMember.getHandle(), followDtoList);
     }
 
-    // 특정 사용자의 팔로잉 목록 조회
-    public FollowingListResponseDto getFollowingList(Long memberId) {
-        Member targetMember = memberService.getMemberById(memberId);
-        List<Follow> followingList = findAllFollowingOfMember(targetMember);
-        Member currentMember = memberService.getCurrentMember();
-        Map<Member, Long> currentMemberFollowingCache = getMemberFollowingCache(currentMember);
-
-        List<FollowDto> followDtoList = followingList.stream()
-                .map(follow -> {
-                    Member following = follow.getFollowing();
-                    return new FollowDto(
-                            following.getMemberId(),
-                            following.getProfileImg(),
-                            following.getNickname(),
-                            following.getHandle(),
-                            currentMemberFollowingCache.get(following) // currentMember가 팔로잉하는 경우 currentMember와의 followId 삽입
-                    );
-                })
-                .collect(Collectors.toList());
-        return FollowingListResponseDto.from(targetMember.equals(currentMember), targetMember.getHandle(), followDtoList);
-    }
-
-    // Member가 팔로잉중인지 확인하고 followId를 가져오기 위한 캐시를 생성해 반환 (팔로워 목록 조회, 팔로잉 목록 조회 시 사용)
+    // member의 팔로잉을 key로 followId를 가져오기 위한 캐시를 생성 (팔로잉/팔로워 목록 조회 시 사용)
     public Map<Member, Long> getMemberFollowingCache(Member member) {
-        List<Follow> followingList = findAllFollowingOfMember(member);
+        List<Follow> followingList = findAllFollowingsOfMember(member);
         return followingList.stream()
-                .collect(Collectors.toMap(Follow::getFollower, Follow::getFollowId));
+                .collect(Collectors.toMap(Follow::getFollowing, Follow::getFollowId));
     }
 
     @Transactional(readOnly = true)
@@ -112,16 +91,18 @@ public class FollowService {
 
     @Transactional(readOnly = true)
     public boolean checkFollowExists(Member follower, Member following) {
-        return followRepository.existsByFollowerAndFollowing(follower, following);
+        return followRepository.existsByFollowerAndFollowing(follower, following).booleanValue();
     }
 
+    // member의 팔로워들
     @Transactional(readOnly = true)
     public List<Follow> findAllFollowersOfMember(Member member){
         return followRepository.findAllByFollowing(member);
     }
 
+    // member의 팔로잉들
     @Transactional(readOnly = true)
-    public List<Follow> findAllFollowingOfMember(Member member){
+    public List<Follow> findAllFollowingsOfMember(Member member){
         return followRepository.findAllByFollower(member);
     }
 

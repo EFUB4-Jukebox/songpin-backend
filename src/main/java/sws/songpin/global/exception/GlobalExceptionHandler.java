@@ -1,10 +1,10 @@
 package sws.songpin.global.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -31,10 +31,10 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode;
         if(errorMessage.contains("-")){
             String errorName = errorMessage.split("-")[0];
-            errorMessage = errorMessage.split("-")[1];
+            errorMessage = e.getFieldError().getField() + ":" + errorMessage.split("-")[1];
             errorCode = ErrorCode.valueOf(errorName);
         } else {
-            errorMessage = e.getFieldError().getField() + "-" + errorMessage;
+            errorMessage = e.getFieldError().getField() + ":" + errorMessage;
             errorCode = ErrorCode.INVALID_INPUT_VALUE;
         }
         ErrorDto errorDto = new ErrorDto(
@@ -46,4 +46,18 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDto,HttpStatusCode.valueOf(errorCode.getStatus()));
     }
+
+    @ExceptionHandler({MissingServletRequestParameterException.class})
+    protected ResponseEntity<ErrorDto> handleMissingRequestParamException(MissingServletRequestParameterException e, HttpServletRequest request) {
+        ErrorCode errorCode = ErrorCode.MISSING_PARAMETER;
+        ErrorDto errorDto = new ErrorDto(
+                LocalDateTime.now().toString(),
+                errorCode.getStatus(),
+                errorCode.name(),
+                e.getMessage(),
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(errorDto, HttpStatusCode.valueOf(errorCode.getStatus()));
+    }
+
 }
