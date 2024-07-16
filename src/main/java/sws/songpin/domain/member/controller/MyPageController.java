@@ -17,13 +17,13 @@ public class MyPageController {
     private final BookmarkService bookmarkService;
 
     @Operation(summary = "내 플레이리스트 목록 조회", description = "마이페이지에서 내 플레이리스트 목록 조회")
-    @GetMapping("/me/playlists")
+    @GetMapping("/playlists")
     public ResponseEntity<?> getAllPlaylists(){
         return ResponseEntity.ok(playlistService.getAllPlaylists());
     }
 
     @Operation(summary = "내 북마크 목록 조회", description = "마이페이지에서 북마크 목록 조회")
-    @GetMapping("/me/bookmarks")
+    @GetMapping("/bookmarks")
     public ResponseEntity<?> getAllBookmarks(){
         return ResponseEntity.ok(bookmarkService.getAllBookmarks());
     }
