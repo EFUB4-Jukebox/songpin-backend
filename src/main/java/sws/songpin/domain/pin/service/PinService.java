@@ -113,6 +113,7 @@ public class PinService {
         return pin;
     }
 
+    // 특정 노래에 대한 핀 조회
     @Transactional(readOnly = true)
     public List<SongDetailsPinDto> getPinsForSong(Long songId, boolean onlyMyPins) {
         Song song = songService.getSongById(songId);
