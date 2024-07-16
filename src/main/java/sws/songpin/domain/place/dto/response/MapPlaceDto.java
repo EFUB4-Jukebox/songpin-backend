@@ -15,7 +15,7 @@ public record MapPlaceDto(
         double placeLongitude,
         int placePinCount,
         Map<GenreName, Integer> placePinCountByGenre,
-        LatestPinSongDto latestPinSong
+        PlaceLatestPinSongDto latestPinSong
 ) {
     // Place 객체를 PlaceDto로 변환하는 static 메서드
     public static MapPlaceDto from(Place place) {
@@ -29,9 +29,9 @@ public record MapPlaceDto(
                 ));
 
         // 최신 핀의 정보
-        LatestPinSongDto latestPinSong = place.getPins().stream()
+        PlaceLatestPinSongDto latestPinSong = place.getPins().stream()
                 .max(Comparator.comparing(Pin::getCreatedTime))
-                .map(pin -> new LatestPinSongDto(pin.getSong().getSongId(), pin.getSong().getAvgGenreName()))
+                .map(pin -> new PlaceLatestPinSongDto(pin.getSong().getSongId(), pin.getSong().getAvgGenreName()))
                 .orElse(null);
 
         return new MapPlaceDto(
@@ -43,9 +43,4 @@ public record MapPlaceDto(
                 latestPinSong
         );
     }
-
-    public record LatestPinSongDto(
-            Long songId,
-            GenreName avgGenreName
-    ) {}
 }

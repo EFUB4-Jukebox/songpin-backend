@@ -4,8 +4,8 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
-public record MapCustomPeriodRequestDto(
-        @NotNull MapBasicRequestDto mapBasicRequestDto,
+public record MapFetchCustomPeriodRequestDto(
+        @NotNull MapBoundCoordsDto boundCoords,
         @NotNull LocalDate startDate,
         @NotNull LocalDate endDate
 ) {
