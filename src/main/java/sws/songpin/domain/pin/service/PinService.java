@@ -90,7 +90,7 @@ public class PinService {
         pinRepository.delete(pin);
     }
 
-    private void updateSongAvgGenreName(Song song) {
+    public void updateSongAvgGenreName(Song song) {
         List<Genre> genres = pinRepository.findAllBySong(song).stream()
                 .map(Pin::getGenre)
                 .collect(Collectors.toList());
