@@ -1,19 +1,24 @@
 package sws.songpin.domain.pin.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sws.songpin.domain.bookmark.dto.response.BookmarkListResponseDto;
+import sws.songpin.domain.bookmark.entity.Bookmark;
 import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.genre.service.GenreService;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
+import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.pin.dto.request.PinAddRequestDto;
 import sws.songpin.domain.pin.dto.request.PinUpdateRequestDto;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.place.entity.Place;
 import sws.songpin.domain.place.service.PlaceService;
+import sws.songpin.domain.playlist.dto.response.PlaylistUnitDto;
 import sws.songpin.domain.playlist.entity.Playlist;
 import sws.songpin.domain.playlistpin.entity.PlaylistPin;
 import sws.songpin.domain.playlistpin.repository.PlaylistPinRepository;
@@ -24,6 +29,7 @@ import sws.songpin.domain.song.service.SongService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -108,19 +114,37 @@ public class PinService {
     }
 
     @Transactional(readOnly = true)
-    public List<SongDetailsPinDto> getPinsForSong(Long songId, boolean includeMyPins) {
+    public List<SongDetailsPinDto> getPinsForSong(Long songId, boolean onlyMyPins) {
         Song song = songService.getSongById(songId);
         List<Pin> pins;
+        Member currentMember = onlyMyPins ? memberService.getCurrentMember() : null;
 
-        Long currentMemberId = includeMyPins ? memberService.getCurrentMember().getMemberId() : null;
-        if (includeMyPins && currentMemberId != null) {
-            // includeMyPins가 true이고, 로그인된 유저가 있을 때
-            Member currentMember = memberService.getCurrentMember();
+        if (onlyMyPins && currentMember != null) {
+            // 내 핀만 보기 - 현재 사용자의 모든 핀 가져오기(visibility 상관없음)
             pins = pinRepository.findAllBySongAndMember(song, currentMember);
         } else {
-            pins = pinRepository.findAllBySong(song);
+            // 전체 핀 보기
+            // 1. "비공개 핀"에 대해 현재 사용자가 작성한 것만 가져오기
+            pins = new ArrayList<>();
+            if (currentMember != null) {
+                pins.addAll(pinRepository.findMyPrivatePins(song, currentMember, Visibility.PRIVATE));
+            }
+            // 2. "공개 핀"에 대해 모든 사용자가 작성한 것 가져오기
+            List<Pin> publicPins = pinRepository.findAllPublicPins(song, Visibility.PUBLIC);
+
+//            // Sol2 - 그런데 어차피 데이터베이스 2번 호출은 불가피해서 그냥 위의 방식으로 진행
+//            // Sol3 - 쿼리문 사용
+//            // 모든 사용자의 공개 핀
+//            List<Pin> publicPins = pinRepository.findAllBySongAndVisibility(song, Visibility.PUBLIC);
+//            // 현재 사용자의 모든 핀
+//            List<Pin> myPins = currentMember != null ? pinRepository.findAllBySongAndMember(song, currentMember) : Collections.emptyList();
+//            // 중복 제거
+//            Set<Pin> uniquePins = new HashSet<>(publicPins);
+//            uniquePins.addAll(myPins);
+//            pins = new ArrayList<>(uniquePins);
         }
 
+        Long currentMemberId = currentMember != null ? currentMember.getMemberId() : null;
         return pins.stream()
                 .map(pin -> SongDetailsPinDto.from(pin, currentMemberId))
                 .collect(Collectors.toList());
@@ -131,4 +155,5 @@ public class PinService {
         return pinRepository.findById(pinId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PIN_NOT_FOUND));
     }
+
 }
