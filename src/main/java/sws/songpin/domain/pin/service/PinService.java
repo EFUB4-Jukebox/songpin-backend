@@ -147,7 +147,11 @@ public class PinService {
 
         Long currentMemberId = currentMember != null ? currentMember.getMemberId() : null;
         return pins.stream()
-                .map(pin -> SongDetailsPinDto.from(pin, currentMemberId))
+                .map(pin -> {
+                    // currentMemberId와 핀의 생성자가 일치하면 true
+                    Boolean isMine = currentMemberId != null && pin.getMember().getMemberId().equals(currentMemberId);
+                    return SongDetailsPinDto.from(pin, currentMemberId);
+                })
                 .collect(Collectors.toList());
     }
 
