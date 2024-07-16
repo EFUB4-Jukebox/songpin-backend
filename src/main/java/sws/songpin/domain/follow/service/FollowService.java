@@ -112,8 +112,7 @@ public class FollowService {
 
     @Transactional(readOnly = true)
     public boolean checkFollowExists(Member follower, Member following) {
-        return followRepository.existsByFollowerAndFollowing(follower, following)
-                .isPresent();
+        return followRepository.existsByFollowerAndFollowing(follower, following);
     }
 
     @Transactional(readOnly = true)
@@ -124,5 +123,20 @@ public class FollowService {
     @Transactional(readOnly = true)
     public List<Follow> findAllFollowingOfMember(Member member){
         return followRepository.findAllByFollower(member);
+    }
+
+    @Transactional(readOnly = true)
+    public long getFollowerCount(Member member){
+        return followRepository.countByFollowing(member);
+    }
+    @Transactional(readOnly = true)
+    public long getFollowingCount(Member member){
+        return followRepository.countByFollower(member);
+    }
+
+    @Transactional(readOnly = true)
+    public Long getFollowId(Member follower, Member following){
+        return followRepository.findByFollowerAndFollowing(follower,following)
+                .orElseThrow(()-> new CustomException(ErrorCode.FOLLOW_NOT_FOUND)).getFollowId();
     }
 }
