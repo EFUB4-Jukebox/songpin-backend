@@ -2,28 +2,31 @@ version: "3.8"
 
 services:
   redis:
-    container_name: my_redis
-    image: redis
+    container_name: redis
+    image: redis:latest
+    hostname: redis
     ports:
       - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+    volumes:
+      - ./redis/data:/data
+      - ./redis/conf/redis.conf:/usr/local/conf/redis.conf
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    restart: always
+    command: redis-server /usr/local/conf/redis.conf
     networks:
-      - my-network
+      - my_network
 
   application:
     container_name: app
     ports:
       - "8080:8080"
     depends_on:
-      redis:
-        condition: service_healthy
+      - redis
     networks:
-      - my-network
+      - my_network
 
 networks:
-  my-network:
+  my_network:
     external: true
