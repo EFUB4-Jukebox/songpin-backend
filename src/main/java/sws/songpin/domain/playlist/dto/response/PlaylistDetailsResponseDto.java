@@ -18,15 +18,12 @@ public record PlaylistDetailsResponseDto(
         List<PlaylistPinUnitDto> pinList) {
 
     public static PlaylistDetailsResponseDto from(Playlist playlist, List<String> imgPathList, List<PlaylistPinUnitDto> pinList, Boolean isMine, Long bookmarkId) {
-        LocalDate updatedDate = (playlist.getModifiedTime() != null)
-                ?playlist.getModifiedTime().toLocalDate()
-                :playlist.getCreatedTime().toLocalDate();
         return new PlaylistDetailsResponseDto(
                 isMine,
                 playlist.getPlaylistName(),
                 playlist.getCreator().getMemberId(),
                 playlist.getCreator().getNickname(),
-                updatedDate,
+                playlist.getModifiedTime().toLocalDate(),
                 playlist.getVisibility(),
                 imgPathList,
                 bookmarkId,
