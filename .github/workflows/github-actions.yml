@@ -59,7 +59,8 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           envs: GITHUB_SHA
-          script: |           
+          script: |
+            cd /var/www/myapp
             sudo docker rm -f $(sudo docker ps -qa)       
             sudo docker pull ${{ secrets.DOCKER_REPO }}:latest
             docker-compose up -d           
