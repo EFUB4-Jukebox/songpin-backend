@@ -40,4 +40,5 @@ public class MapController {
         MapFetchResponseDto responseDto = mapService.getPlacesWithinBoundsByCustomPeriod(requestDto);
         return ResponseEntity.ok(responseDto);
     }
+
 }
