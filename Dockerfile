@@ -1,5 +1,5 @@
 # 사용할 base 이미지 선택
-FROM openjdk:17
+FROM openjdk:21-slim
 
 # build/libs/ 에 있는 jar 파일을 JAR_FILE 변수에 저장
 ARG JAR_FILE=build/libs/*.jar
