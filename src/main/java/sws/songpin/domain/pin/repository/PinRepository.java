@@ -12,7 +12,7 @@ import sws.songpin.domain.song.entity.Song;
 import java.util.List;
 
 public interface PinRepository extends JpaRepository <Pin, Long> {
-    List<Pin> findAllBySong(Song song );
+    List<Pin> findAllBySong(Song song);
     List<Pin> findAllByMember(Member member);
     List<Pin> findAllBySongAndMember(Song song, Member member);
     List<Pin> findAllBySongAndMemberAndVisibility(Song song, Member member, Visibility visibility);

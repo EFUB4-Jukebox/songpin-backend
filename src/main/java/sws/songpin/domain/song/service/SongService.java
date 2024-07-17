@@ -72,8 +72,7 @@ public class SongService {
 
     public SongDetailsResponseDto getSongDetails(Long songId) {
         Song song = getSongById(songId);
-        int pinCount = pinRepository.countBySong(song);
-        return SongDetailsResponseDto.from(song, pinCount);
+        return SongDetailsResponseDto.from(song);
     }
 
     @Transactional(readOnly = true)

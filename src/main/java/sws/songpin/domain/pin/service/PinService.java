@@ -21,6 +21,8 @@ import sws.songpin.domain.playlist.entity.Playlist;
 import sws.songpin.domain.playlistpin.entity.PlaylistPin;
 import sws.songpin.domain.playlistpin.repository.PlaylistPinRepository;
 import sws.songpin.domain.song.dto.response.SongDetailsPinDto;
+import sws.songpin.domain.song.dto.response.SongDetailsPinListResponseDto;
+import sws.songpin.domain.song.dto.response.SongDetailsResponseDto;
 import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.song.repository.SongRepository;
 import sws.songpin.domain.song.service.SongService;
@@ -113,29 +115,29 @@ public class PinService {
 
     // 특정 노래에 대한 핀 조회
     @Transactional(readOnly = true)
-    public List<SongDetailsPinDto> getPinsForSong(Long songId, boolean onlyMyPins) {
+    public SongDetailsPinListResponseDto getPinsForSong(Long songId, boolean onlyMyPins) {
         Song song = songService.getSongById(songId);
-        List<Pin> pins;
         Member currentMember = memberService.getCurrentMember();
         Long currentMemberId = currentMember != null ? currentMember.getMemberId() : null;
+        List<Pin> pins;
+        List<SongDetailsPinDto> songDetailsPinList;
 
         if (onlyMyPins) {
             // 내 핀만 보기 - 현재 사용자의 모든 핀 가져오기(visibility 상관없음)
             pins = pinRepository.findAllBySongAndMember(song, currentMember);
+            songDetailsPinList = pins.stream()
+                    .map(pin -> SongDetailsPinDto.from(pin , currentMemberId))
+                    .collect(Collectors.toList());
         } else {
             // 전체 핀 보기
-            // 1. "비공개 핀"에 대해 현재 사용자가 작성한 것만 가져오기
-            pins = new ArrayList<>();
-            pins.addAll(pinRepository.findAllBySongAndMemberAndVisibility(song, currentMember, Visibility.PRIVATE));
-            // 2. "공개 핀"에 대해 모든 사용자가 작성한 것 가져오기
-            pins.addAll(pinRepository.findAllBySongAndVisibility(song, Visibility.PUBLIC));
+            pins = pinRepository.findAllBySong(song);
+            songDetailsPinList = pins.stream()
+                    .filter(pin -> pin.getVisibility() == Visibility.PUBLIC ||
+                            (pin.getMember().equals(currentMember) && pin.getVisibility() == Visibility.PRIVATE))
+                    .map(pin -> SongDetailsPinDto.from(pin, currentMemberId))
+                    .collect(Collectors.toList());
         }
-
-        return pins.stream()
-                .map(pin -> {
-                    return SongDetailsPinDto.from(pin, currentMemberId);
-                })
-                .collect(Collectors.toList());
+        return SongDetailsPinListResponseDto.from(songDetailsPinList);
     }
 
     // 타 유저의 공개 핀 피드 조회

@@ -8,17 +8,15 @@ public record SongDetailsResponseDto(
         String title,
         String artist,
         String imgPath,
-        GenreName avgGenreName,
-        int pinCount
+        GenreName avgGenreName
 ) {
-    public static SongDetailsResponseDto from(Song song, int pinCount) {
+    public static SongDetailsResponseDto from(Song song) {
         return new SongDetailsResponseDto(
                 song.getSongId(),
                 song.getTitle(),
                 song.getArtist(),
                 song.getImgPath(),
-                song.getAvgGenreName(),
-                pinCount
+                song.getAvgGenreName()
         );
     }
 }
