@@ -7,8 +7,8 @@ public record MyProfileResponseDto(
         ProfileImg profileImg,
         String nickname,
         String handle,
-        long follower,
-        long following
+        long followerCount,
+        long followingCount
 ) {
     public static MyProfileResponseDto from(Member member, long followerCount, long followingCount){
         return new MyProfileResponseDto(member.getProfileImg(), member.getNickname(), member.getHandle(), followerCount, followingCount);
