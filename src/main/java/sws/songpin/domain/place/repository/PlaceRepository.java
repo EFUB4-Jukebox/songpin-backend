@@ -8,21 +8,20 @@ import org.springframework.data.repository.query.Param;
 import sws.songpin.domain.place.entity.Place;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 public interface PlaceRepository extends JpaRepository<Place, Long> {
     Optional<Place> findByProviderAddressId(Long providerAddressId);
 
     // 좌표 범위에 포함되는 장소들 불러오기
-    @Query(value = "SELECT p.* FROM Place p " +
+    @Query(value = "SELECT p.* FROM place p " +
             "JOIN pin ON p.place_id = pin.place_id " +
             "WHERE p.latitude BETWEEN :swLat AND :neLat " +
             "AND p.longitude BETWEEN :swLng AND :neLng " +
             "GROUP BY p.place_id " +
             "HAVING COUNT(pin.pin_id) > 0 " +
             "ORDER BY MAX(pin.listened_date) DESC, p.place_id DESC",
-            countQuery = "SELECT COUNT(DISTINCT p.place_id) FROM Place p " +
+            countQuery = "SELECT COUNT(DISTINCT p.place_id) FROM place p " +
                     "JOIN pin ON p.place_id = pin.place_id " +
                     "WHERE p.latitude BETWEEN :swLat AND :neLat " +
                     "AND p.longitude BETWEEN :swLng AND :neLng " +
@@ -38,7 +37,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     );
 
     // 좌표 범위 & 기간 범위에 모두 포함되는 장소들 불러오기
-    @Query(value = "SELECT p.* FROM Place p " +
+    @Query(value = "SELECT p.* FROM place p " +
             "JOIN pin ON p.place_id = pin.place_id " +
             "WHERE p.latitude BETWEEN :swLat AND :neLat " +
             "AND p.longitude BETWEEN :swLng AND :neLng " +
@@ -46,7 +45,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             "GROUP BY p.place_id " +
             "HAVING COUNT(pin.pin_id) > 0 " +
             "ORDER BY MAX(pin.listened_date) DESC, p.place_id DESC",
-            countQuery = "SELECT COUNT(DISTINCT p.place_id) FROM Place p " +
+            countQuery = "SELECT COUNT(DISTINCT p.place_id) FROM place p " +
                     "JOIN pin ON p.place_id = pin.place_id " +
                     "WHERE p.latitude BETWEEN :swLat AND :neLat " +
                     "AND p.longitude BETWEEN :swLng AND :neLng " +
