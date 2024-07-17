@@ -56,6 +56,7 @@ public class FollowService {
     // 특정 사용자의 팔로잉/팔로워 목록 조회
     public FollowListResponseDto getFollowList(Long memberId, boolean isFollowingList) {
         Member targetMember = memberService.getMemberById(memberId);
+        List<Follow> followerList = findAllFollowersOfMember(targetMember);
         Member currentMember = memberService.getCurrentMember();
         Map<Member, Long> currentMemberFollowingCache = getMemberFollowingCache(currentMember);
         List<Follow> followList = isFollowingList ? findAllFollowingsOfMember(targetMember) : findAllFollowersOfMember(targetMember);
@@ -103,5 +104,20 @@ public class FollowService {
     @Transactional(readOnly = true)
     public List<Follow> findAllFollowingsOfMember(Member member){
         return followRepository.findAllByFollower(member);
+    }
+
+    @Transactional(readOnly = true)
+    public long getFollowerCount(Member member){
+        return followRepository.countByFollowing(member);
+    }
+    @Transactional(readOnly = true)
+    public long getFollowingCount(Member member){
+        return followRepository.countByFollower(member);
+    }
+
+    @Transactional(readOnly = true)
+    public Long getFollowId(Member follower, Member following){
+        return followRepository.findByFollowerAndFollowing(follower,following)
+                .orElseThrow(()-> new CustomException(ErrorCode.FOLLOW_NOT_FOUND)).getFollowId();
     }
 }
