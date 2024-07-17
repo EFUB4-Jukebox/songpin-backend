@@ -7,8 +7,8 @@ public record MemberProfileResponseDto(
         ProfileImg profileImg,
         String nickname,
         String handle,
-        long follower,
-        long following,
+        long followerCount,
+        long followingCount,
         Long followId
 ) {
     public static MemberProfileResponseDto from(Member member, long followerCount, long followingCount, Long followId){

@@ -37,7 +37,7 @@ public class MemberController {
     }
 
     @Operation(summary = "타 유저 플레이리스트 목록 조회", description = "타 유저 페이지에서 플레이리스트 목록 조회")
-    @GetMapping("/members/{memberId}/playlists")
+    @GetMapping("/{memberId}/playlists")
     public ResponseEntity<?> getAllPlaylists(@PathVariable("memberId") final Long memberId){
         return ResponseEntity.ok(playlistService.getAllPlaylists(memberId));
     }
