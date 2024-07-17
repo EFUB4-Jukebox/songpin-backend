@@ -35,7 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             } catch (RedisConnectionFailureException e){
                 SecurityContextHolder.clearContext();
-                request.setAttribute("exception",ErrorCode.EXTERNAL_API_ERROR);
+                request.setAttribute("exception",ErrorCode.REDIS_CONNECTION_ERROR);
             } catch (CustomException e){
                 request.setAttribute("exception",e.getErrorCode());
             }
