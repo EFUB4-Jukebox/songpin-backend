@@ -11,7 +11,8 @@ import java.util.List;
 public record PlaceDetailsResponseDto(
         String placeName,
         String address,
-        Long providerAddressId,
+        double latitude,
+        double longitude,
         GenreName latestGenreName,
         int pinCount,
         LocalDate updatedDate,
@@ -21,7 +22,8 @@ public record PlaceDetailsResponseDto(
         return new PlaceDetailsResponseDto(
                 place.getPlaceName(),
                 place.getAddress(),
-                place.getProviderAddressId(),
+                place.getLatitude(),
+                place.getLongitude(),
                 latestPin != null ? latestPin.getGenre().getGenreName() : null, // 가장 최근 핀의 장르
                 pinCount,
                 latestPin != null ? latestPin.getCreatedTime().toLocalDate() : null, // 가장 최근 핀의 등록 날짜
