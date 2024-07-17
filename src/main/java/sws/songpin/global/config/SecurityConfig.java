@@ -39,8 +39,22 @@ public class SecurityConfig {
     };
 
     @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() { // security를 적용하지 않을 리소스
+        return web -> web.ignoring()
+                .requestMatchers("/error", "/favicon.ico")
+                .requestMatchers(AUTH_WHITELIST);
+    }
+
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("http://localhost:5173");
+        configuration.addAllowedOrigin("http://localhost:5174");
+        configuration.addAllowedOrigin("http://localhost:8080");
+        configuration.addAllowedOrigin("https://api.songpin.n-e.kr/");
+        configuration.addAllowedOrigin("https://songpin.vercel.app");
 
         configuration.addAllowedOrigin("*");
         configuration.addAllowedMethod("*");
