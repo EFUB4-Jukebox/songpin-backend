@@ -25,6 +25,7 @@ public enum ErrorCode {
     // 자신과 관련해 불가능한 요청
     MEMBER_BAD_REQUEST(400, "자기 자신은 이 경로를 통해 조회할 수 없습니다."),
     FOLLOW_BAD_REQUEST(400,"자기 자신은 팔로잉할 수 없습니다."),
+    HANDLE_BAD_REQUEST(400, "이미 본인이 사용 중인 핸들입니다."),
 
     // 401 Unauthorized
     // 로그인 상태여야 하는 요청
@@ -57,6 +58,7 @@ public enum ErrorCode {
     FOLLOW_ALREADY_EXISTS(409, "이미 팔로우하고 있습니다."),
     BOOKMARK_ALREADY_EXISTS(409, "이미 북마크가 되어있습니다."),
     PIN_ALREADY_EXISTS(409, "이미 플레이리스트에 추가된 핀입니다."),
+    HANDLE_ALREADY_EXISTS(409,"이미 존재하는 핸들입니다."),
 
     // 500 Internal Server Error
     // 외부 API 사용 도중 에러

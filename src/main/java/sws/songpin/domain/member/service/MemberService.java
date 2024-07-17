@@ -7,9 +7,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sws.songpin.domain.member.dto.request.ProfileUpdateRequestDto;
 import sws.songpin.domain.member.dto.response.MemberSearchResponseDto;
 import sws.songpin.domain.member.dto.response.MemberUnitDto;
 import sws.songpin.domain.member.entity.Member;
+import sws.songpin.domain.member.entity.ProfileImg;
 import sws.songpin.domain.member.repository.MemberRepository;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
@@ -46,4 +48,22 @@ public class MemberService {
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
+    public boolean checkMemberExistsByHandle(String handle){
+        return memberRepository.existsByHandle(handle);
+    }
+
+    public void updateProfile(ProfileUpdateRequestDto requestDto){
+
+        Member member = getCurrentMember();
+
+        //핸들 중복 검사
+        if(checkMemberExistsByHandle(requestDto.handle()) && !(member.getHandle().equals(requestDto.handle()))){
+            throw new CustomException(ErrorCode.HANDLE_ALREADY_EXISTS);
+        }
+
+        member.modifyProfile(ProfileImg.from(requestDto.profileImg()), requestDto.nickname(), requestDto.handle());
+
+        memberRepository.save(member);
+    }
 }

@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member,Long> {
     Optional<Member> findByEmail(String email);
+    boolean existsByHandle(String handle);
 
     // 유저 검색
     @Query("SELECT m FROM Member m WHERE m.handle LIKE %:keyword% OR m.nickname LIKE %:keyword%")
