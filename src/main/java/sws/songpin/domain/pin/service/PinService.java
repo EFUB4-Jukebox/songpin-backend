@@ -138,30 +138,35 @@ public class PinService {
                 .collect(Collectors.toList());
     }
 
+    // 타 유저의 공개 핀 피드 조회
+    @Transactional(readOnly = true)
+    public FeedPinListResponseDto getPublicFeedPins(Long memberId) {
+        Member targetMember = memberService.getMemberById(memberId);
+        List<Pin> pins = pinRepository.findAllByMemberAndVisibility(targetMember, Visibility.PUBLIC);
+        return getFeedPinsResponse(pins, false);
+    }
+
     // 내 핀 피드 조회
     @Transactional(readOnly = true)
     public FeedPinListResponseDto getMyFeedPins() {
         Member currentMember = memberService.getCurrentMember();
         List<Pin> pins = pinRepository.findAllByMember(currentMember);
-        List<FeedPinUnitDto> feedPinList = pins.stream()
-                .map(pin -> FeedPinUnitDto.from(pin, true))
-                .collect(Collectors.toList());
-        return new FeedPinListResponseDto(feedPinList, feedPinList.size());
+        return getFeedPinsResponse(pins, true);
     }
 
-    // 타 유저의 공개 핀 피드 조회
+    // 내 피드 월별로 조회
     @Transactional(readOnly = true)
-    public FeedPinListResponseDto getPublicFeedPins(Long memberId) {
-        return getAllFeedPins(memberId, Visibility.PUBLIC);
+    public FeedPinListResponseDto getMyFeedPinsForMonth(int year, int month) {
+        Member currentMember = memberService.getCurrentMember();
+        List<Pin> pins = pinRepository.findAllByMemberAndYearAndMonth(currentMember, year, month);
+        return getFeedPinsResponse(pins, true);
     }
 
     // 피드 조회 공통 메서드
     @Transactional(readOnly = true)
-    public FeedPinListResponseDto getAllFeedPins(Long memberId, Visibility visibility) {
-        Member targetMember = memberService.getMemberById(memberId);
-        List<Pin> pins = pinRepository.findAllByMemberAndVisibility(targetMember, visibility);
+    private FeedPinListResponseDto getFeedPinsResponse(List<Pin> pins, boolean isMine) {
         List<FeedPinUnitDto> feedPinList = pins.stream()
-                .map(pin -> FeedPinUnitDto.from(pin, false))
+                .map(pin -> FeedPinUnitDto.from(pin, isMine))
                 .collect(Collectors.toList());
         return new FeedPinListResponseDto(feedPinList, feedPinList.size());
     }
