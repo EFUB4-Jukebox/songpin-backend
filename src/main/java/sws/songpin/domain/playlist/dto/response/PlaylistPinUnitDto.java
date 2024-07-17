@@ -10,7 +10,8 @@ public record PlaylistPinUnitDto(
         SongInfoDto songInfo,
         LocalDate listenedDate,
         String placeName,
-        Long providerAddressId,
+        double placeLatitude,
+        double placeLongitude,
         GenreName genreName,
         int pinIndex) {
 }

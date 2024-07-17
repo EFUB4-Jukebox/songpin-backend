@@ -76,7 +76,8 @@ public class PlaylistService {
                             songInfo,
                             playlistPin.getPin().getListenedDate(),
                             playlistPin.getPin().getPlace().getPlaceName(),
-                            playlistPin.getPin().getPlace().getProviderAddressId(),
+                            playlistPin.getPin().getPlace().getLatitude(),
+                            playlistPin.getPin().getPlace().getLongitude(),
                             playlistPin.getPin().getGenre().getGenreName(),
                             playlistPin.getPinIndex()
                     );
