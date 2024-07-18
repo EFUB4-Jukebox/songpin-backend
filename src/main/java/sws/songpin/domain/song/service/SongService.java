@@ -81,7 +81,8 @@ public class SongService {
         Song song = getSongById(songId);
         Member currentMember = memberService.getCurrentMember();
         LocalDate lastListenedDate = getLastListenedDate(song, currentMember);
-        return SongDetailsResponseDto.from(song, lastListenedDate);
+        int pinCount = pinRepository.countBySong(song);
+        return SongDetailsResponseDto.from(song, lastListenedDate, pinCount);
     }
 
     public LocalDate getLastListenedDate(Song song, Member member) {

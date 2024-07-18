@@ -11,16 +11,18 @@ public record SongDetailsResponseDto(
         String artist,
         String imgPath,
         GenreName avgGenreName,
-        LocalDate lastListenedDate
+        LocalDate lastListenedDate,
+        int pinCount
 ) {
-    public static SongDetailsResponseDto from(Song song, LocalDate lastListenedDate) {
+    public static SongDetailsResponseDto from(Song song, LocalDate lastListenedDate, int pinCount) {
         return new SongDetailsResponseDto(
                 song.getSongId(),
                 song.getTitle(),
                 song.getArtist(),
                 song.getImgPath(),
                 song.getAvgGenreName(),
-                lastListenedDate
+                lastListenedDate,
+                pinCount
         );
     }
 }
