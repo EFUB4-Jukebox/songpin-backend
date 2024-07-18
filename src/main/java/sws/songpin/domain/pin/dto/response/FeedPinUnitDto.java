@@ -8,7 +8,6 @@ import java.time.LocalDate;
 
 public record FeedPinUnitDto(
         Long PinId,
-        Long CreatorId,
         SongInfoDto songInfo,
         LocalDate listenedDate,
         String placeName,
@@ -21,7 +20,6 @@ public record FeedPinUnitDto(
     public static FeedPinUnitDto from(Pin pin, Boolean isMine) {
         return new FeedPinUnitDto(
                 pin.getPinId(),
-                pin.getMember().getMemberId(),
                 SongInfoDto.from(pin.getSong()),
                 pin.getListenedDate(),
                 pin.getPlace().getPlaceName(),
