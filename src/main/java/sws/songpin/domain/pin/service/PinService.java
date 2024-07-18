@@ -158,7 +158,7 @@ public class PinService {
     @Transactional(readOnly = true)
     public FeedPinListResponseDto getMyFeedPinsForMonth(int year, int month) {
         Member currentMember = memberService.getCurrentMember();
-        List<Pin> pins = pinRepository.findAllByMemberAndYearAndMonth(currentMember, year, month);
+        List<Pin> pins = pinRepository.findAllByMemberAndDate(currentMember, year, month);
         return getFeedPinsResponse(pins, true);
     }
 
