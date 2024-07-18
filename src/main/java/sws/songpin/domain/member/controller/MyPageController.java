@@ -37,7 +37,7 @@ public class MyPageController {
     }
     @Operation(summary = "내 핀 피드 월별 조회", description = "현재 사용자의 핀 피드를 년/월별로 조회합니다.")
     @GetMapping("/calendar")
-    public ResponseEntity<?> getMyFeedPinsByMonth(@RequestParam int year, @RequestParam int month) {
+    public ResponseEntity<?> getMyFeedPinsByMonth(@RequestParam("year") int year, @RequestParam("month") int month) {
         return ResponseEntity.ok(pinService.getMyFeedPinsForMonth(year, month));
     }
 
