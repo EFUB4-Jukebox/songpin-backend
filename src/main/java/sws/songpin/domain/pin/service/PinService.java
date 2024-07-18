@@ -72,7 +72,6 @@ public class PinService {
     // 음악 핀 수정
     public Long updatePin(Long pinId, PinUpdateRequestDto pinUpdateRequestDto) {
         Pin pin = validatePinCreator(pinId);
-
         Genre genre = genreService.getGenreByGenreName(pinUpdateRequestDto.genreName());
         pin.updatePin(pinUpdateRequestDto.listenedDate(), pinUpdateRequestDto.memo(), pinUpdateRequestDto.visibility(), genre);
         pinRepository.save(pin);
@@ -96,7 +95,6 @@ public class PinService {
         List<Genre> genres = pinRepository.findAllBySong(song).stream()
                 .map(Pin::getGenre)
                 .collect(Collectors.toList());
-
         Optional<GenreName> avgGenreName = songService.calculateAvgGenreName(genres);
         avgGenreName.ifPresent(song::setAvgGenreName);
         songRepository.save(song);

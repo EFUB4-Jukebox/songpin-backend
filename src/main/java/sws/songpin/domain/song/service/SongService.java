@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.genre.entity.GenreName;
+import sws.songpin.domain.member.entity.Member;
+import sws.songpin.domain.member.service.MemberService;
+import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.song.dto.request.SongAddRequestDto;
 import sws.songpin.domain.song.dto.response.SongDetailsResponseDto;
@@ -16,6 +19,7 @@ import se.michaelthelin.spotify.model_objects.specification.Track;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,6 +33,7 @@ public class SongService {
     private final SpotifyUtil spotifyUtil;
     private final SongRepository songRepository;
     private final PinRepository pinRepository;
+    private final MemberService memberService;
 
     @Transactional(readOnly = true)
     public List<SpotifySearchDto> searchTracks(String keyword, int offset) {
@@ -70,9 +75,19 @@ public class SongService {
                 .orElseGet(() -> createSong(songRequestDto));
     }
 
+    // 특정 노래에 대한 상세정보
+    @Transactional(readOnly = true)
     public SongDetailsResponseDto getSongDetails(Long songId) {
         Song song = getSongById(songId);
-        return SongDetailsResponseDto.from(song);
+        Member currentMember = memberService.getCurrentMember();
+        LocalDate lastListenedDate = getLastListenedDate(song, currentMember);
+        return SongDetailsResponseDto.from(song, lastListenedDate);
+    }
+
+    public LocalDate getLastListenedDate(Song song, Member member) {
+        return pinRepository.findTopBySongAndMemberOrderByListenedDateDesc(song, member)
+                .map(Pin::getListenedDate)
+                .orElse(null); // null 반환하면 "아직 듣지 않음"으로 프론트에서 표시
     }
 
     @Transactional(readOnly = true)
