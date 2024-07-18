@@ -85,6 +85,7 @@ public class SongService {
         return SongDetailsResponseDto.from(song, lastListenedDate, pinCount);
     }
 
+    @Transactional(readOnly = true)
     public LocalDate getLastListenedDate(Song song, Member member) {
         return pinRepository.findTopBySongAndMemberOrderByListenedDateDesc(song, member)
                 .map(Pin::getListenedDate)
