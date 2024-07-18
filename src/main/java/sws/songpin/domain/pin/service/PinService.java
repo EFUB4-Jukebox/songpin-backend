@@ -168,7 +168,7 @@ public class PinService {
         List<FeedPinUnitDto> feedPinList = pins.stream()
                 .map(pin -> FeedPinUnitDto.from(pin, isMine))
                 .collect(Collectors.toList());
-        return new FeedPinListResponseDto(feedPinList, feedPinList.size());
+        return new FeedPinListResponseDto(feedPinList.size(), feedPinList);
     }
 
     @Transactional(readOnly = true)
