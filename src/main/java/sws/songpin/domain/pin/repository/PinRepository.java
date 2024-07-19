@@ -1,5 +1,6 @@
 package sws.songpin.domain.pin.repository;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,9 +15,10 @@ import java.util.Optional;
 
 public interface PinRepository extends JpaRepository <Pin, Long> {
     List<Pin> findAllBySong(Song song);
-    List<Pin> findAllByMember(Member member);
     List<Pin> findAllBySongAndMember(Song song, Member member);
-    List<Pin> findAllByMemberAndVisibility(Member member, Visibility visibility);
+    // 들은날짜 최신순 정렬을 위해 sort 추가
+    List<Pin> findAllByMember(Member member, Sort sort);
+    List<Pin> findAllByMemberAndVisibility(Member member, Visibility visibility, Sort sort);
     Optional<Pin> findTopBySongAndMemberOrderByListenedDateDesc(Song song, Member member);
     int countBySong(Song song);
     List<Pin> findAllByPlace(Place place);

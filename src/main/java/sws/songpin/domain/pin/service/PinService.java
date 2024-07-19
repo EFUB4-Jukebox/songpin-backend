@@ -1,5 +1,6 @@
 package sws.songpin.domain.pin.service;
 
+import org.springframework.data.domain.Sort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -141,7 +142,7 @@ public class PinService {
     @Transactional(readOnly = true)
     public PinFeedListResponseDto getPublicPinFeed(Long memberId) {
         Member targetMember = memberService.getMemberById(memberId);
-        List<Pin> pins = pinRepository.findAllByMemberAndVisibility(targetMember, Visibility.PUBLIC);
+        List<Pin> pins = pinRepository.findAllByMemberAndVisibility(targetMember, Visibility.PUBLIC, Sort.by(Sort.Direction.DESC, "listenedDate"));
         return getPinFeedResponse(pins, false);
     }
 
@@ -149,7 +150,7 @@ public class PinService {
     @Transactional(readOnly = true)
     public PinFeedListResponseDto getMyPinFeed() {
         Member currentMember = memberService.getCurrentMember();
-        List<Pin> pins = pinRepository.findAllByMember(currentMember);
+        List<Pin> pins = pinRepository.findAllByMember(currentMember, Sort.by(Sort.Direction.DESC, "listenedDate"));
         return getPinFeedResponse(pins, true);
     }
 
