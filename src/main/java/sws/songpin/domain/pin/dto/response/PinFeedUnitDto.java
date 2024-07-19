@@ -14,8 +14,7 @@ public record PinFeedUnitDto(
         GenreName genreName,
         String memo,
         Visibility visibility,
-        Boolean isMine,
-        LocalDate updatedDate
+        Boolean isMine
 ) {
     public static PinFeedUnitDto from(Pin pin, Boolean isMine) {
         return new PinFeedUnitDto(
@@ -26,8 +25,7 @@ public record PinFeedUnitDto(
                 pin.getGenre().getGenreName(),
                 pin.getMemo(),
                 pin.getVisibility(),
-                isMine,
-                pin.getModifiedTime().toLocalDate()
+                isMine
         );
     }
 }
