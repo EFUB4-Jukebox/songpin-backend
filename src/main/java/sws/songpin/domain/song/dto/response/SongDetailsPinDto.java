@@ -15,7 +15,6 @@ public record SongDetailsPinDto(
         Boolean isMine) {
 
     public static SongDetailsPinDto from(Pin pin, Boolean isMine) {
-        // currentMemberId와 핀의 생성자가 일치하면 true
         return new SongDetailsPinDto(
                 pin.getPinId(),
                 pin.getMember().getNickname(),
