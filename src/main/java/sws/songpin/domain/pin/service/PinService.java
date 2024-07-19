@@ -142,7 +142,7 @@ public class PinService {
     @Transactional(readOnly = true)
     public PinFeedListResponseDto getPublicPinFeed(Long memberId) {
         Member targetMember = memberService.getMemberById(memberId);
-        List<Pin> pins = pinRepository.findAllByMemberAndVisibility(targetMember, Visibility.PUBLIC, Sort.by(Sort.Direction.DESC, "listenedDate"));
+        List<Pin> pins = pinRepository.findAllByMemberAndVisibilityOrderByListenedDateDesc(targetMember, Visibility.PUBLIC);
         return getPinFeedResponse(pins, false);
     }
 
@@ -150,7 +150,7 @@ public class PinService {
     @Transactional(readOnly = true)
     public PinFeedListResponseDto getMyPinFeed() {
         Member currentMember = memberService.getCurrentMember();
-        List<Pin> pins = pinRepository.findAllByMember(currentMember, Sort.by(Sort.Direction.DESC, "listenedDate"));
+        List<Pin> pins = pinRepository.findAllByMemberOrderByListenedDateDesc(currentMember);
         return getPinFeedResponse(pins, true);
     }
 

@@ -16,9 +16,8 @@ import java.util.Optional;
 public interface PinRepository extends JpaRepository <Pin, Long> {
     List<Pin> findAllBySong(Song song);
     List<Pin> findAllBySongAndMember(Song song, Member member);
-    // 들은날짜 최신순 정렬을 위해 sort 추가
-    List<Pin> findAllByMember(Member member, Sort sort);
-    List<Pin> findAllByMemberAndVisibility(Member member, Visibility visibility, Sort sort);
+    List<Pin> findAllByMemberOrderByListenedDateDesc(Member member);
+    List<Pin> findAllByMemberAndVisibilityOrderByListenedDateDesc(Member member, Visibility visibility);
     Optional<Pin> findTopBySongAndMemberOrderByListenedDateDesc(Song song, Member member);
     int countBySong(Song song);
     List<Pin> findAllByPlace(Place place);
