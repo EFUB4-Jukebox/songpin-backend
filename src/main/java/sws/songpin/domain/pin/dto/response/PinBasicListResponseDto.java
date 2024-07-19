@@ -2,7 +2,7 @@ package sws.songpin.domain.pin.dto.response;
 
 import java.util.List;
 
-public record PinBasicListDto(
+public record PinBasicListResponseDto(
         List<PinBasicUnitDto> pinList,
         int basicCount
 ) {

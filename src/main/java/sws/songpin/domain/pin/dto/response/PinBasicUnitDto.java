@@ -16,7 +16,6 @@ public record PinBasicUnitDto(
         double latitude,
         double longitude,
         GenreName genreName,
-        Visibility visibility,
         Boolean isMine
 
 ) {

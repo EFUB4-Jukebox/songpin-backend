@@ -11,6 +11,8 @@ import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.pin.dto.request.PinAddRequestDto;
 import sws.songpin.domain.pin.dto.request.PinUpdateRequestDto;
+import sws.songpin.domain.pin.dto.response.PinBasicListResponseDto;
+import sws.songpin.domain.pin.dto.response.PinBasicUnitDto;
 import sws.songpin.domain.pin.dto.response.PinFeedListResponseDto;
 import sws.songpin.domain.pin.dto.response.PinFeedUnitDto;
 import sws.songpin.domain.pin.entity.Pin;
@@ -151,21 +153,24 @@ public class PinService {
         return getPinFeedResponse(pins, true);
     }
 
-    // 내 피드 월별로 조회
-    @Transactional(readOnly = true)
-    public PinFeedListResponseDto getMyPinFeedForMonth(int year, int month) {
-        Member currentMember = memberService.getCurrentMember();
-        List<Pin> pins = pinRepository.findAllByMemberAndDate(currentMember, year, month);
-        return getPinFeedResponse(pins, true);
-    }
-
-    // 피드 조회 공통 메서드
+    // 핀피드 조회 공통 메서드
     @Transactional(readOnly = true)
     private PinFeedListResponseDto getPinFeedResponse(List<Pin> pins, boolean isMine) {
         List<PinFeedUnitDto> feedPinList = pins.stream()
                 .map(pin -> PinFeedUnitDto.from(pin, isMine))
                 .collect(Collectors.toList());
         return new PinFeedListResponseDto(feedPinList.size(), feedPinList);
+    }
+
+    // 마이페이지 캘린더
+    @Transactional(readOnly = true)
+    public PinBasicListResponseDto getMyPinFeedForMonth(int year, int month) {
+        Member currentMember = memberService.getCurrentMember();
+        List<Pin> pins = pinRepository.findAllByMemberAndDate(currentMember,year, month);
+        List<PinBasicUnitDto> pinList = pins.stream()
+                .map(pin -> PinBasicUnitDto.from(pin, true))
+                .collect(Collectors.toList());
+        return new PinBasicListResponseDto(pinList, pinList.size());
     }
 
     @Transactional(readOnly = true)
