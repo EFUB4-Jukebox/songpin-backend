@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.follow.service.FollowService;
 import sws.songpin.domain.member.service.MemberService;
-import sws.songpin.domain.pin.dto.response.FeedPinListResponseDto;
 import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.playlist.service.PlaylistService;
 

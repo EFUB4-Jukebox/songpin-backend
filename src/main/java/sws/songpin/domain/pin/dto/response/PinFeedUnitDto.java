@@ -6,8 +6,8 @@ import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.song.dto.response.SongInfoDto;
 import java.time.LocalDate;
 
-public record FeedPinUnitDto(
-        Long PinId,
+public record PinFeedUnitDto(
+        Long pinId,
         SongInfoDto songInfo,
         LocalDate listenedDate,
         String placeName,
@@ -17,8 +17,8 @@ public record FeedPinUnitDto(
         Boolean isMine,
         LocalDate updatedDate
 ) {
-    public static FeedPinUnitDto from(Pin pin, Boolean isMine) {
-        return new FeedPinUnitDto(
+    public static PinFeedUnitDto from(Pin pin, Boolean isMine) {
+        return new PinFeedUnitDto(
                 pin.getPinId(),
                 SongInfoDto.from(pin.getSong()),
                 pin.getListenedDate(),
