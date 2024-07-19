@@ -137,31 +137,31 @@ public class PinService {
 
     // 타 유저의 공개 핀 피드 조회
     @Transactional(readOnly = true)
-    public PinFeedListResponseDto getPublicFeedPins(Long memberId) {
+    public PinFeedListResponseDto getPublicPinFeed(Long memberId) {
         Member targetMember = memberService.getMemberById(memberId);
         List<Pin> pins = pinRepository.findAllByMemberAndVisibility(targetMember, Visibility.PUBLIC);
-        return getFeedPinsResponse(pins, false);
+        return getPinFeedResponse(pins, false);
     }
 
     // 내 핀 피드 조회
     @Transactional(readOnly = true)
-    public PinFeedListResponseDto getMyFeedPins() {
+    public PinFeedListResponseDto getMyPinFeed() {
         Member currentMember = memberService.getCurrentMember();
         List<Pin> pins = pinRepository.findAllByMember(currentMember);
-        return getFeedPinsResponse(pins, true);
+        return getPinFeedResponse(pins, true);
     }
 
     // 내 피드 월별로 조회
     @Transactional(readOnly = true)
-    public PinFeedListResponseDto getMyFeedPinsForMonth(int year, int month) {
+    public PinFeedListResponseDto getMyPinFeedForMonth(int year, int month) {
         Member currentMember = memberService.getCurrentMember();
         List<Pin> pins = pinRepository.findAllByMemberAndDate(currentMember, year, month);
-        return getFeedPinsResponse(pins, true);
+        return getPinFeedResponse(pins, true);
     }
 
     // 피드 조회 공통 메서드
     @Transactional(readOnly = true)
-    private PinFeedListResponseDto getFeedPinsResponse(List<Pin> pins, boolean isMine) {
+    private PinFeedListResponseDto getPinFeedResponse(List<Pin> pins, boolean isMine) {
         List<PinFeedUnitDto> feedPinList = pins.stream()
                 .map(pin -> PinFeedUnitDto.from(pin, isMine))
                 .collect(Collectors.toList());

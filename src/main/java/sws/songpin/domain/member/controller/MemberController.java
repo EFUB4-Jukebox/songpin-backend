@@ -49,7 +49,7 @@ public class MemberController {
     @GetMapping("/{memberId}/pins")
     @Operation(summary = "타 유저의 공개 핀 피드 조회", description = "타 유저의 공개 핀 피드를 조회합니다.")
     public ResponseEntity<?> getPublicFeedPins(@PathVariable("memberId") Long memberId) {
-        return ResponseEntity.ok(pinService.getPublicFeedPins(memberId));
+        return ResponseEntity.ok(pinService.getPublicPinFeed(memberId));
     }
 
     @Operation(summary = "유저의 팔로잉 목록 조회", description = "유저의 팔로잉 목록을 불러옵니다.")
