@@ -20,6 +20,10 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
             "WHERE REPLACE(p.playlist_name, ' ', '') LIKE %:keywordNoSpaces% " +
             "GROUP BY p.playlist_id " +
             "ORDER BY pin_count DESC, p.playlist_name ASC",
+            countQuery = "SELECT COUNT(DISTINCT p.playlist_id) " +
+                    "FROM playlist p " +
+                    "LEFT JOIN playlist_pin pin ON p.playlist_id = pin.playlist_id " +
+                    "WHERE REPLACE(p.playlist_name, ' ', '') LIKE %:keywordNoSpaces%",
             nativeQuery = true)
     Page<Object[]> findAllByPlaylistNameContainingIgnoreSpacesOrderByCount(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
 
@@ -29,6 +33,10 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
             "WHERE REPLACE(p.playlist_name, ' ', '') LIKE %:keywordNoSpaces% " +
             "GROUP BY p.playlist_id " +
             "ORDER BY MAX(p.modified_time) DESC",
+            countQuery = "SELECT COUNT(DISTINCT p.playlist_id) " +
+                    "FROM playlist p " +
+                    "LEFT JOIN playlist_pin pin ON p.playlist_id = pin.playlist_id " +
+                    "WHERE REPLACE(p.playlist_name, ' ', '') LIKE %:keywordNoSpaces%",
             nativeQuery = true)
     Page<Object[]> findAllByPlaylistNameContainingIgnoreSpacesOrderByNewest(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
 
@@ -38,6 +46,10 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
             "WHERE REPLACE(p.playlist_name, ' ', '') LIKE %:keywordNoSpaces% " +
             "GROUP BY p.playlist_id " +
             "ORDER BY p.playlist_name ASC",
+            countQuery = "SELECT COUNT(DISTINCT p.playlist_id) " +
+                    "FROM playlist p " +
+                    "LEFT JOIN playlist_pin pin ON p.playlist_id = pin.playlist_id " +
+                    "WHERE REPLACE(p.playlist_name, ' ', '') LIKE %:keywordNoSpaces%",
             nativeQuery = true)
     Page<Object[]> findAllByPlaylistNameContainingIgnoreSpacesOrderByAccuracy(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
 }

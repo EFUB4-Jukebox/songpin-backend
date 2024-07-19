@@ -60,6 +60,7 @@ public enum ErrorCode {
 
     // 500 Internal Server Error
     // 외부 API 사용 도중 에러
+    REDIS_CONNECTION_ERROR(500, "서버에서 Redis 연결 중 문제가 발생했습니다."),
     EXTERNAL_API_ERROR(500, "외부 API 사용 중 문제가 발생했습니다."),
 
     ;
