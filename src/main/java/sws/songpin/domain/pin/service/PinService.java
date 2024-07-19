@@ -1,6 +1,5 @@
 package sws.songpin.domain.pin.service;
 
-import org.springframework.data.domain.Sort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

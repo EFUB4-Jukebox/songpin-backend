@@ -1,7 +1,6 @@
 package sws.songpin.domain.pin.dto.response;
 
 import sws.songpin.domain.genre.entity.GenreName;
-import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.song.dto.response.SongInfoDto;
 
