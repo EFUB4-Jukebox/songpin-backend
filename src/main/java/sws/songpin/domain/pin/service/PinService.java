@@ -117,22 +117,21 @@ public class PinService {
         Long currentMemberId = currentMember != null ? currentMember.getMemberId() : null;
         List<Pin> pins;
         List<SongDetailsPinDto> songDetailsPinList;
-
         if (onlyMyPins) {
             // 내 핀만 보기 - 현재 사용자의 모든 핀 가져오기(visibility 상관없음)
             pins = pinRepository.findAllBySongAndMember(song, currentMember);
-            songDetailsPinList = pins.stream()
-                    .map(pin -> SongDetailsPinDto.from(pin , currentMemberId))
-                    .collect(Collectors.toList());
         } else {
-            // 전체 핀 보기
-            pins = pinRepository.findAllBySong(song);
-            songDetailsPinList = pins.stream()
-                    .filter(pin -> pin.getVisibility() == Visibility.PUBLIC ||
-                            (pin.getMember().equals(currentMember) && pin.getVisibility() == Visibility.PRIVATE))
-                    .map(pin -> SongDetailsPinDto.from(pin, currentMemberId))
+            // 전체 핀 보기 - 내 핀 가져오기(visibility 상관없음) + 타유저의 공개 핀 가져오기
+            pins = pinRepository.findAllBySong(song).stream()
+                    .filter(pin -> pin.getVisibility() == Visibility.PUBLIC || pin.getMember().equals(currentMember))
                     .collect(Collectors.toList());
         }
+        songDetailsPinList = pins.stream()
+                .map(pin -> {
+                    Boolean isMine = pin.getMember().getMemberId().equals(currentMemberId);
+                    return SongDetailsPinDto.from(pin, isMine);
+                })
+                .collect(Collectors.toList());
         return SongDetailsPinListResponseDto.from(songDetailsPinList);
     }
 
