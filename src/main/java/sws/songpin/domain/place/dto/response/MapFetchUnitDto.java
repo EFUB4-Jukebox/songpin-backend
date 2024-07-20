@@ -2,7 +2,7 @@ package sws.songpin.domain.place.dto.response;
 
 import sws.songpin.domain.genre.entity.GenreName;
 
-public record MapFetchUnitDto ( // JPA DTO 직접 조회 위해 class로 생성
+public record MapFetchUnitDto (
         Long placeId,
         Double latitude,
         Double longitude,
