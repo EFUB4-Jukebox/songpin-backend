@@ -20,7 +20,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
             p.placeId,
             p.latitude,
             p.longitude,
-            SUM(CASE WHEN pin.genre.genreName IN :genreNameSet THEN 1 ELSE 0 END),
+            COUNT(pin),
             latestPin.listenedDate,
             latestPin.song.songId,
             latestPin.genre.genreName
@@ -34,8 +34,9 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
         )
         WHERE p.latitude BETWEEN :swLat AND :neLat
         AND p.longitude BETWEEN :swLng AND :neLng
+        AND pin.genre.genreName IN :genreNameSet
         GROUP BY p.placeId, p.latitude, p.longitude, latestPin.song.songId, latestPin.genre.genreName, latestPin.listenedDate
-        HAVING SUM(CASE WHEN pin.genre.genreName IN :genreNameSet THEN 1 ELSE 0 END) > 0
+        HAVING COUNT(pin) > 0
         ORDER BY latestPin.listenedDate DESC, p.placeId DESC
     """)
     Slice<MapPlaceProjectionDto> findPlacesWithLatestPinsByGenre(@Param("swLat") double swLat,
@@ -51,7 +52,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
             p.placeId,
             p.latitude,
             p.longitude,
-            SUM(CASE WHEN pin.genre.genreName IN :genreNameSet THEN 1 ELSE 0 END),
+            COUNT(pin),
             latestPin.listenedDate,
             latestPin.song.songId,
             latestPin.genre.genreName
@@ -65,9 +66,10 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
         )
         WHERE p.latitude BETWEEN :swLat AND :neLat
         AND p.longitude BETWEEN :swLng AND :neLng
+        AND pin.genre.genreName IN :genreNameSet
         AND pin.listenedDate BETWEEN :startDate AND :endDate
         GROUP BY p.placeId, p.latitude, p.longitude, latestPin.song.songId, latestPin.genre.genreName, latestPin.listenedDate
-        HAVING SUM(CASE WHEN pin.genre.genreName IN :genreNameSet THEN 1 ELSE 0 END) > 0
+        HAVING COUNT(pin) > 0
         ORDER BY latestPin.listenedDate DESC, p.placeId DESC
     """)
     Slice<MapPlaceProjectionDto> findPlacesWithLatestPinsByGenreAndDateRange(@Param("swLat") double swLat,
@@ -85,7 +87,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
             p.placeId,
             p.latitude,
             p.longitude,
-            SUM(CASE WHEN pin.member.memberId = :memberId THEN 1 ELSE 0 END),
+            COUNT(pin),
             latestPin.listenedDate,
             latestPin.song.songId,
             latestPin.genre.genreName
@@ -97,8 +99,9 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
             FROM Pin innerPin
             WHERE innerPin.place = p
         )
+        WHERE pin.member.memberId = :memberId
         GROUP BY p.placeId, p.latitude, p.longitude, latestPin.song.songId, latestPin.genre.genreName, latestPin.listenedDate
-        HAVING SUM(CASE WHEN pin.member.memberId = :memberId THEN 1 ELSE 0 END) > 0
+        HAVING COUNT(pin) > 0
         ORDER BY latestPin.listenedDate DESC, p.placeId DESC
     """)
     Slice<MapPlaceProjectionDto> findPlacesWithLatestPinsByMember(@Param("memberId") Long memberId, Pageable pageable);
