@@ -10,6 +10,7 @@ import sws.songpin.domain.place.dto.request.MapFetchBasicRequestDto;
 import sws.songpin.domain.place.dto.request.MapFetchCustomPeriodRequestDto;
 import sws.songpin.domain.place.dto.request.MapFetchRecentPeriodRequestDto;
 import sws.songpin.domain.place.dto.response.MapFetchResponseDto;
+import sws.songpin.domain.place.dto.response.MapFetchUsingMemberResponseDto;
 import sws.songpin.domain.place.service.MapService;
 
 @Tag(name = "Map", description = "장소들을 지도에 마커로 표시하기 위해, 요청 조건을 충족하는 최대 100개 장소의 위도/경도 좌표를 반환하는 API입니다.")
@@ -22,23 +23,29 @@ public class MapController {
 
     @Operation(summary = "장소 좌표들 가져오기-기본", description = "요청한 좌표 영역 안에 위치한 장소 좌표들을 불러옵니다.")
     @GetMapping
-    public ResponseEntity<?> getPlaceCoordinates(@RequestBody @Valid MapFetchBasicRequestDto requestDto) {
-        MapFetchResponseDto responseDto = mapService.getPlacesWithinBoundsByBasic(requestDto);
+    public ResponseEntity<?> getMapPlacesWithinBounds(@RequestBody @Valid MapFetchBasicRequestDto requestDto) {
+        MapFetchResponseDto responseDto = mapService.getMapPlacesWithinBoundsByBasic(requestDto);
         return ResponseEntity.ok(responseDto);
     }
 
     @Operation(summary = "장소 좌표들 가져오기-최근 기준 기간", description = "요청한 좌표 영역 안에 위치하고, 선택한 기간 조건이 충족되는 장소 좌표들을 불러옵니다.")
     @GetMapping("/period/recent")
-    public ResponseEntity<?> getRecentPeriodPlaceCoordinates(@RequestBody @Valid MapFetchRecentPeriodRequestDto requestDto) {
-        MapFetchResponseDto responseDto = mapService.getPlaceCoordinatesByRecentPeriod(requestDto);
+    public ResponseEntity<?> getMapPlacesWithinBoundsForRecentPeriod(@RequestBody @Valid MapFetchRecentPeriodRequestDto requestDto) {
+        MapFetchResponseDto responseDto = mapService.getMapPlacesWithinBoundsByRecentPeriod(requestDto);
         return ResponseEntity.ok(responseDto);
     }
 
     @Operation(summary = "장소 좌표들 가져오기-기간 직접 설정", description = "요청한 좌표 영역 안에 위치하고, 직접 설정한 기간 조건이 충족되는 장소 좌표들을 불러옵니다.")
     @GetMapping("/period/custom")
-    public ResponseEntity<?> getCustomPeriodPlaceCoordinates(@RequestBody @Valid MapFetchCustomPeriodRequestDto requestDto) {
-        MapFetchResponseDto responseDto = mapService.getPlacesWithinBoundsByCustomPeriod(requestDto);
+    public ResponseEntity<?> getMapPlacesWithinBoundsForCustomPeriod(@RequestBody @Valid MapFetchCustomPeriodRequestDto requestDto) {
+        MapFetchResponseDto responseDto = mapService.getMapPlacesWithinBoundsByCustomPeriod(requestDto);
         return ResponseEntity.ok(responseDto);
     }
 
+    @Operation(summary = "유저가 핀을 등록한 장소 좌표들 가져오기", description = "유저가 핀을 등록한 장소 좌표들을 가져옵니다. (공개여부 무관)")
+    @GetMapping("/members/{memberId}")
+    public ResponseEntity<?> getMapPlacesOfMember(@PathVariable final Long memberId) {
+        MapFetchResponseDto responseDto = mapService.getMapPlacesOfMember(memberId);
+        return ResponseEntity.ok(responseDto);
+    }
 }

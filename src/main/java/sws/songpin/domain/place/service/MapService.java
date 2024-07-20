@@ -12,6 +12,7 @@ import sws.songpin.domain.place.dto.request.MapFetchBasicRequestDto;
 import sws.songpin.domain.place.dto.request.MapFetchCustomPeriodRequestDto;
 import sws.songpin.domain.place.dto.request.MapFetchRecentPeriodRequestDto;
 import sws.songpin.domain.place.dto.response.MapFetchResponseDto;
+import sws.songpin.domain.place.dto.response.MapPlaceUnitDto;
 import sws.songpin.domain.place.entity.Place;
 import sws.songpin.domain.place.repository.PlaceRepository;
 
@@ -26,14 +27,14 @@ public class MapService {
     private final PlaceRepository placeRepository;
 
     // 기본
-    public MapFetchResponseDto getPlacesWithinBoundsByBasic(MapFetchBasicRequestDto requestDto) {
+    public MapFetchResponseDto getMapPlacesWithinBoundsByBasic(MapFetchBasicRequestDto requestDto) {
         Pageable pageable = getCustomPageableForMap();
-        Page<Place> pageResult = getPlacesWithinBounds(requestDto.boundCoords(), pageable);
-        return MapFetchResponseDto.from(pageResult.getContent());
+        Page<MapPlaceUnitDto> dtoPage = getMapPlaceDtosWithinBounds(requestDto.boundCoords(), pageable);
+        return MapFetchResponseDto.from(dtoPage);
     }
 
     // 최근 기준 기간
-    public MapFetchResponseDto getPlaceCoordinatesByRecentPeriod(MapFetchRecentPeriodRequestDto requestDto) {
+    public MapFetchResponseDto getMapPlacesWithinBoundsByRecentPeriod(MapFetchRecentPeriodRequestDto requestDto) {
         LocalDate startDate;
         LocalDate endDate = LocalDate.now();
         switch (requestDto.periodFilter()) {
@@ -43,15 +44,24 @@ public class MapService {
             default -> throw new IllegalArgumentException("Invalid period filter: " + requestDto.periodFilter());
         }
         Pageable pageable = getCustomPageableForMap();
-        Page<Place> pageResult = getPlacePagesWithinBoundsAndDateRange(requestDto.boundCoords(), startDate, endDate, pageable);
-        return MapFetchResponseDto.from(pageResult.getContent());
+        // Page<Place> pageResult = getPlacePagesWithinBoundsAndDateRange(requestDto.boundCoords(), startDate, endDate, pageable);
+        // Page<MapPlaceUnitDto> dtoPage = placeRepository.findPagedPlacesWithLatestPins(pageable);
+        return MapFetchResponseDto.from(dtoPage);
     }
 
     // 기간 직접 설정
-    public MapFetchResponseDto getPlacesWithinBoundsByCustomPeriod(MapFetchCustomPeriodRequestDto requestDto) {
+    public MapFetchResponseDto getMapPlacesWithinBoundsByCustomPeriod(MapFetchCustomPeriodRequestDto requestDto) {
         Pageable pageable = getCustomPageableForMap();
-        Page<Place> pageResult = getPlacePagesWithinBoundsAndDateRange(requestDto.boundCoords(), requestDto.startDate(), requestDto.endDate(), pageable);
+        // Page<Place> pageResult = getPlacePagesWithinBoundsAndDateRange(requestDto.boundCoords(), requestDto.startDate(), requestDto.endDate(), pageable);
         return MapFetchResponseDto.from(pageResult.getContent());
+    }
+
+    //// 유저로 필터링
+    // 유저가 핀을 등록한 장소 좌표들 가져오기
+    public MapFetchResponseDto getMapPlacesOfMember(Long memberId) {
+        Pageable pageable = PageRequest.of(0, 100);
+        Page<MapPlaceUnitDto> dtoPage = placeRepository.findPagedPlacesWithLatestPinsByMember(memberId, pageable);
+        return MapFetchResponseDto.from(dtoPage);
     }
 
     // Map에 Place 좌표를 띄우기 위한 Custom Pageable
@@ -60,8 +70,8 @@ public class MapService {
     }
 
     // 날짜 범위 조건 걸지 않는 경우
-    public Page<Place> getPlacesWithinBounds(MapBoundCoordsDto dto, Pageable pageable) {
-        return placeRepository.findAllByLatitudeBetweenAndLongitudeBetween(dto.swLat(), dto.neLat(), dto.swLng(), dto.neLng(), pageable);
+    public Page<MapPlaceUnitDto> getMapPlaceDtosWithinBounds(MapBoundCoordsDto dto, Pageable pageable) {
+        return placeRepository.findPagedPlacesWithLatestPins(dto.swLat(), dto.neLat(), dto.swLng(), dto.neLng(), pageable);
     }
 
     // 날짜 범위 조건 거는 경우

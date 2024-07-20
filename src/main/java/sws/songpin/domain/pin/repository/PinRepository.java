@@ -13,4 +13,5 @@ public interface PinRepository extends JpaRepository <Pin, Long> {
     List<Pin> findAllBySongAndMember(Song song, Member member);
     int countBySong(Song song);
     List<Pin> findAllByPlace(Place place);
+
 }

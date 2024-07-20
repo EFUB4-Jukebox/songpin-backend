@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import sws.songpin.domain.place.dto.response.MapPlaceUnitDto;
 import sws.songpin.domain.place.entity.Place;
 
 import java.time.LocalDate;
@@ -63,8 +64,50 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             Pageable pageable
     );
 
+    // Home 장소 검색 구현
+    @Query("""
+        SELECT new sws.songpin.domain.place.dto.response.MapPlaceUnitDto(
+            p.placeId,
+            p.latitude,
+            p.longitude,
+            pin.genre.genreName,
+            COUNT(pin.genre)
+        )
+        FROM Place p
+        JOIN p.pins pin
+        WHERE p.latitude between :swLat AND :neLat AND p.longitude BETWEEN :swLng AND :neLng
+        GROUP BY p.placeId, p.latitude, p.longitude, pin.genre
+        HAVING COUNT(pin) > 0
+        ORDER BY MAX(pin.listenedDate) DESC, p.placeId DESC
+    """)
+    Page<MapPlaceUnitDto> findPagedPlacesWithLatestPins(@Param("swLat") double swLat,
+                                                        @Param("neLat") double neLat,
+                                                        @Param("swLng") double swLng,
+                                                        @Param("neLng") double neLng,
+                                                        Pageable pageable);
+
+    // 유저의 장소 검색 구현
+    @Query("""
+        SELECT new sws.songpin.domain.place.dto.response.MapPlaceUnitDto(
+            p.placeId,
+            p.latitude,
+            p.longitude,
+            MAX(pin.genre.genreName),
+            COUNT(pin)
+        )
+        FROM Place p
+        JOIN p.pins pin
+        WHERE pin.member.memberId = :memberId
+        GROUP BY p.placeId, p.latitude, p.longitude
+        HAVING COUNT(pin) > 0
+        ORDER BY MAX(pin.listenedDate) DESC, p.placeId DESC
+    """)
+    Page<MapPlaceUnitDto> findPagedPlacesWithLatestPinsByMember(@Param("memberId") Long memberId, Pageable pageable);
+
+
+    ////
     // 페이징 방식으로 장소 검색
-    // countQuery 추가함 (total elements 계산시 사용)
+
     @Query(value = "SELECT p.place_id, p.place_name, COUNT(pin.pin_id) AS pin_count " +
             "FROM place p " +
             "LEFT JOIN pin pin ON p.place_id = pin.place_id " +
