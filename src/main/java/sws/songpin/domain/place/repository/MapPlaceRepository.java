@@ -20,7 +20,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
             p.placeId, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
-        JOIN p.pins pin
+        JOIN p.pins pin ON pin.genre.genreName IN :genreNameSet
         LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.genre.genreName IN :genreNameSet AND latestPin.listenedDate = (
             SELECT MAX(innerPin.listenedDate)
             FROM Pin innerPin
@@ -29,9 +29,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
         )
         WHERE p.latitude BETWEEN :swLat AND :neLat
         AND p.longitude BETWEEN :swLng AND :neLng
-        AND pin.genre.genreName IN :genreNameSet
         GROUP BY p.placeId, p.latitude, p.longitude, latestPin.song.songId, latestPin.genre.genreName, latestPin.listenedDate
-        HAVING COUNT(pin) > 0
         ORDER BY latestPin.listenedDate DESC, p.placeId DESC
     """)
     Slice<MapPlaceProjectionDto> findPlacesWithLatestPinsByGenre(@Param("swLat") double swLat,
@@ -47,7 +45,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
             p.placeId, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
-        JOIN p.pins pin
+        JOIN p.pins pin ON pin.genre.genreName IN :genreNameSet AND pin.listenedDate BETWEEN :startDate AND :endDate
         LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.genre.genreName IN :genreNameSet AND latestPin.listenedDate = (
             SELECT MAX(innerPin.listenedDate)
             FROM Pin innerPin
@@ -56,10 +54,8 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
         )
         WHERE p.latitude BETWEEN :swLat AND :neLat
         AND p.longitude BETWEEN :swLng AND :neLng
-        AND pin.genre.genreName IN :genreNameSet
         AND pin.listenedDate BETWEEN :startDate AND :endDate
         GROUP BY p.placeId, p.latitude, p.longitude, latestPin.song.songId, latestPin.genre.genreName, latestPin.listenedDate
-        HAVING COUNT(pin) > 0
         ORDER BY latestPin.listenedDate DESC, p.placeId DESC
     """)
     Slice<MapPlaceProjectionDto> findPlacesWithLatestPinsByGenreAndDateRange(@Param("swLat") double swLat,
@@ -77,15 +73,13 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
             p.placeId, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
-        JOIN p.pins pin
+        JOIN p.pins pin ON pin.member.memberId = :memberId
         LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.member.memberId = :memberId AND latestPin.listenedDate = (
             SELECT MAX(innerPin.listenedDate)
             FROM Pin innerPin
             WHERE innerPin.place = p AND innerPin.member.memberId = :memberId
         )
-        WHERE pin.member.memberId = :memberId
         GROUP BY p.placeId, p.latitude, p.longitude, latestPin.song.songId, latestPin.genre.genreName, latestPin.listenedDate
-        HAVING COUNT(pin) > 0
         ORDER BY latestPin.listenedDate DESC, p.placeId DESC
     """)
     Slice<MapPlaceProjectionDto> findPlacesWithLatestPinsByMember(@Param("memberId") Long memberId, Pageable pageable);
