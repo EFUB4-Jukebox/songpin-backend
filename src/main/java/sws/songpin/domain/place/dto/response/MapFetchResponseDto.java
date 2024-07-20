@@ -2,16 +2,21 @@ package sws.songpin.domain.place.dto.response;
 
 import org.springframework.data.domain.Page;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public record MapFetchResponseDto(
         Long mapPlaceCount,
-        List<MapPlaceUnitDto> mapPlaceList
+        Set<MapFetchUnitDto> mapPlaceSet
 ){
-    public static MapFetchResponseDto from(Page<MapPlaceUnitDto> pages) {
+    public static MapFetchResponseDto from(Page<MapPlaceProjectionDto> dtoPage) {
+        Set<MapFetchUnitDto> mapPlaceSet = dtoPage.stream()
+                .map(MapFetchUnitDto::from)
+                .collect(Collectors.toCollection(HashSet::new));
         return new MapFetchResponseDto(
-                pages.getTotalElements(),
-                pages.getContent()
+                dtoPage.getTotalElements(),
+                mapPlaceSet
         );
     }
 }

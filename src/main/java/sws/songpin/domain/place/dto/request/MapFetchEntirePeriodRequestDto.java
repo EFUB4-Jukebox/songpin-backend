@@ -4,9 +4,8 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-public record MapFetchRecentPeriodRequestDto(
+public record MapFetchEntirePeriodRequestDto(
         @NotNull MapBoundCoordsDto boundCoords,
-        List<String> genreNameFilters,
-        @NotNull String periodFilter // "week", "month", "threeMonths"
+        List<String> genreNameFilters
 ) {
 }
