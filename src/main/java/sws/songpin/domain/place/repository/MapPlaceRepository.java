@@ -17,20 +17,15 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
     // 좌표 범위에 포함되는 장소들 불러오기
     @Query("""
         SELECT new sws.songpin.domain.place.dto.response.MapPlaceProjectionDto(
-            p.placeId,
-            p.latitude,
-            p.longitude,
-            COUNT(pin),
-            latestPin.listenedDate,
-            latestPin.song.songId,
-            latestPin.genre.genreName
+            p.placeId, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
         JOIN p.pins pin
-        LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.listenedDate = (
+        LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.genre.genreName IN :genreNameSet AND latestPin.listenedDate = (
             SELECT MAX(innerPin.listenedDate)
             FROM Pin innerPin
             WHERE innerPin.place = p
+            AND innerPin.genre.genreName IN :genreNameSet
         )
         WHERE p.latitude BETWEEN :swLat AND :neLat
         AND p.longitude BETWEEN :swLng AND :neLng
@@ -49,20 +44,15 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
     // 좌표 범위 & 기간 범위에 모두 포함되는 장소들 불러오기
     @Query("""
         SELECT new sws.songpin.domain.place.dto.response.MapPlaceProjectionDto(
-            p.placeId,
-            p.latitude,
-            p.longitude,
-            COUNT(pin),
-            latestPin.listenedDate,
-            latestPin.song.songId,
-            latestPin.genre.genreName
+            p.placeId, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
         JOIN p.pins pin
-        LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.listenedDate = (
+        LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.genre.genreName IN :genreNameSet AND latestPin.listenedDate = (
             SELECT MAX(innerPin.listenedDate)
             FROM Pin innerPin
             WHERE innerPin.place = p
+            AND innerPin.genre.genreName IN :genreNameSet
         )
         WHERE p.latitude BETWEEN :swLat AND :neLat
         AND p.longitude BETWEEN :swLng AND :neLng
@@ -84,20 +74,14 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
     // 유저가 핀을 등록한 지도 장소들 불러오기
     @Query("""
         SELECT new sws.songpin.domain.place.dto.response.MapPlaceProjectionDto(
-            p.placeId,
-            p.latitude,
-            p.longitude,
-            COUNT(pin),
-            latestPin.listenedDate,
-            latestPin.song.songId,
-            latestPin.genre.genreName
+            p.placeId, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
         JOIN p.pins pin
-        LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.listenedDate = (
+        LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.member.memberId = :memberId AND latestPin.listenedDate = (
             SELECT MAX(innerPin.listenedDate)
             FROM Pin innerPin
-            WHERE innerPin.place = p
+            WHERE innerPin.place = p AND innerPin.member.memberId = :memberId
         )
         WHERE pin.member.memberId = :memberId
         GROUP BY p.placeId, p.latitude, p.longitude, latestPin.song.songId, latestPin.genre.genreName, latestPin.listenedDate
