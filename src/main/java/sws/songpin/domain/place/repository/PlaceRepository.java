@@ -45,7 +45,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
                                                               @Param("neLat") double neLat,
                                                               @Param("swLng") double swLng,
                                                               @Param("neLng") double neLng,
-                                                              @Param("selectedGenreNames") Set<GenreName> genreNameSet,
+                                                              @Param("genreNameSet") Set<GenreName> genreNameSet,
                                                               Pageable pageable);
 
     // 좌표 범위 & 기간 범위에 모두 포함되는 장소들 불러오기
@@ -78,7 +78,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
                                                                            @Param("neLat") double neLat,
                                                                            @Param("swLng") double swLng,
                                                                            @Param("neLng") double neLng,
-                                                                           @Param("selectedGenreNames") Set<GenreName> genreNameSet,
+                                                                           @Param("genreNameSet") Set<GenreName> genreNameSet,
                                                                            @Param("startDate") LocalDate startDate,
                                                                            @Param("endDate") LocalDate endDate,
                                                                            Pageable pageable);
