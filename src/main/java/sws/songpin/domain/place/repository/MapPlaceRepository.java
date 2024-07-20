@@ -29,7 +29,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
         )
         WHERE p.latitude BETWEEN :swLat AND :neLat
         AND p.longitude BETWEEN :swLng AND :neLng
-        GROUP BY p.placeId, p.latitude, p.longitude, latestPin.song.songId, latestPin.genre.genreName, latestPin.listenedDate
+        GROUP BY p.placeId, p.latitude, p.longitude, latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         ORDER BY latestPin.listenedDate DESC, p.placeId DESC
     """)
     Slice<MapPlaceProjectionDto> findPlacesWithLatestPinsByGenre(@Param("swLat") double swLat,
@@ -55,7 +55,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
         WHERE p.latitude BETWEEN :swLat AND :neLat
         AND p.longitude BETWEEN :swLng AND :neLng
         AND pin.listenedDate BETWEEN :startDate AND :endDate
-        GROUP BY p.placeId, p.latitude, p.longitude, latestPin.song.songId, latestPin.genre.genreName, latestPin.listenedDate
+        GROUP BY p.placeId, p.latitude, p.longitude, latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         ORDER BY latestPin.listenedDate DESC, p.placeId DESC
     """)
     Slice<MapPlaceProjectionDto> findPlacesWithLatestPinsByGenreAndDateRange(@Param("swLat") double swLat,
@@ -79,8 +79,8 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
             FROM Pin innerPin
             WHERE innerPin.place = p AND innerPin.member.memberId = :memberId
         )
-        GROUP BY p.placeId, p.latitude, p.longitude, latestPin.song.songId, latestPin.genre.genreName, latestPin.listenedDate
+        GROUP BY p.placeId, p.latitude, p.longitude, latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         ORDER BY latestPin.listenedDate DESC, p.placeId DESC
     """)
-    Slice<MapPlaceProjectionDto> findPlacesWithLatestPinsByMember(@Param("memberId") Long memberId, Pageable pageable);
+    Slice<MapPlaceProjectionDto> findPlacesWithLatestPinsByMember(Long memberId, Pageable pageable);
 }
