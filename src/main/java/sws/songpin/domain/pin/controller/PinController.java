@@ -35,7 +35,7 @@ public class PinController {
     @Operation(summary = "핀 수정", description = "핀을 수정합니다.")
     public ResponseEntity<?> updatePin(@PathVariable("pinId") final Long pinId, @Valid @RequestBody PinUpdateRequestDto pinUpdateRequestDto) {
         Long songId = pinService.updatePin(pinId, pinUpdateRequestDto);
-        URI location = URI.create("/songs/" + songId);;
+        URI location = URI.create("/songs/" + songId);
         return ResponseEntity.ok().location(location).build();
     }
 

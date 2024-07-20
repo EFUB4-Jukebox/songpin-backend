@@ -8,8 +8,13 @@ import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.genre.service.GenreService;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
+import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.pin.dto.request.PinAddRequestDto;
 import sws.songpin.domain.pin.dto.request.PinUpdateRequestDto;
+import sws.songpin.domain.pin.dto.response.PinBasicListResponseDto;
+import sws.songpin.domain.pin.dto.response.PinBasicUnitDto;
+import sws.songpin.domain.pin.dto.response.PinFeedListResponseDto;
+import sws.songpin.domain.pin.dto.response.PinFeedUnitDto;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.place.entity.Place;
@@ -18,6 +23,7 @@ import sws.songpin.domain.playlist.entity.Playlist;
 import sws.songpin.domain.playlistpin.entity.PlaylistPin;
 import sws.songpin.domain.playlistpin.repository.PlaylistPinRepository;
 import sws.songpin.domain.song.dto.response.SongDetailsPinDto;
+import sws.songpin.domain.song.dto.response.SongDetailsPinListResponseDto;
 import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.song.repository.SongRepository;
 import sws.songpin.domain.song.service.SongService;
@@ -66,7 +72,6 @@ public class PinService {
     // 음악 핀 수정
     public Long updatePin(Long pinId, PinUpdateRequestDto pinUpdateRequestDto) {
         Pin pin = validatePinCreator(pinId);
-
         Genre genre = genreService.getGenreByGenreName(pinUpdateRequestDto.genreName());
         pin.updatePin(pinUpdateRequestDto.listenedDate(), pinUpdateRequestDto.memo(), pinUpdateRequestDto.visibility(), genre);
         pinRepository.save(pin);
@@ -86,11 +91,10 @@ public class PinService {
         pinRepository.delete(pin);
     }
 
-    private void updateSongAvgGenreName(Song song) {
+    public void updateSongAvgGenreName(Song song) {
         List<Genre> genres = pinRepository.findAllBySong(song).stream()
                 .map(Pin::getGenre)
                 .collect(Collectors.toList());
-
         Optional<GenreName> avgGenreName = songService.calculateAvgGenreName(genres);
         avgGenreName.ifPresent(song::setAvgGenreName);
         songRepository.save(song);
@@ -107,23 +111,66 @@ public class PinService {
         return pin;
     }
 
+    // 특정 노래에 대한 핀 조회
     @Transactional(readOnly = true)
-    public List<SongDetailsPinDto> getPinsForSong(Long songId, boolean includeMyPins) {
+    public SongDetailsPinListResponseDto getPinsForSong(Long songId, boolean onlyMyPins) {
         Song song = songService.getSongById(songId);
+        Member currentMember = memberService.getCurrentMember();
+        Long currentMemberId = currentMember != null ? currentMember.getMemberId() : null;
         List<Pin> pins;
-
-        Long currentMemberId = includeMyPins ? memberService.getCurrentMember().getMemberId() : null;
-        if (includeMyPins && currentMemberId != null) {
-            // includeMyPins가 true이고, 로그인된 유저가 있을 때
-            Member currentMember = memberService.getCurrentMember();
+        List<SongDetailsPinDto> songDetailsPinList;
+        if (onlyMyPins) {
+            // 내 핀만 보기 - 현재 사용자의 모든 핀 가져오기(visibility 상관없음)
             pins = pinRepository.findAllBySongAndMember(song, currentMember);
         } else {
-            pins = pinRepository.findAllBySong(song);
+            // 전체 핀 보기 - 내 핀 가져오기(visibility 상관없음) + 타유저의 공개 핀 가져오기
+            pins = pinRepository.findAllBySong(song).stream()
+                    .filter(pin -> pin.getVisibility() == Visibility.PUBLIC || pin.getMember().equals(currentMember))
+                    .collect(Collectors.toList());
         }
-
-        return pins.stream()
-                .map(pin -> SongDetailsPinDto.from(pin, currentMemberId))
+        songDetailsPinList = pins.stream()
+                .map(pin -> {
+                    Boolean isMine = pin.getMember().getMemberId().equals(currentMemberId);
+                    return SongDetailsPinDto.from(pin, isMine);
+                })
                 .collect(Collectors.toList());
+        return SongDetailsPinListResponseDto.from(songDetailsPinList);
+    }
+
+    // 타 유저의 공개 핀 피드 조회
+    @Transactional(readOnly = true)
+    public PinFeedListResponseDto getPublicPinFeed(Long memberId) {
+        Member targetMember = memberService.getMemberById(memberId);
+        List<Pin> pins = pinRepository.findAllByMemberAndVisibilityOrderByListenedDateDesc(targetMember, Visibility.PUBLIC);
+        return getPinFeedResponse(pins, false);
+    }
+
+    // 내 핀 피드 조회
+    @Transactional(readOnly = true)
+    public PinFeedListResponseDto getMyPinFeed() {
+        Member currentMember = memberService.getCurrentMember();
+        List<Pin> pins = pinRepository.findAllByMemberOrderByListenedDateDesc(currentMember);
+        return getPinFeedResponse(pins, true);
+    }
+
+    // 핀피드 조회 공통 메서드
+    @Transactional(readOnly = true)
+    private PinFeedListResponseDto getPinFeedResponse(List<Pin> pins, boolean isMine) {
+        List<PinFeedUnitDto> feedPinList = pins.stream()
+                .map(pin -> PinFeedUnitDto.from(pin, isMine))
+                .collect(Collectors.toList());
+        return new PinFeedListResponseDto(feedPinList.size(), feedPinList);
+    }
+
+    // 마이페이지 캘린더
+    @Transactional(readOnly = true)
+    public PinBasicListResponseDto getMyPinFeedForMonth(int year, int month) {
+        Member currentMember = memberService.getCurrentMember();
+        List<Pin> pins = pinRepository.findAllByMemberAndDate(currentMember,year, month);
+        List<PinBasicUnitDto> pinList = pins.stream()
+                .map(pin -> PinBasicUnitDto.from(pin, true))
+                .collect(Collectors.toList());
+        return new PinBasicListResponseDto(pinList, pinList.size());
     }
 
     @Transactional(readOnly = true)
@@ -131,4 +178,5 @@ public class PinService {
         return pinRepository.findById(pinId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PIN_NOT_FOUND));
     }
+
 }

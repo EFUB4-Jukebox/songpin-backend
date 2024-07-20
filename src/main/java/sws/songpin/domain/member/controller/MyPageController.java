@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.bookmark.service.BookmarkService;
 import sws.songpin.domain.member.service.ProfileService;
+import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.playlist.service.PlaylistService;
 
 @Tag(name = "MyPage", description = "MyPage 관련 API입니다.")
@@ -17,6 +18,7 @@ public class MyPageController {
     private final PlaylistService playlistService;
     private final BookmarkService bookmarkService;
     private final ProfileService profileService;
+    private final PinService pinService;
 
     @Operation(summary = "내 플레이리스트 목록 조회", description = "마이페이지에서 내 플레이리스트 목록 조회")
     @GetMapping("/playlists")
@@ -35,4 +37,17 @@ public class MyPageController {
     public ResponseEntity<?> getMyProfile(){
         return ResponseEntity.ok(profileService.getMyProfile());
     }
+
+    @Operation(summary = "내 핀 피드 조회", description = "현재 사용자의 모든 핀 피드를 조회합니다.")
+    @GetMapping("/pins")
+    public ResponseEntity<?> getMyPinFeed() {
+        return ResponseEntity.ok(pinService.getMyPinFeed());
+    }
+
+    @Operation(summary = "내 핀 피드 월별 조회", description = "현재 사용자의 핀 피드를 년/월별로 조회합니다.")
+    @GetMapping("/calendar")
+    public ResponseEntity<?> getMyFeedPinsByMonth(@RequestParam("year") int year, @RequestParam("month") int month) {
+        return ResponseEntity.ok(pinService.getMyPinFeedForMonth(year, month));
+    }
+
 }
