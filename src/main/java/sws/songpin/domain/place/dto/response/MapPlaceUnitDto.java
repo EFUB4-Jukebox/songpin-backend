@@ -2,7 +2,7 @@ package sws.songpin.domain.place.dto.response;
 
 import sws.songpin.domain.genre.entity.GenreName;
 
-public record MapFetchUnitDto (
+public record MapPlaceUnitDto(
         Long placeId,
         Double latitude,
         Double longitude,
@@ -10,7 +10,7 @@ public record MapFetchUnitDto (
         Long songId,
         GenreName genreName
 ){
-    public static MapFetchUnitDto from(MapPlaceProjectionDto dto) {
-        return new MapFetchUnitDto(dto.getPlaceId(), dto.getLatitude(), dto.getLongitude(), dto.getPlacePinCount(), dto.getSongId(), dto.getGenreName());
+    public static MapPlaceUnitDto from(MapPlaceProjectionDto dto) {
+        return new MapPlaceUnitDto(dto.getPlaceId(), dto.getLatitude(), dto.getLongitude(), dto.getPlacePinCount(), dto.getSongId(), dto.getGenreName());
     }
 }

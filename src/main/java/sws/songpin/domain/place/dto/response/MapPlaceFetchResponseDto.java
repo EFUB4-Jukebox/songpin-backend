@@ -6,15 +6,15 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public record MapFetchResponseDto(
+public record MapPlaceFetchResponseDto(
         Long mapPlaceCount,
-        Set<MapFetchUnitDto> mapPlaceSet
+        Set<MapPlaceUnitDto> mapPlaceSet
 ){
-    public static MapFetchResponseDto from(Page<MapPlaceProjectionDto> dtoPage) {
-        Set<MapFetchUnitDto> mapPlaceSet = dtoPage.stream()
-                .map(MapFetchUnitDto::from)
+    public static MapPlaceFetchResponseDto from(Page<MapPlaceProjectionDto> dtoPage) {
+        Set<MapPlaceUnitDto> mapPlaceSet = dtoPage.stream()
+                .map(MapPlaceUnitDto::from)
                 .collect(Collectors.toCollection(HashSet::new));
-        return new MapFetchResponseDto(
+        return new MapPlaceFetchResponseDto(
                 dtoPage.getTotalElements(),
                 mapPlaceSet
         );

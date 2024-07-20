@@ -12,7 +12,7 @@ import sws.songpin.domain.place.dto.request.MapBoundCoordsDto;
 import sws.songpin.domain.place.dto.request.MapFetchEntirePeriodRequestDto;
 import sws.songpin.domain.place.dto.request.MapFetchCustomPeriodRequestDto;
 import sws.songpin.domain.place.dto.request.MapFetchRecentPeriodRequestDto;
-import sws.songpin.domain.place.dto.response.MapFetchResponseDto;
+import sws.songpin.domain.place.dto.response.MapPlaceFetchResponseDto;
 import sws.songpin.domain.place.dto.response.MapPlaceProjectionDto;
 import sws.songpin.domain.place.repository.PlaceRepository;
 
@@ -32,32 +32,32 @@ public class MapService {
 
     // 장르 필터링
     // 장소 좌표들 가져오기-전체 기간
-    public MapFetchResponseDto getMapPlacesWithinBoundsByEntirePeriod(MapFetchEntirePeriodRequestDto reqDto) {
-        Set<GenreName> genreNameSet =  getSelectedGenreNames(reqDto.genreNameFilters());
-        Page<MapPlaceProjectionDto> dtoPage = getMapPlacePagesWithinBounds(reqDto.boundCoords(), genreNameSet);
-        return MapFetchResponseDto.from(dtoPage);
+    public MapPlaceFetchResponseDto getMapPlacesWithinBoundsByEntirePeriod(MapFetchEntirePeriodRequestDto requestDto) {
+        Set<GenreName> genreNameSet =  getSelectedGenreNames(requestDto.genreNameFilters());
+        Page<MapPlaceProjectionDto> dtoPage = getMapPlacePagesWithinBounds(requestDto.boundCoords(), genreNameSet);
+        return MapPlaceFetchResponseDto.from(dtoPage);
     }
 
     // 장소 좌표들 가져오기-최근 기준 기간
-    public MapFetchResponseDto getMapPlacesWithinBoundsByRecentPeriod(MapFetchRecentPeriodRequestDto reqDto) {
+    public MapPlaceFetchResponseDto getMapPlacesWithinBoundsByRecentPeriod(MapFetchRecentPeriodRequestDto requestDto) {
         LocalDate startDate;
         LocalDate endDate = LocalDate.now();
-        switch (reqDto.periodFilter()) {
+        switch (requestDto.periodFilter()) {
             case "week" -> startDate = endDate.minusWeeks(1);
             case "month" -> startDate = endDate.minusMonths(1);
             case "threeMonths"-> startDate = endDate.minusMonths(3);
-            default -> throw new IllegalArgumentException("Invalid period filter: " + reqDto.periodFilter());
+            default -> throw new IllegalArgumentException("Invalid period filter: " + requestDto.periodFilter());
         }
-        Set<GenreName> genreNameSet =  getSelectedGenreNames(reqDto.genreNameFilters());
-        Page<MapPlaceProjectionDto> dtoPage = getMapPlacePagesWithinBoundsAndDateRange(reqDto.boundCoords(), genreNameSet, startDate, endDate);
-        return MapFetchResponseDto.from(dtoPage);
+        Set<GenreName> genreNameSet =  getSelectedGenreNames(requestDto.genreNameFilters());
+        Page<MapPlaceProjectionDto> dtoPage = getMapPlacePagesWithinBoundsAndDateRange(requestDto.boundCoords(), genreNameSet, startDate, endDate);
+        return MapPlaceFetchResponseDto.from(dtoPage);
     }
 
     // 장소 좌표들 가져오기-기간 직접 설정
-    public MapFetchResponseDto getMapPlacesWithinBoundsByCustomPeriod(MapFetchCustomPeriodRequestDto reqDto) {
-        Set<GenreName> genreNameSet =  getSelectedGenreNames(reqDto.genreNameFilters());
-        Page<MapPlaceProjectionDto> dtoPage = getMapPlacePagesWithinBoundsAndDateRange(reqDto.boundCoords(), genreNameSet, reqDto.startDate(), reqDto.endDate());
-        return MapFetchResponseDto.from(dtoPage);
+    public MapPlaceFetchResponseDto getMapPlacesWithinBoundsByCustomPeriod(MapFetchCustomPeriodRequestDto requestDto) {
+        Set<GenreName> genreNameSet =  getSelectedGenreNames(requestDto.genreNameFilters());
+        Page<MapPlaceProjectionDto> dtoPage = getMapPlacePagesWithinBoundsAndDateRange(requestDto.boundCoords(), genreNameSet, requestDto.startDate(), requestDto.endDate());
+        return MapPlaceFetchResponseDto.from(dtoPage);
     }
 
     // 날짜 범위 조건 걸지 않는 경우
@@ -92,9 +92,9 @@ public class MapService {
 
     //// 유저로 필터링
     // 유저가 핀을 등록한 장소 좌표들 가져오기
-    public MapFetchResponseDto getMapPlacesOfMember(Long memberId) {
+    public MapPlaceFetchResponseDto getMapPlacesOfMember(Long memberId) {
         Pageable pageable = PageRequest.of(0, 300);
         Page<MapPlaceProjectionDto> dtoPage = placeRepository.findPagedPlacesWithLatestPinsByMember(memberId, pageable);
-        return MapFetchResponseDto.from(dtoPage);
+        return MapPlaceFetchResponseDto.from(dtoPage);
     }
 }
