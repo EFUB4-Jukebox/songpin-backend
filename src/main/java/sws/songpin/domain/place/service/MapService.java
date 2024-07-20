@@ -2,9 +2,9 @@ package sws.songpin.domain.place.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.genre.entity.GenreName;
@@ -14,7 +14,7 @@ import sws.songpin.domain.place.dto.request.MapFetchCustomPeriodRequestDto;
 import sws.songpin.domain.place.dto.request.MapFetchRecentPeriodRequestDto;
 import sws.songpin.domain.place.dto.response.MapPlaceFetchResponseDto;
 import sws.songpin.domain.place.dto.response.MapPlaceProjectionDto;
-import sws.songpin.domain.place.repository.PlaceRepository;
+import sws.songpin.domain.place.repository.MapPlaceRepository;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -28,17 +28,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MapService {
 
-    private final PlaceRepository placeRepository;
+    private final MapPlaceRepository mapPlaceRepository;
 
-    // 장르 필터링
-    // 장소 좌표들 가져오기-전체 기간
+    // 장소 좌표들 가져오기-전체 기간 & 장르 필터링
     public MapPlaceFetchResponseDto getMapPlacesWithinBoundsByEntirePeriod(MapFetchEntirePeriodRequestDto requestDto) {
         Set<GenreName> genreNameSet =  getSelectedGenreNames(requestDto.genreNameFilters());
-        Page<MapPlaceProjectionDto> dtoPage = getMapPlacePagesWithinBounds(requestDto.boundCoords(), genreNameSet);
-        return MapPlaceFetchResponseDto.from(dtoPage);
+        Slice<MapPlaceProjectionDto> dtoSlice = getMapPlaceSlicesWithinBounds(requestDto.boundCoords(), genreNameSet);
+        return MapPlaceFetchResponseDto.from(dtoSlice);
     }
 
-    // 장소 좌표들 가져오기-최근 기준 기간
+    // 장소 좌표들 가져오기-최근 기준 기간 & 장르 필터링
     public MapPlaceFetchResponseDto getMapPlacesWithinBoundsByRecentPeriod(MapFetchRecentPeriodRequestDto requestDto) {
         LocalDate startDate;
         LocalDate endDate = LocalDate.now();
@@ -49,27 +48,27 @@ public class MapService {
             default -> throw new IllegalArgumentException("Invalid period filter: " + requestDto.periodFilter());
         }
         Set<GenreName> genreNameSet =  getSelectedGenreNames(requestDto.genreNameFilters());
-        Page<MapPlaceProjectionDto> dtoPage = getMapPlacePagesWithinBoundsAndDateRange(requestDto.boundCoords(), genreNameSet, startDate, endDate);
-        return MapPlaceFetchResponseDto.from(dtoPage);
+        Slice<MapPlaceProjectionDto> dtoSlice = getMapPlaceSlicesWithinBoundsAndDateRange(requestDto.boundCoords(), genreNameSet, startDate, endDate);
+        return MapPlaceFetchResponseDto.from(dtoSlice);
     }
 
-    // 장소 좌표들 가져오기-기간 직접 설정
+    // 장소 좌표들 가져오기-기간 직접 설정 & 장르 필터링
     public MapPlaceFetchResponseDto getMapPlacesWithinBoundsByCustomPeriod(MapFetchCustomPeriodRequestDto requestDto) {
         Set<GenreName> genreNameSet =  getSelectedGenreNames(requestDto.genreNameFilters());
-        Page<MapPlaceProjectionDto> dtoPage = getMapPlacePagesWithinBoundsAndDateRange(requestDto.boundCoords(), genreNameSet, requestDto.startDate(), requestDto.endDate());
-        return MapPlaceFetchResponseDto.from(dtoPage);
+        Slice<MapPlaceProjectionDto> dtoSlice = getMapPlaceSlicesWithinBoundsAndDateRange(requestDto.boundCoords(), genreNameSet, requestDto.startDate(), requestDto.endDate());
+        return MapPlaceFetchResponseDto.from(dtoSlice);
     }
 
     // 날짜 범위 조건 걸지 않는 경우
-    public Page<MapPlaceProjectionDto> getMapPlacePagesWithinBounds(MapBoundCoordsDto dto, Set<GenreName> genreNameSet) {
+    public Slice<MapPlaceProjectionDto> getMapPlaceSlicesWithinBounds(MapBoundCoordsDto dto, Set<GenreName> genreNameSet) {
         Pageable pageable = getCustomPageableForMap();
-        return placeRepository.findPagedPlacesWithLatestPins(dto.swLat(), dto.neLat(), dto.swLng(), dto.neLng(), genreNameSet, pageable);
+        return mapPlaceRepository.findPlacesWithLatestPinsByGenre(dto.swLat(), dto.neLat(), dto.swLng(), dto.neLng(), genreNameSet, pageable);
     }
 
     // 날짜 범위 조건 거는 경우
-    public Page<MapPlaceProjectionDto> getMapPlacePagesWithinBoundsAndDateRange(MapBoundCoordsDto dto, Set<GenreName> genreNameSet, LocalDate startDate, LocalDate endDate) {
+    public Slice<MapPlaceProjectionDto> getMapPlaceSlicesWithinBoundsAndDateRange(MapBoundCoordsDto dto, Set<GenreName> genreNameSet, LocalDate startDate, LocalDate endDate) {
         Pageable pageable = getCustomPageableForMap();
-        return placeRepository.findPagedPlacesWithPinsListenedDateBetween(dto.swLat(), dto.neLat(), dto.swLng(), dto.neLng(), genreNameSet, startDate, endDate, pageable);
+        return mapPlaceRepository.findPlacesWithLatestPinsByGenreAndDateRange(dto.swLat(), dto.neLat(), dto.swLng(), dto.neLng(), genreNameSet, startDate, endDate, pageable);
     }
 
     // 장르 필터링에 포함할 리스트 생성
@@ -94,7 +93,7 @@ public class MapService {
     // 유저가 핀을 등록한 장소 좌표들 가져오기
     public MapPlaceFetchResponseDto getMapPlacesOfMember(Long memberId) {
         Pageable pageable = PageRequest.of(0, 300);
-        Page<MapPlaceProjectionDto> dtoPage = placeRepository.findPagedPlacesWithLatestPinsByMember(memberId, pageable);
-        return MapPlaceFetchResponseDto.from(dtoPage);
+        Slice<MapPlaceProjectionDto> dtoSlice = mapPlaceRepository.findPlacesWithLatestPinsByMember(memberId, pageable);
+        return MapPlaceFetchResponseDto.from(dtoSlice);
     }
 }
