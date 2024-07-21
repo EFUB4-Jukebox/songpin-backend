@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.song.dto.response.SongDetailsPinDto;
+import sws.songpin.domain.song.dto.response.SongDetailsPinListResponseDto;
 import sws.songpin.domain.song.dto.response.SongDetailsResponseDto;
 import sws.songpin.domain.song.service.SongService;
 
@@ -25,22 +26,22 @@ public class SongController {
 
     @GetMapping("/{songId}")
     @Operation(summary = "노래 상세보기", description = "노래의 상세 정보를 조회합니다.")
-    public ResponseEntity<SongDetailsResponseDto> getSongDetails(@PathVariable("songId") final Long songId) {
+    public ResponseEntity<?> getSongDetails(@PathVariable("songId") final Long songId) {
         SongDetailsResponseDto songDetails = songService.getSongDetails(songId);
         return ResponseEntity.ok(songDetails);
     }
 
     @GetMapping("/{songId}/pins")
     @Operation(summary = "노래에 대한 모든 핀", description = "해당 노래에 대한 모든 핀을 조회합니다.")
-    public ResponseEntity<List<SongDetailsPinDto>> getPinsForSong(@PathVariable("songId") final Long songId) {
-        List<SongDetailsPinDto> allPins = pinService.getPinsForSong(songId, false);
+    public ResponseEntity<?> getPinsForSong(@PathVariable("songId") final Long songId) {
+        SongDetailsPinListResponseDto allPins = pinService.getPinsForSong(songId, false);
         return ResponseEntity.ok(allPins);
     }
 
     @GetMapping("/{songId}/pins/me")
     @Operation(summary = "현재 로그인한 사용자의 핀 보기", description = "현재 로그인한 사용자가 만든 핀만 조회합니다.")
-    public ResponseEntity<List<SongDetailsPinDto>> getMyPinsForSong(@PathVariable("songId") final Long songId) {
-        List<SongDetailsPinDto> myPins = pinService.getPinsForSong(songId, true);
+    public ResponseEntity<?> getMyPinsForSong(@PathVariable("songId") final Long songId) {
+        SongDetailsPinListResponseDto myPins = pinService.getPinsForSong(songId, true);
         return ResponseEntity.ok(myPins);
     }
 }

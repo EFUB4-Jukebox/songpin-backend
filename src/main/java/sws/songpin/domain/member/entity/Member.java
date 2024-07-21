@@ -72,4 +72,10 @@ public class Member extends BaseTimeEntity {
         this.isNewAlarm = false;
         this.pins = new ArrayList<>();
     }
+
+    public void modifyProfile(ProfileImg profileImg, String nickname, String handle){
+        this.profileImg = profileImg;
+        this.nickname = nickname;
+        this.handle = handle;
+    }
 }

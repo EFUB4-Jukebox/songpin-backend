@@ -2,11 +2,15 @@ package sws.songpin.domain.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.bookmark.service.BookmarkService;
+import sws.songpin.domain.member.dto.request.ProfileUpdateRequestDto;
+import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.member.service.ProfileService;
+import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.playlist.service.PlaylistService;
 
 @Tag(name = "MyPage", description = "MyPage 관련 API입니다.")
@@ -17,6 +21,8 @@ public class MyPageController {
     private final PlaylistService playlistService;
     private final BookmarkService bookmarkService;
     private final ProfileService profileService;
+    private final MemberService memberService;
+    private final PinService pinService;
 
     @Operation(summary = "내 플레이리스트 목록 조회", description = "마이페이지에서 내 플레이리스트 목록 조회")
     @GetMapping("/playlists")
@@ -35,4 +41,24 @@ public class MyPageController {
     public ResponseEntity<?> getMyProfile(){
         return ResponseEntity.ok(profileService.getMyProfile());
     }
+
+    @Operation(summary = "프로필 편집", description = "프로필 이미지, 닉네임, 핸들 변경")
+    @PatchMapping
+    public ResponseEntity<?> updateProfile(@RequestBody @Valid ProfileUpdateRequestDto requestDto){
+        memberService.updateProfile(requestDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "내 핀 피드 조회", description = "현재 사용자의 모든 핀 피드를 조회합니다.")
+    @GetMapping("/pins")
+    public ResponseEntity<?> getMyPinFeed() {
+        return ResponseEntity.ok(pinService.getMyPinFeed());
+    }
+
+    @Operation(summary = "내 핀 피드 월별 조회", description = "현재 사용자의 핀 피드를 년/월별로 조회합니다.")
+    @GetMapping("/calendar")
+    public ResponseEntity<?> getMyFeedPinsByMonth(@RequestParam("year") int year, @RequestParam("month") int month) {
+        return ResponseEntity.ok(pinService.getMyPinFeedForMonth(year, month));
+    }
+
 }
