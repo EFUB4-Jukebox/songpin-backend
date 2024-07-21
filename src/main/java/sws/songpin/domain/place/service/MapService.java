@@ -13,7 +13,7 @@ import sws.songpin.domain.place.dto.request.MapFetchEntirePeriodRequestDto;
 import sws.songpin.domain.place.dto.request.MapFetchCustomPeriodRequestDto;
 import sws.songpin.domain.place.dto.request.MapFetchRecentPeriodRequestDto;
 import sws.songpin.domain.place.dto.response.MapPlaceFetchResponseDto;
-import sws.songpin.domain.place.dto.response.MapPlaceProjectionDto;
+import sws.songpin.domain.place.dto.projection.MapPlaceProjectionDto;
 import sws.songpin.domain.place.repository.MapPlaceRepository;
 
 import java.time.LocalDate;

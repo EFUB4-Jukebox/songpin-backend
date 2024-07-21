@@ -1,6 +1,7 @@
 package sws.songpin.domain.place.dto.response;
 
 import org.springframework.data.domain.Slice;
+import sws.songpin.domain.place.dto.projection.MapPlaceProjectionDto;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -15,10 +16,10 @@ public record MapPlaceFetchResponseDto(
         // Collecting entries by placeId
         Map<Long, MapPlaceProjectionDto> latestPlaceMap = dtoSlice.stream()
                 .collect(Collectors.toMap(
-                        MapPlaceProjectionDto::getPlaceId,
+                        MapPlaceProjectionDto::placeId,
                         dto -> dto,
                         (existing, replacement) -> {
-                            if (existing.getListenedDate().isAfter(replacement.getListenedDate())) {
+                            if (existing.listenedDate().isAfter(replacement.listenedDate())) {
                                 return existing;
                             } else {
                                 return replacement;

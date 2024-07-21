@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import sws.songpin.domain.genre.entity.GenreName;
-import sws.songpin.domain.place.dto.response.MapPlaceProjectionDto;
+import sws.songpin.domain.place.dto.projection.MapPlaceProjectionDto;
 import sws.songpin.domain.place.entity.Place;
 import sws.songpin.domain.statistics.dto.projection.StatsPlaceProjectionDto;
 
@@ -18,7 +18,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
     //// Home 페이지
     // 좌표 범위에 포함되는 장소들 불러오기
     @Query("""
-        SELECT new sws.songpin.domain.place.dto.response.MapPlaceProjectionDto(
+        SELECT new sws.songpin.domain.place.dto.projection.MapPlaceProjectionDto(
             p.placeId, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
@@ -43,7 +43,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
 
     // 좌표 범위 & 기간 범위에 모두 포함되는 장소들 불러오기
     @Query("""
-        SELECT new sws.songpin.domain.place.dto.response.MapPlaceProjectionDto(
+        SELECT new sws.songpin.domain.place.dto.projection.MapPlaceProjectionDto(
             p.placeId, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
@@ -72,7 +72,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
     //// Member 페이지
     // 유저가 핀을 등록한 지도 장소들 불러오기
     @Query("""
-        SELECT new sws.songpin.domain.place.dto.response.MapPlaceProjectionDto(
+        SELECT new sws.songpin.domain.place.dto.projection.MapPlaceProjectionDto(
             p.placeId, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
