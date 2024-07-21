@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.member.dto.request.LoginRequestDto;
 import sws.songpin.domain.member.dto.request.SignUpRequestDto;
-import sws.songpin.domain.member.dto.response.LoginResponseDto;
+import sws.songpin.domain.member.dto.response.TokenDto;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.repository.MemberRepository;
 import sws.songpin.global.auth.JwtUtil;
@@ -48,7 +48,7 @@ public class AuthService {
         memberRepository.save(member);
     }
 
-    public LoginResponseDto login(LoginRequestDto requestDto){
+    public TokenDto login(LoginRequestDto requestDto){
 
         try{
             Authentication authentication = authenticationManager.authenticate(
@@ -57,7 +57,7 @@ public class AuthService {
                     )
             );
 
-            LoginResponseDto responseDto = new LoginResponseDto(jwtUtil.generateAccessToken(authentication), jwtUtil.generateRefreshToken(authentication) );
+            TokenDto responseDto = new TokenDto(jwtUtil.generateAccessToken(authentication), jwtUtil.generateRefreshToken(authentication) );
 
             return responseDto;
         } catch (BadCredentialsException e){

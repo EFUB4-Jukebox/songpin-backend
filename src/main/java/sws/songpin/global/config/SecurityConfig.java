@@ -63,6 +63,8 @@ public class SecurityConfig {
 
         configuration.addExposedHeader("Authorization");
         configuration.addExposedHeader("Authorization-Refresh");
+        configuration.addExposedHeader("Set-Cookie");
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         source.registerCorsConfiguration("/**", configuration); //위에서 설정한 Configuration 적용
