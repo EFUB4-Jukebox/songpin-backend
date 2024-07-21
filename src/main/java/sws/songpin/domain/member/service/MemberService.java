@@ -23,6 +23,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     // 유저 검색
+    @Transactional(readOnly = true)
     public MemberSearchResponseDto searchMembers(String keyword, Pageable pageable) {
         Page<Member> memberPage = memberRepository.findAllByHandleContainingOrNicknameContaining(keyword, pageable);
         Long currentMemberId = getCurrentMember().getMemberId();
