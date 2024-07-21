@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.place.dto.response.MapPlaceProjectionDto;
 import sws.songpin.domain.place.entity.Place;
-import sws.songpin.domain.statistics.dto.response.StatsPlaceProjectionDto;
+import sws.songpin.domain.statistics.dto.projection.StatsPlaceProjectionDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -90,7 +90,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
     //// 통계 페이지
     // 모든 장르 통틀어 가장 핀이 많이 등록된 장소 가져오기
     @Query("""
-        SELECT new sws.songpin.domain.statistics.dto.response.StatsPlaceProjectionDto(
+        SELECT new sws.songpin.domain.statistics.dto.projection.StatsPlaceProjectionDto(
             p.placeId, p.placeName, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
@@ -107,7 +107,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
 
     // 해당 장르에서 가장 핀이 많이 등록된 장소 가져오기
     @Query("""
-        SELECT new sws.songpin.domain.statistics.dto.response.StatsPlaceProjectionDto(
+        SELECT new sws.songpin.domain.statistics.dto.projection.StatsPlaceProjectionDto(
             p.placeId, p.placeName, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p

@@ -1,6 +1,7 @@
 package sws.songpin.domain.statistics.dto.response;
 
 import sws.songpin.domain.genre.entity.GenreName;
+import sws.songpin.domain.statistics.dto.projection.StatsPlaceProjectionDto;
 
 public record StatsPlaceUnitDto(
         Long placeId,

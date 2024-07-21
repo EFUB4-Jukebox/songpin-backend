@@ -10,6 +10,8 @@ import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.place.repository.MapPlaceRepository;
 import sws.songpin.domain.song.repository.SongRepository;
+import sws.songpin.domain.statistics.dto.projection.StatsPlaceProjectionDto;
+import sws.songpin.domain.statistics.dto.projection.StatsSongProjectionDto;
 import sws.songpin.domain.statistics.dto.response.*;
 
 import java.time.LocalDate;

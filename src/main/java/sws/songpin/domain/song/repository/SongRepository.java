@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.song.entity.Song;
-import sws.songpin.domain.statistics.dto.response.StatsSongProjectionDto;
+import sws.songpin.domain.statistics.dto.projection.StatsSongProjectionDto;
 
 import java.util.Optional;
 
@@ -14,7 +14,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     Optional<Song> findByProviderTrackCode(String providerTrackCode);
 
     @Query("""
-        SELECT new sws.songpin.domain.statistics.dto.response.StatsSongProjectionDto(
+        SELECT new sws.songpin.domain.statistics.dto.projection.StatsSongProjectionDto(
             s.songId, s.title, s.artist, s.imgPath, s.avgGenreName
         )
         FROM Song s
@@ -26,7 +26,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
     Slice<StatsSongProjectionDto> findTopSongsByGenreName(GenreName genreName, Pageable pageable);
 
     @Query("""
-        SELECT new sws.songpin.domain.statistics.dto.response.StatsSongProjectionDto(
+        SELECT new sws.songpin.domain.statistics.dto.projection.StatsSongProjectionDto(
             s.songId, s.title, s.artist, s.imgPath, s.avgGenreName
         )
         FROM Song s

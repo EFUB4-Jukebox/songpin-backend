@@ -1,5 +1,7 @@
 package sws.songpin.domain.statistics.dto.response;
 
+import sws.songpin.domain.statistics.dto.projection.StatsSongProjectionDto;
+
 public record StatsPopularSongDto(
         String title,
         String artist,

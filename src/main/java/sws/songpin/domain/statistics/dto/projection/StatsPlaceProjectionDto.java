@@ -1,4 +1,4 @@
-package sws.songpin.domain.statistics.dto.response;
+package sws.songpin.domain.statistics.dto.projection;
 
 import lombok.*;
 import sws.songpin.domain.genre.entity.GenreName;
