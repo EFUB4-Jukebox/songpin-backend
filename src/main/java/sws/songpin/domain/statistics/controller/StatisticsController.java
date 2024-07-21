@@ -11,7 +11,7 @@ import sws.songpin.domain.statistics.dto.response.StatsGenreResponseDto;
 import sws.songpin.domain.statistics.dto.response.StatsOverallResponseDto;
 import sws.songpin.domain.statistics.service.StatisticsService;
 
-@Tag(name = "Statistics", description = "서비스와 관련된 통계 정보를 표시합니다.")
+@Tag(name = "Statistics", description = "서비스 통계 데이터를 보여줍니다.")
 @RestController
 @RequestMapping("/stats")
 @RequiredArgsConstructor
@@ -25,7 +25,7 @@ public class StatisticsController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @Operation(summary = "서비스 통계-장르", description = "장르별로 가장 많은 핀이 등록된 장소, 노래 정보를 전달합니다.")
+    @Operation(summary = "서비스 통계-장르별 장소, 노래", description = "장르별로 가장 많은 핀이 등록된 장소, 노래 정보를 전달합니다.")
     @GetMapping("/genre")
     public ResponseEntity<?> placeAndSongStatsByGenre() {
         StatsGenreResponseDto responseDto = statisticsService.getPlaceAndSongStatsByGenre();
