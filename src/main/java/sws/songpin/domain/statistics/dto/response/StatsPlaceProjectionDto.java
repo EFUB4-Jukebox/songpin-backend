@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class StatsMapPlaceProjectionDto {
+public class StatsPlaceProjectionDto {
     private Long placeId;
     private String placeName;
     private Double latitude;

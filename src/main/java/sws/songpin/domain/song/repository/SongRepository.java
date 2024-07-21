@@ -21,7 +21,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
         LEFT JOIN s.pins p
         WHERE s.avgGenreName = :genreName
         GROUP BY s.songId
-        ORDER BY COUNT(p) DESC
+        ORDER BY COUNT(p) DESC, p.listenedDate DESC, s.songId DESC
     """)
     Slice<StatsSongProjectionDto> findTopSongsByGenreName(GenreName genreName, Pageable pageable);
 
@@ -32,7 +32,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
         FROM Song s
         LEFT JOIN s.pins p
         GROUP BY s.songId
-        ORDER BY COUNT(p) DESC
+        ORDER BY COUNT(p) DESC, p.listenedDate DESC, s.songId DESC
     """)
     Slice<StatsSongProjectionDto> findTopSongs(Pageable pageable);
 }

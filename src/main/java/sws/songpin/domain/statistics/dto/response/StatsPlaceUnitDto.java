@@ -10,7 +10,7 @@ public record StatsPlaceUnitDto(
         Long placePinCount,
         GenreName genreName
 ){
-    public static StatsPlaceUnitDto from(StatsMapPlaceProjectionDto dto) {
+    public static StatsPlaceUnitDto from(StatsPlaceProjectionDto dto) {
         return new StatsPlaceUnitDto(dto.getPlaceId(), dto.getPlaceName(), dto.getLatitude(), dto.getLongitude(), dto.getPlacePinCount(), dto.getGenreName());
     }
 }
