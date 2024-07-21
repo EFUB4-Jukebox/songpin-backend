@@ -21,21 +21,21 @@ public class MapController {
     private final MapService mapService;
 
     @Operation(summary = "장소 좌표들 가져오기-전체 기간", description = "전체 기간 범위에서 핀이 1개 이상 등록된, 요청 좌표 영역 안의 장소 좌표들을 불러옵니다.")
-    @GetMapping
+    @PostMapping
     public ResponseEntity<?> getMapPlacesWithinBounds(@RequestBody @Valid MapFetchEntirePeriodRequestDto requestDto) {
         MapPlaceFetchResponseDto responseDto = mapService.getMapPlacesWithinBoundsByEntirePeriod(requestDto);
         return ResponseEntity.ok(responseDto);
     }
 
     @Operation(summary = "장소 좌표들 가져오기-최근 기준 기간", description = "선택한 기간 조건 안에 핀이 1개 이상 등록된, 요청 좌표 영역 안의 장소 좌표들을 불러옵니다.")
-    @GetMapping("/period/recent")
+    @PostMapping("/period/recent")
     public ResponseEntity<?> getMapPlacesWithinBoundsForRecentPeriod(@RequestBody @Valid MapFetchRecentPeriodRequestDto requestDto) {
         MapPlaceFetchResponseDto responseDto = mapService.getMapPlacesWithinBoundsByRecentPeriod(requestDto);
         return ResponseEntity.ok(responseDto);
     }
 
     @Operation(summary = "장소 좌표들 가져오기-기간 직접 설정", description = "직접 설정한 기간 조건 안에 핀이 1개 이상 등록된, 요청 좌표 영역 안의 장소 좌표들을 불러옵니다.")
-    @GetMapping("/period/custom")
+    @PostMapping("/period/custom")
     public ResponseEntity<?> getMapPlacesWithinBoundsForCustomPeriod(@RequestBody @Valid MapFetchCustomPeriodRequestDto requestDto) {
         MapPlaceFetchResponseDto responseDto = mapService.getMapPlacesWithinBoundsByCustomPeriod(requestDto);
         return ResponseEntity.ok(responseDto);
