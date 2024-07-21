@@ -25,7 +25,7 @@ public class StatisticsService {
     private final SongRepository songRepository;
     private final PinRepository pinRepository;
 
-    // 전체 통계
+    // 종합 통계
 
     public StatsOverallResponseDto getOverallStats() {
         int currentYear = LocalDate.now().getYear();
@@ -67,8 +67,8 @@ public class StatisticsService {
     public StatsGenreResponseDto getPlaceAndSongStatsByGenre() {
         GenreName[] genreNames = GenreName.values();
         Pageable pageable = PageRequest.of(0, 1);
-        List<StatsSongUnitDto> songUnitDtos = getTopSongsFromAllGenres(genreNames, pageable);
         List<StatsPlaceUnitDto> placeUnitDtos = getTopPlacesFromAllGenres(genreNames, pageable);
+        List<StatsSongUnitDto> songUnitDtos = getTopSongsFromAllGenres(genreNames, pageable);
         return StatsGenreResponseDto.from(placeUnitDtos, songUnitDtos);
     }
 
