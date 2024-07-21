@@ -2,6 +2,7 @@ package sws.songpin.global.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -15,7 +16,11 @@ import org.springframework.http.HttpHeaders;
 import java.util.Arrays;
 
 @OpenAPIDefinition(
-        info = @Info(title = "Songpin API",version = "v1"))
+        info = @Info(title = "Songpin API", version = "v1"),
+        servers = {
+                @Server(url = "https://api.songpin.n-e.kr", description = "backend server"),
+                @Server(url = "http://localhost:8080", description = "local server")
+})
 @RequiredArgsConstructor
 @Configuration
 public class SwaggerConfig {

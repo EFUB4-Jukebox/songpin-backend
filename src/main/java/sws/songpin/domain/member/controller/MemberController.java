@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sws.songpin.domain.follow.service.FollowService;
 import sws.songpin.domain.member.service.MemberService;
+import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.playlist.service.PlaylistService;
 import sws.songpin.domain.member.service.ProfileService;
 
@@ -22,6 +24,8 @@ import sws.songpin.domain.member.service.ProfileService;
 public class MemberController {
     private final MemberService memberService;
     private final PlaylistService playlistService;
+    private final PinService pinService;
+    private final FollowService followService;
     private final ProfileService profileService;
 
     @Operation(summary = "유저 검색", description = "유저를 검색합니다.")
@@ -40,5 +44,23 @@ public class MemberController {
     @GetMapping("/{memberId}/playlists")
     public ResponseEntity<?> getAllPlaylists(@PathVariable("memberId") final Long memberId){
         return ResponseEntity.ok(playlistService.getAllPlaylists(memberId));
+    }
+
+    @GetMapping("/{memberId}/pins")
+    @Operation(summary = "타 유저의 공개 핀 피드 조회", description = "타 유저의 공개 핀 피드를 조회합니다.")
+    public ResponseEntity<?> getPublicFeedPins(@PathVariable("memberId") Long memberId) {
+        return ResponseEntity.ok(pinService.getPublicPinFeed(memberId));
+    }
+
+    @Operation(summary = "유저의 팔로잉 목록 조회", description = "유저의 팔로잉 목록을 불러옵니다.")
+    @GetMapping("/{memberId}/followings")
+    public ResponseEntity<?> followingList(@PathVariable final Long memberId) {
+        return ResponseEntity.ok(followService.getFollowList(memberId, true));
+    }
+
+    @Operation(summary = "유저의 팔로워 목록 조회", description = "유저의 팔로워 목록을 불러옵니다.")
+    @GetMapping("/{memberId}/followers")
+    public ResponseEntity<?> followerList(@PathVariable final Long memberId) {
+        return ResponseEntity.ok(followService.getFollowList(memberId, false));
     }
 }
