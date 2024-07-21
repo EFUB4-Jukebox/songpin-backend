@@ -10,7 +10,7 @@ import sws.songpin.domain.place.dto.response.MapPlaceProjectionDto;
 import sws.songpin.domain.place.entity.Place;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 
 public interface MapPlaceRepository extends JpaRepository<Place, Long> {
 
@@ -20,12 +20,12 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
             p.placeId, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
-        JOIN p.pins pin ON pin.genre.genreName IN :genreNameSet
-        LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.genre.genreName IN :genreNameSet AND latestPin.listenedDate = (
+        JOIN p.pins pin ON pin.genre.genreName IN :genreNameList
+        LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.genre.genreName IN :genreNameList AND latestPin.listenedDate = (
             SELECT MAX(innerPin.listenedDate)
             FROM Pin innerPin
             WHERE innerPin.place = p
-            AND innerPin.genre.genreName IN :genreNameSet
+            AND innerPin.genre.genreName IN :genreNameList
         )
         WHERE p.latitude BETWEEN :swLat AND :neLat
         AND p.longitude BETWEEN :swLng AND :neLng
@@ -36,7 +36,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
                                                                  @Param("neLat") double neLat,
                                                                  @Param("swLng") double swLng,
                                                                  @Param("neLng") double neLng,
-                                                                 @Param("genreNameSet") Set<GenreName> genreNameSet,
+                                                                 @Param("genreNameList") List<GenreName> genreNameList,
                                                                  Pageable pageable);
 
     // 좌표 범위 & 기간 범위에 모두 포함되는 장소들 불러오기
@@ -45,12 +45,12 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
             p.placeId, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
-        JOIN p.pins pin ON pin.genre.genreName IN :genreNameSet AND pin.listenedDate BETWEEN :startDate AND :endDate
-        LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.genre.genreName IN :genreNameSet AND latestPin.listenedDate = (
+        JOIN p.pins pin ON pin.genre.genreName IN :genreNameList AND pin.listenedDate BETWEEN :startDate AND :endDate
+        LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.genre.genreName IN :genreNameList AND latestPin.listenedDate = (
             SELECT MAX(innerPin.listenedDate)
             FROM Pin innerPin
             WHERE innerPin.place = p
-            AND innerPin.genre.genreName IN :genreNameSet
+            AND innerPin.genre.genreName IN :genreNameList
         )
         WHERE p.latitude BETWEEN :swLat AND :neLat
         AND p.longitude BETWEEN :swLng AND :neLng
@@ -62,7 +62,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
                                                                              @Param("neLat") double neLat,
                                                                              @Param("swLng") double swLng,
                                                                              @Param("neLng") double neLng,
-                                                                             @Param("genreNameSet") Set<GenreName> genreNameSet,
+                                                                             @Param("genreNameList") List<GenreName> genreNameList,
                                                                              @Param("startDate") LocalDate startDate,
                                                                              @Param("endDate") LocalDate endDate,
                                                                              Pageable pageable);
