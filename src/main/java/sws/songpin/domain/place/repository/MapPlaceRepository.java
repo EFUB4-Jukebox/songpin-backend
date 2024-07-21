@@ -8,12 +8,14 @@ import org.springframework.data.repository.query.Param;
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.place.dto.response.MapPlaceProjectionDto;
 import sws.songpin.domain.place.entity.Place;
+import sws.songpin.domain.statistics.dto.response.StatsMapPlaceProjectionDto;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 public interface MapPlaceRepository extends JpaRepository<Place, Long> {
 
+    //// Home 페이지
     // 좌표 범위에 포함되는 장소들 불러오기
     @Query("""
         SELECT new sws.songpin.domain.place.dto.response.MapPlaceProjectionDto(
@@ -67,6 +69,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
                                                                              @Param("endDate") LocalDate endDate,
                                                                              Pageable pageable);
 
+    //// Member 페이지
     // 유저가 핀을 등록한 지도 장소들 불러오기
     @Query("""
         SELECT new sws.songpin.domain.place.dto.response.MapPlaceProjectionDto(
@@ -83,4 +86,39 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
         ORDER BY latestPin.listenedDate DESC, p.placeId DESC
     """)
     Slice<MapPlaceProjectionDto> findPlacesWithLatestPinsByMember(Long memberId, Pageable pageable);
+
+    //// 통계 페이지
+    // 모든 장르 통틀어 가장 핀이 많이 등록된 장소 가져오기
+    @Query("""
+        SELECT new sws.songpin.domain.statistics.dto.response.StatsMapPlaceProjectionDto(
+            p.placeId, p.placeName, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
+        )
+        FROM Place p
+        JOIN p.pins pin
+        LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.listenedDate = (
+            SELECT MAX(innerPin.listenedDate)
+            FROM Pin innerPin
+            WHERE innerPin.place = p
+        )
+        GROUP BY p.placeId, p.placeName, p.latitude, p.longitude, latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
+        ORDER BY COUNT(pin) DESC, latestPin.listenedDate DESC, p.placeId DESC
+    """)
+    Slice<StatsMapPlaceProjectionDto> findTopPlaces(Pageable pageable);
+
+    // 해당 장르에서 가장 핀이 많이 등록된 장소 가져오기
+    @Query("""
+        SELECT new sws.songpin.domain.statistics.dto.response.StatsMapPlaceProjectionDto(
+            p.placeId, p.placeName, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
+        )
+        FROM Place p
+        JOIN p.pins pin ON pin.genre.genreName = :genreName
+        LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.genre.genreName = :genreName AND latestPin.listenedDate = (
+            SELECT MAX(innerPin.listenedDate)
+            FROM Pin innerPin
+            WHERE innerPin.place = p  AND latestPin.genre.genreName = :genreName
+        )
+        GROUP BY p.placeId, p.placeName, p.latitude, p.longitude, latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
+        ORDER BY COUNT(pin) DESC, latestPin.listenedDate DESC, p.placeId DESC
+    """)
+    Slice<StatsMapPlaceProjectionDto> findTopPlacesByGenreName(@Param("genreName") GenreName genreName, Pageable pageable);
 }
