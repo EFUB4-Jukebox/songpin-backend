@@ -1,6 +1,7 @@
 package sws.songpin.domain.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -18,6 +19,7 @@ import sws.songpin.domain.member.dto.response.LoginResponseDto;
 import sws.songpin.domain.member.dto.response.TokenDto;
 import sws.songpin.domain.member.service.AuthService;
 
+@Tag(name = "Auth", description = "인증 관련 API입니다.")
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
