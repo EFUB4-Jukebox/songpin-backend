@@ -8,6 +8,6 @@ public record StatsPopularSongDto(
         String imgPath
 ) {
     public static StatsPopularSongDto from(StatsSongProjectionDto dto) {
-        return new StatsPopularSongDto(dto.getTitle(), dto.getArtist(), dto.getImgPath());
+        return new StatsPopularSongDto(dto.title(), dto.artist(), dto.imgPath());
     }
 }
