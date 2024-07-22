@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.member.entity.Member;
+import sws.songpin.domain.member.entity.Status;
 import sws.songpin.domain.member.repository.MemberRepository;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
@@ -21,6 +22,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws CustomException {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(()-> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        if(member.getStatus().equals(Status.DELETED)){
+            throw new CustomException(ErrorCode.ALREADY_DELETED_MEMBER);
+        }
+
         return new CustomUserDetails(member);
     }
 }
