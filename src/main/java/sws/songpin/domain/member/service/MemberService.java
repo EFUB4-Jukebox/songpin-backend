@@ -67,4 +67,8 @@ public class MemberService {
 
         memberRepository.save(member);
     }
+
+    public Member saveMember(Member member){
+        return memberRepository.save(member);
+    }
 }

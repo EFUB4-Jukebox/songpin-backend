@@ -2,19 +2,26 @@ package sws.songpin.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.follow.service.FollowService;
+import sws.songpin.domain.member.dto.request.ProfileDeactivateRequestDto;
 import sws.songpin.domain.member.dto.response.MemberProfileResponseDto;
 import sws.songpin.domain.member.dto.response.MyProfileResponseDto;
 import sws.songpin.domain.member.entity.Member;
+import sws.songpin.global.auth.RedisService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ProfileService {
     private final MemberService memberService;
     private final FollowService followService;
+    private final AuthService authService;
+    private final RedisService redisService;
 
+    @Transactional(readOnly = true)
     public MemberProfileResponseDto getMemberProfile(Long memberId){
         Member member = memberService.getMemberById(memberId);
         Member currentMember = memberService.getCurrentMember();
@@ -39,6 +46,7 @@ public class ProfileService {
 
     }
 
+    @Transactional(readOnly = true)
     public MyProfileResponseDto getMyProfile(){
         Member member = memberService.getCurrentMember();
 
@@ -50,4 +58,22 @@ public class ProfileService {
 
         return MyProfileResponseDto.from(member, followerCount, followingCount);
     }
+
+    public void deactivateProfile(ProfileDeactivateRequestDto requestDto){
+
+        Member member = memberService.getCurrentMember();
+
+        //패스워드 검사
+        if(!(authService.checkPassword(member, requestDto.password()))){
+            throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
+        }
+
+        //Status, Nickname 변경
+        member.deactivate();
+        memberService.saveMember(member);
+
+        //Redis에서 Refresh Token 삭제
+        redisService.deleteValues(member.getEmail());
+    }
+
 }

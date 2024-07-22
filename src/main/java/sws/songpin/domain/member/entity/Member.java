@@ -78,4 +78,9 @@ public class Member extends BaseTimeEntity {
         this.nickname = nickname;
         this.handle = handle;
     }
+
+    public void deactivate(){
+        this.status = Status.DELETED;
+        this.nickname = "알 수 없음";
+    }
 }

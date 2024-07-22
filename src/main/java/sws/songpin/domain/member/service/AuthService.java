@@ -65,4 +65,9 @@ public class AuthService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public boolean checkPassword(Member member, String password){
+        return passwordEncoder.matches(password, member.getPassword());
+    }
+
 }
