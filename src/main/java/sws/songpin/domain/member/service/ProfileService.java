@@ -5,9 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.follow.service.FollowService;
 import sws.songpin.domain.member.dto.request.ProfileDeactivateRequestDto;
+import sws.songpin.domain.member.dto.request.ProfileUpdateRequestDto;
 import sws.songpin.domain.member.dto.response.MemberProfileResponseDto;
 import sws.songpin.domain.member.dto.response.MyProfileResponseDto;
 import sws.songpin.domain.member.entity.Member;
+import sws.songpin.domain.member.entity.ProfileImg;
 import sws.songpin.global.auth.RedisService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
@@ -57,6 +59,21 @@ public class ProfileService {
         long followingCount = followService.getFollowingCount(member);
 
         return MyProfileResponseDto.from(member, followerCount, followingCount);
+    }
+
+    public void updateProfile(ProfileUpdateRequestDto requestDto){
+
+        Member member = memberService.getCurrentMember();
+
+        //핸들 중복 검사
+        if(memberService.checkMemberExistsByHandle(requestDto.handle()) && !(member.getHandle().equals(requestDto.handle()))){
+            throw new CustomException(ErrorCode.HANDLE_ALREADY_EXISTS);
+        }
+
+        member.modifyProfile(ProfileImg.from(requestDto.profileImg()), requestDto.nickname(), requestDto.handle());
+
+        memberService.saveMember(member);
+
     }
 
     public void deactivateProfile(ProfileDeactivateRequestDto requestDto){

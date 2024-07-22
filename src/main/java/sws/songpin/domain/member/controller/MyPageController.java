@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.bookmark.service.BookmarkService;
 import sws.songpin.domain.member.dto.request.ProfileDeactivateRequestDto;
 import sws.songpin.domain.member.dto.request.ProfileUpdateRequestDto;
-import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.member.service.ProfileService;
 import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.playlist.service.PlaylistService;
@@ -24,7 +23,6 @@ public class MyPageController {
     private final PlaylistService playlistService;
     private final BookmarkService bookmarkService;
     private final ProfileService profileService;
-    private final MemberService memberService;
     private final PinService pinService;
 
     @Operation(summary = "내 플레이리스트 목록 조회", description = "마이페이지에서 내 플레이리스트 목록 조회")
@@ -48,7 +46,7 @@ public class MyPageController {
     @Operation(summary = "프로필 편집", description = "프로필 이미지, 닉네임, 핸들 변경")
     @PatchMapping
     public ResponseEntity<?> updateProfile(@RequestBody @Valid ProfileUpdateRequestDto requestDto){
-        memberService.updateProfile(requestDto);
+        profileService.updateProfile(requestDto);
         return ResponseEntity.ok().build();
     }
 
