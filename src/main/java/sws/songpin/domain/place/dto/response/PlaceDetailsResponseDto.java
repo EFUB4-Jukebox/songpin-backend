@@ -13,19 +13,19 @@ public record PlaceDetailsResponseDto(
         String address,
         double latitude,
         double longitude,
-        GenreName latestGenreName,
         int placePinCount,
+        GenreName latestGenreName,
         LocalDate updatedDate,
         List<SongUnitDto> songList
 ) {
-    public static PlaceDetailsResponseDto from(Place place, Pin latestPin, int placePinCount, List<SongUnitDto> songUnitDtos) {
+    public static PlaceDetailsResponseDto from(Place place, int placePinCount, Pin latestPin, List<SongUnitDto> songUnitDtos) {
         return new PlaceDetailsResponseDto(
                 place.getPlaceName(),
                 place.getAddress(),
                 place.getLatitude(),
                 place.getLongitude(),
-                latestPin != null ? latestPin.getGenre().getGenreName() : null, // 가장 최근 핀의 장르
                 placePinCount,
+                latestPin != null ? latestPin.getGenre().getGenreName() : null, // 가장 최근 핀의 장르
                 latestPin != null ? latestPin.getCreatedTime().toLocalDate() : null, // 가장 최근 핀의 등록 날짜
                 songUnitDtos
         );
