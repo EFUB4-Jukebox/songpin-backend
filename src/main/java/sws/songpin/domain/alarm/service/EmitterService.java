@@ -1,6 +1,7 @@
 package sws.songpin.domain.alarm.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import sws.songpin.global.auth.CustomUserDetails;
 
 import java.io.IOException;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -21,7 +23,7 @@ public class EmitterService {
     private final EmitterRepository emitterRepository;
     private final AlarmRepository alarmRepository;
 
-    private static final Long DEFAULT_TIMEOUT = 600L * 1000 * 60;
+    private static final Long DEFAULT_TIMEOUT = 5L * 1000;  // 5초
 
     public SseEmitter subscribe() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
