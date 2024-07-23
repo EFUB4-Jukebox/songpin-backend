@@ -16,6 +16,7 @@ import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
+import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class FollowService {
             throw new CustomException(ErrorCode.FOLLOW_ALREADY_EXISTS);
         }
         Follow follow = followRepository.save(FollowAddRequestDto.toEntity(follower, following));
-        alarmService.createAlarm(AlarmType.FOLLOW, null, follower, following);
+        alarmService.createFollowAlarm(follower, following);
         return FollowAddResponseDto.from(follow);
     }
 

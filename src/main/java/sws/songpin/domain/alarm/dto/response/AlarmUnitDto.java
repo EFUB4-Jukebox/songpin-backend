@@ -1,5 +1,6 @@
-package sws.songpin.domain.alarm.dto;
+package sws.songpin.domain.alarm.dto.response;
 
+import sws.songpin.domain.alarm.dto.ssedata.AlarmFollowDataDto;
 import sws.songpin.domain.alarm.entity.Alarm;
 import sws.songpin.domain.member.entity.Member;
 
@@ -11,7 +12,7 @@ public record AlarmUnitDto(
         LocalDateTime createdTime,
         Object data
 ) {
-    public static AlarmUnitDto from(Alarm alarm) {
+    public static AlarmUnitDto fromFollowAlarm(Alarm alarm) {
         Member sender = alarm.getSender();
         return new AlarmUnitDto(
                 MessageFormat.format(alarm.getAlarmType().getMessagePattern(), sender.getNickname(), sender.getHandle()),

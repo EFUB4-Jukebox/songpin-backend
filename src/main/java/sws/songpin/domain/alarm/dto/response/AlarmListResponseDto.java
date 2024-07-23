@@ -1,4 +1,4 @@
-package sws.songpin.domain.alarm.dto;
+package sws.songpin.domain.alarm.dto.response;
 
 import sws.songpin.domain.alarm.entity.Alarm;
 
@@ -8,8 +8,9 @@ import java.util.stream.Collectors;
 public record AlarmListResponseDto(
         List<AlarmUnitDto> alarmList
 ) {
-    public static AlarmListResponseDto from(List<Alarm> alarmList) {
-        List<AlarmUnitDto> alarmUnitDtos = alarmList.stream().map(alarm -> AlarmUnitDto.from(alarm))
+    public static AlarmListResponseDto fromFollowAlarm(List<Alarm> alarmList) {
+        List<AlarmUnitDto> alarmUnitDtos = alarmList.stream()
+                .map(AlarmUnitDto::fromFollowAlarm)
                 .collect(Collectors.toList());
         return new AlarmListResponseDto(alarmUnitDtos);
     }

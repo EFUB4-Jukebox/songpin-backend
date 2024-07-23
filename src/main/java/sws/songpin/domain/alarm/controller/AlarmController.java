@@ -3,7 +3,6 @@ package sws.songpin.domain.alarm.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +10,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import sws.songpin.domain.alarm.service.AlarmService;
 import sws.songpin.domain.alarm.service.EmitterService;
 
-@Slf4j
 @Tag(name = "Alarm", description = "Alarm 관련 API입니다.")
 @RestController
 @RequiredArgsConstructor
@@ -21,7 +19,7 @@ public class AlarmController {
     private final AlarmService alarmService;
 
     @Operation(summary = "알림 구독", description = "알림을 구독합니다.")
-    @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @PostMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> subscribe() {
         return ResponseEntity.ok(emitterService.subscribe());
     }

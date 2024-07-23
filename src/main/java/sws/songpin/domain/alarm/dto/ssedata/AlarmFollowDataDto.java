@@ -1,4 +1,4 @@
-package sws.songpin.domain.alarm.dto;
+package sws.songpin.domain.alarm.dto.ssedata;
 
 import sws.songpin.domain.member.entity.Member;
 

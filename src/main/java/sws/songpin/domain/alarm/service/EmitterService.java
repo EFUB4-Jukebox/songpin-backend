@@ -6,6 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import sws.songpin.domain.alarm.dto.ssedata.AlarmDefaultDataDto;
 import sws.songpin.domain.alarm.repository.AlarmRepository;
 import sws.songpin.domain.alarm.repository.EmitterRepository;
 import sws.songpin.domain.member.entity.Member;
@@ -46,9 +47,9 @@ public class EmitterService {
     }
 
     private void sendToClientIfNewAlarmExists(Member member) {
-        Boolean isMissedAlarms = alarmRepository.existsByReceiverAndIsCheckedFalse(member);
+        Boolean isMissedAlarms = alarmRepository.existsByReceiverAndIsReadFalse(member);
         if (isMissedAlarms.equals(false)) {
-            sendToClient(member.getMemberId(), null, "new sse alarm exists");
+            sendToClient(member.getMemberId(), AlarmDefaultDataDto.from(member), "new sse alarm exists");
         }
     }
 

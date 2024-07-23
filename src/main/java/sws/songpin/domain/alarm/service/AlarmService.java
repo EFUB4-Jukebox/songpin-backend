@@ -3,15 +3,19 @@ package sws.songpin.domain.alarm.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sws.songpin.domain.alarm.dto.AlarmListResponseDto;
+import sws.songpin.domain.alarm.dto.ssedata.AlarmFollowDataDto;
+import sws.songpin.domain.alarm.dto.response.AlarmListResponseDto;
 import sws.songpin.domain.alarm.entity.Alarm;
 import sws.songpin.domain.alarm.entity.AlarmType;
 import sws.songpin.domain.alarm.repository.AlarmRepository;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -23,8 +27,8 @@ public class AlarmService {
     private final EmitterService emitterService;
     private final MemberService memberService;
 
-    // 알람 생성 (message, sender는 필수 요소 x)
-    public void createAlarm(AlarmType alarmType, String message, Member sender, Member receiver) {
+    // 일반 알림 생성 (message, sender는 필수 요소 x)
+    public void createAlarm(AlarmType alarmType, String message, Member sender, Member receiver, Object data) {
         Alarm alarm = Alarm.builder()
                 .alarmType(alarmType)
                 .message(message) // nullable
@@ -33,22 +37,32 @@ public class AlarmService {
                 .isRead(false)
                 .build();
         alarmRepository.save(alarm);
-        emitterService.notify(sender.getMemberId(), null, "new follow alarm");
+        emitterService.notify(sender.getMemberId(), data, "new alarm");
+    }
+
+    // 팔로우 알림 생성
+    public void createFollowAlarm(Member follower, Member following) {
+        String alarmMessage = MessageFormat.format(AlarmType.FOLLOW.getMessagePattern(), follower.getNickname(), follower.getHandle());
+        createAlarm(AlarmType.FOLLOW, alarmMessage, follower, following, AlarmFollowDataDto.from(follower));
     }
 
     // 최근 알림 목록 읽어오기
     public AlarmListResponseDto getAlarmList(){
         List<Alarm> alarmList = getAndReadAlarms();
-        return AlarmListResponseDto.from(alarmList);
+        return AlarmListResponseDto.fromFollowAlarm(alarmList);
     }
 
     private List<Alarm> getAndReadAlarms() {
+        List<Alarm> result = new ArrayList<>();
         Member member = memberService.getCurrentMember();
         Pageable pageable = PageRequest.of(0, 30);
-        List<Alarm> alarmList = alarmRepository.findByReceiverOrderByCreatedAtDesc(member, pageable);
-        for (Alarm alarm : alarmList) {
-            alarm.readAlarm();
+        Slice<Alarm> alarmSlice = alarmRepository.findByReceiverOrderByCreatedTimeDesc(member, pageable);
+        if (alarmSlice != null  && alarmSlice.getSize() > 0) {
+            for (Alarm alarm : alarmSlice) {
+                alarm.readAlarm();
+            }
+            result = alarmRepository.saveAll(alarmSlice);
         }
-        return alarmRepository.saveAll(alarmList);
+        return result;
     }
 }
