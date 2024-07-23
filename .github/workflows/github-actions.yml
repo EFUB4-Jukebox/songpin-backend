@@ -60,8 +60,8 @@ jobs:
           key: ${{ secrets.KEY }}
           envs: GITHUB_SHA
           script: |
-            touch ./docker-compose.yml
-            echo "${{ secrets.DOCKER_COMPOSE }}" > ./docker-compose.yml
+            sudo touch ./docker-compose.yml
+            sudo echo "${{ secrets.DOCKER_COMPOSE }}" > ./docker-compose.yml
             sudo docker rm -f $(sudo docker ps -qa)
             sudo docker pull ${{ secrets.DOCKER_REPO }}:latest
             sudo docker-compose up -d
