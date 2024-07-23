@@ -4,7 +4,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,17 +19,17 @@ import java.util.Date;
 public class JwtUtil {
     private final Key accessKey;
     private final Key refreshKey;
-    private final RedisTemplate<String,Object> redisTemplate;
+    private final RedisService redisService;
     private final CustomUserDetailsService userDetailsService;
     private static final Duration ACCESS_TOKEN_EXPIRE_TIME = Duration.ofMinutes(30); //30분
     private static final Duration REFRESH_TOKEN_EXPIRE_TIME = Duration.ofDays(7); //7일
 
-    public JwtUtil(@Value("${jwt.secret.access}") String accessSecret, @Value("${jwt.secret.refresh}") String refreshSecret, CustomUserDetailsService userDetailsService,RedisTemplate<String,Object> redisTemplate){
+    public JwtUtil(@Value("${jwt.secret.access}") String accessSecret, @Value("${jwt.secret.refresh}") String refreshSecret, CustomUserDetailsService userDetailsService, RedisService redisService){
         byte[] keyBytes = Decoders.BASE64.decode(accessSecret);
         this.accessKey = Keys.hmacShaKeyFor(keyBytes);
         keyBytes = Decoders.BASE64.decode(refreshSecret);
         this.refreshKey = Keys.hmacShaKeyFor(keyBytes);
-        this.redisTemplate = redisTemplate;
+        this.redisService = redisService;
         this.userDetailsService = userDetailsService;
     }
 
@@ -67,7 +66,7 @@ public class JwtUtil {
                 .compact();
 
         //refresh token을 redis에 저장
-        redisTemplate.opsForValue().set(authentication.getName(),refreshToken,REFRESH_TOKEN_EXPIRE_TIME);
+        redisService.setValuesWithTimeout(authentication.getName(), refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
 
         return refreshToken;
     }

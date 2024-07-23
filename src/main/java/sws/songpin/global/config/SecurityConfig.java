@@ -3,6 +3,7 @@ package sws.songpin.global.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -16,10 +17,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import sws.songpin.global.auth.CustomLogoutHandler;
 import sws.songpin.global.auth.JwtAuthenticationEntryPoint;
 import sws.songpin.global.auth.JwtFilter;
 import sws.songpin.global.auth.JwtUtil;
@@ -32,6 +35,7 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final CustomLogoutHandler logoutHandler;
 
     private static final String[] AUTH_WHITELIST = {
             "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs", "/v3/api-docs/**",
@@ -64,6 +68,8 @@ public class SecurityConfig {
 
         configuration.addExposedHeader("Authorization");
         configuration.addExposedHeader("Authorization-Refresh");
+        configuration.addExposedHeader("Set-Cookie");
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         source.registerCorsConfiguration("/**", configuration); //위에서 설정한 Configuration 적용
@@ -81,15 +87,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .formLogin(AbstractHttpConfigurer::disable)
+                .logout(logout -> logout
+                                .logoutUrl("/logout")
+                                .deleteCookies("refreshToken")
+                                .addLogoutHandler(logoutHandler)
+                                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
+                        )
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(header -> header
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-                .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(jwtUtil), LogoutFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .requestMatchers(HttpMethod.GET,"/places/**").permitAll()
@@ -98,6 +111,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .exceptionHandling(e -> e.authenticationEntryPoint(jwtAuthenticationEntryPoint))
         ;
+
         return http.build();
     }
 }

@@ -1,6 +1,9 @@
 package sws.songpin.domain.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,8 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import sws.songpin.domain.member.dto.request.LoginRequestDto;
 import sws.songpin.domain.member.dto.request.SignUpRequestDto;
 import sws.songpin.domain.member.dto.response.LoginResponseDto;
+import sws.songpin.domain.member.dto.response.TokenDto;
 import sws.songpin.domain.member.service.AuthService;
 
+@Tag(name = "Auth", description = "인증 관련 API입니다.")
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -29,9 +34,25 @@ public class AuthController {
 
     @Operation(summary = "로그인", description = "로그인 결과를 반환합니다.")
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto requestDto){
-        LoginResponseDto responseDto = authService.login(requestDto);
-        return ResponseEntity.ok(responseDto);
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDto requestDto, HttpServletResponse response){
+        TokenDto tokenDto = authService.login(requestDto);
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", tokenDto.refreshToken());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(tokenDto.refreshTokenMaxAge());
+
+        response.addCookie(refreshTokenCookie);
+
+        return ResponseEntity.ok(new LoginResponseDto(tokenDto.accessToken()));
+    }
+
+    @Operation(summary = "로그아웃", description = "Redis와 쿠키에 저장되었던 회원의 Refresh Token을 삭제합니다.")
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response){
+
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "토큰 검증 테스트")
