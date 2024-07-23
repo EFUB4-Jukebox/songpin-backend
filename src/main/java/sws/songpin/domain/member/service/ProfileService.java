@@ -14,6 +14,8 @@ import sws.songpin.global.auth.RedisService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -85,8 +87,10 @@ public class ProfileService {
             throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
         }
 
-        //Status, Nickname 변경
-        member.deactivate();
+        //handle 랜덤값 생성
+        String handle = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 12);
+        //Status, Nickname, Handle 변경
+        member.deactivate(handle);
         memberService.saveMember(member);
 
         //Redis에서 Refresh Token 삭제

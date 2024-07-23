@@ -62,7 +62,7 @@ public class MyPageController {
         return ResponseEntity.ok(pinService.getMyPinFeedForMonth(year, month));
     }
 
-    @Operation(summary = "회원 탈퇴", description = "회원 상태를 '탈퇴'로 변경하고 닉네임을 '알 수 없음'으로 변경합니다. Redis와 쿠키에 저장되었던 회원의 Refresh Token을 삭제합니다. 해당 회원이 등록했던 핀 등의 데이터는 남겨둡니다.")
+    @Operation(summary = "회원 탈퇴", description = "회원 상태를 '탈퇴'로 변경하고 닉네임을 '(알 수 없음)'으로 변경합니다. \t\n해당 회원의 handle을 랜덤 uuid 값으로 변경합니다. \t\nRedis와 쿠키에 저장되었던 회원의 Refresh Token을 삭제합니다. \t\n해당 회원이 등록했던 핀 등의 데이터는 남겨둡니다. \t\n해당 회원의 팔로우, 팔로잉 데이터는 삭제합니다.")
     @PatchMapping("/status")
     public ResponseEntity<?> deactivate(@Valid @RequestBody ProfileDeactivateRequestDto requestDto, HttpServletResponse response){
         profileService.deactivateProfile(requestDto);
