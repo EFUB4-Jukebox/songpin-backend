@@ -12,11 +12,14 @@ import sws.songpin.domain.member.dto.request.LoginRequestDto;
 import sws.songpin.domain.member.dto.request.SignUpRequestDto;
 import sws.songpin.domain.member.dto.response.TokenDto;
 import sws.songpin.domain.member.entity.Member;
+import sws.songpin.domain.member.entity.Status;
 import sws.songpin.domain.member.repository.MemberRepository;
+import sws.songpin.global.auth.CustomUserDetailsService;
 import sws.songpin.global.auth.JwtUtil;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -27,11 +30,19 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final CustomUserDetailsService userDetailsService;
 
     public void signUp(SignUpRequestDto requestDto) {
 
+        Optional<Member> memberOptional = memberRepository.findByEmail(requestDto.email());
+
         //이메일 중복 검사
-        if (memberRepository.findByEmail(requestDto.email()).isPresent()) {
+        if (memberOptional.isPresent()) {
+
+            if(memberOptional.get().getStatus().equals(Status.DELETED)){
+                throw new CustomException(ErrorCode.ALREADY_DELETED_MEMBER);
+            }
+
             throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
