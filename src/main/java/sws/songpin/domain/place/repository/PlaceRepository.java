@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import sws.songpin.domain.place.entity.Place;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface PlaceRepository extends JpaRepository<Place, Long> {
@@ -103,4 +104,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
                     "WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces%",
             nativeQuery = true)
     Page<Object[]> findAllByPlaceNameContainingIgnoreSpacesOrderByAccuracy(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
+
+    @Query(value = "SELECT * FROM Place p ORDER BY p.place_id DESC LIMIT 3", nativeQuery = true)
+    List<Place> findTop3ByOrderByPlaceIdDesc();
 }
