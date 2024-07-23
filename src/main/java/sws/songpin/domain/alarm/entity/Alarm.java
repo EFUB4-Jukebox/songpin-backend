@@ -35,7 +35,7 @@ public class Alarm {
     @Column(name = "is_read")
     @ColumnDefault("false")
     @Builder.Default
-    private boolean isRead = false;
+    private Boolean isRead = false;
 
     @CreatedDate
     @Column(updatable = false)

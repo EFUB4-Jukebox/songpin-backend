@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sws.songpin.domain.alarm.dto.response.AlarmUnitDto;
 import sws.songpin.domain.alarm.dto.ssedata.AlarmFollowDataDto;
 import sws.songpin.domain.alarm.dto.response.AlarmListResponseDto;
 import sws.songpin.domain.alarm.entity.Alarm;
@@ -48,21 +49,22 @@ public class AlarmService {
 
     // 최근 알림 목록 읽어오기
     public AlarmListResponseDto getAlarmList(){
-        List<Alarm> alarmList = getAndReadAlarms();
-        return AlarmListResponseDto.fromFollowAlarm(alarmList);
+        List<AlarmUnitDto> alarmUnitDtos = getAndReadAlarms();
+        return AlarmListResponseDto.fromAlarmUnitDto(alarmUnitDtos);
     }
 
-    private List<Alarm> getAndReadAlarms() {
-        List<Alarm> result = new ArrayList<>();
+    private List<AlarmUnitDto> getAndReadAlarms() {
+        List<AlarmUnitDto> alarmList = new ArrayList<>();
         Member member = memberService.getCurrentMember();
         Pageable pageable = PageRequest.of(0, 30);
         Slice<Alarm> alarmSlice = alarmRepository.findByReceiverOrderByCreatedTimeDesc(member, pageable);
-        if (alarmSlice != null  && alarmSlice.getSize() > 0) {
+        if (alarmSlice != null && alarmSlice.hasContent()) {
             for (Alarm alarm : alarmSlice) {
+                alarmList.add(AlarmUnitDto.from(alarm));
                 alarm.readAlarm();
             }
-            result = alarmRepository.saveAll(alarmSlice);
+            alarmRepository.saveAll(alarmSlice);
         }
-        return result;
+        return alarmList;
     }
 }

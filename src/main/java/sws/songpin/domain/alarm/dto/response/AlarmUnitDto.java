@@ -1,23 +1,21 @@
 package sws.songpin.domain.alarm.dto.response;
 
-import sws.songpin.domain.alarm.dto.ssedata.AlarmFollowDataDto;
 import sws.songpin.domain.alarm.entity.Alarm;
-import sws.songpin.domain.member.entity.Member;
 
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 
 public record AlarmUnitDto(
+        Boolean isRead,
         String message,
         LocalDateTime createdTime,
-        Object data
+        Long senderId
 ) {
-    public static AlarmUnitDto fromFollowAlarm(Alarm alarm) {
-        Member sender = alarm.getSender();
+    public static AlarmUnitDto from(Alarm alarm) {
         return new AlarmUnitDto(
-                MessageFormat.format(alarm.getAlarmType().getMessagePattern(), sender.getNickname(), sender.getHandle()),
+                alarm.getIsRead(),
+                alarm.getMessage(),
                 alarm.getCreatedTime(),
-                AlarmFollowDataDto.from(sender)
+                alarm.getSender().getMemberId()
         );
     }
 }
