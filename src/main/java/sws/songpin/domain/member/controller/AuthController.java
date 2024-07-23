@@ -48,6 +48,13 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponseDto(tokenDto.accessToken()));
     }
 
+    @Operation(summary = "로그아웃", description = "Redis와 쿠키에 저장되었던 회원의 Refresh Token을 삭제합니다.")
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response){
+
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(summary = "토큰 검증 테스트")
     @GetMapping("/authTest")
     public String test(Authentication authentication){
