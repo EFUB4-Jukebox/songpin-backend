@@ -18,12 +18,14 @@ import sws.songpin.domain.member.dto.request.SignUpRequestDto;
 import sws.songpin.domain.member.dto.response.LoginResponseDto;
 import sws.songpin.domain.member.dto.response.TokenDto;
 import sws.songpin.domain.member.service.AuthService;
+import sws.songpin.global.auth.RedisService;
 
 @Tag(name = "Auth", description = "인증 관련 API입니다.")
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final RedisService redisService;
 
     @Operation(summary = "회원가입", description = "회원 가입을 통해 유저 생성")
     @PostMapping("/signup")
@@ -53,6 +55,12 @@ public class AuthController {
     public ResponseEntity<?> logout(HttpServletResponse response){
 
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "refresh 토큰 저장 테스트", description = "로그인 후 refresh Token이 Redis에 잘 저장되었는지 확인 후 refresh token 반환")
+    @GetMapping("/redisTest")
+    public String redisTest(Authentication authentication){
+        return (String) redisService.getValues(authentication.getName());
     }
 
     @Operation(summary = "토큰 검증 테스트")
