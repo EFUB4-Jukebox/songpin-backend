@@ -18,8 +18,7 @@ import java.util.Arrays;
 @OpenAPIDefinition(
         info = @Info(title = "Songpin API", version = "v1"),
         servers = {
-                @Server(url = "https://api.songpin.n-e.kr", description = "backend server"),
-                @Server(url = "http://localhost:8080", description = "local server")
+        @Server(url = "/", description = "Server URL")
 })
 @RequiredArgsConstructor
 @Configuration

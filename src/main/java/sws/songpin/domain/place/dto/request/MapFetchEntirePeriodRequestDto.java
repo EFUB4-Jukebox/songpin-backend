@@ -5,9 +5,8 @@ import sws.songpin.domain.genre.entity.GenreName;
 
 import java.util.List;
 
-public record MapFetchRecentPeriodRequestDto(
+public record MapFetchEntirePeriodRequestDto(
         @NotNull MapBoundCoordsDto boundCoords,
-        List<GenreName> genreNameFilters,
-        @NotNull String periodFilter // "week", "month", "threeMonths"
+        List<GenreName> genreNameFilters
 ) {
 }
