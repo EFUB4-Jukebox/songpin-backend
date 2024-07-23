@@ -3,6 +3,8 @@ package sws.songpin.domain.follow.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sws.songpin.domain.alarm.entity.AlarmType;
+import sws.songpin.domain.alarm.service.AlarmService;
 import sws.songpin.domain.follow.dto.request.FollowAddRequestDto;
 import sws.songpin.domain.follow.dto.response.FollowAddResponseDto;
 import sws.songpin.domain.follow.dto.response.FollowDto;
@@ -14,6 +16,7 @@ import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
+import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
 public class FollowService {
     private final FollowRepository followRepository;
     private final MemberService memberService;
+    private final AlarmService alarmService;
 
     // 팔로우 추가
     public FollowAddResponseDto addFollow(FollowAddRequestDto followAddRequestDto){
@@ -39,6 +43,7 @@ public class FollowService {
             throw new CustomException(ErrorCode.FOLLOW_ALREADY_EXISTS);
         }
         Follow follow = followRepository.save(FollowAddRequestDto.toEntity(follower, following));
+        alarmService.createFollowAlarm(follower, following);
         return FollowAddResponseDto.from(follow);
     }
 
@@ -56,7 +61,6 @@ public class FollowService {
     // 특정 사용자의 팔로잉/팔로워 목록 조회
     public FollowListResponseDto getFollowList(Long memberId, boolean isFollowingList) {
         Member targetMember = memberService.getMemberById(memberId);
-        List<Follow> followerList = findAllFollowersOfMember(targetMember);
         Member currentMember = memberService.getCurrentMember();
         Map<Member, Long> currentMemberFollowingCache = getMemberFollowingCache(currentMember);
         List<Follow> followList = isFollowingList ? findAllFollowingsOfMember(targetMember) : findAllFollowersOfMember(targetMember);
