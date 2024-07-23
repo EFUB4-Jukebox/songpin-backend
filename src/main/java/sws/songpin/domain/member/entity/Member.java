@@ -53,10 +53,6 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    /*@Column(name = "is_new_alarm")
-    @NotNull
-    private Boolean isNewAlarm;*/
-
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pin> pins;
 
