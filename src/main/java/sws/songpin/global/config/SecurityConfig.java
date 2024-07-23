@@ -61,13 +61,10 @@ public class SecurityConfig {
         configuration.addAllowedOrigin("https://api.songpin.n-e.kr/");
         configuration.addAllowedOrigin("https://songpin.vercel.app");
 
-        configuration.addAllowedOrigin("*");
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);
 
-        configuration.addExposedHeader("Authorization");
-        configuration.addExposedHeader("Authorization-Refresh");
         configuration.addExposedHeader("Set-Cookie");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
