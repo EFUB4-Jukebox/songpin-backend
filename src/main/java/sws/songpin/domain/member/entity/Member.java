@@ -53,9 +53,9 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @Column(name = "is_new_alarm")
+    /*@Column(name = "is_new_alarm")
     @NotNull
-    private Boolean isNewAlarm;
+    private Boolean isNewAlarm;*/
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pin> pins;
@@ -69,13 +69,19 @@ public class Member extends BaseTimeEntity {
         this.handle= handle;
         this.profileImg = ProfileImg.POP;
         this.status = Status.ACTIVE;
-        this.isNewAlarm = false;
+        //this.isNewAlarm = false;
         this.pins = new ArrayList<>();
     }
 
     public void modifyProfile(ProfileImg profileImg, String nickname, String handle){
         this.profileImg = profileImg;
         this.nickname = nickname;
+        this.handle = handle;
+    }
+
+    public void deactivate(String handle){
+        this.status = Status.DELETED;
+        this.nickname = "(알 수 없음)";
         this.handle = handle;
     }
 }
