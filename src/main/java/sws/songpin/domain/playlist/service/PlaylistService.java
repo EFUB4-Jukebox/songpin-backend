@@ -236,15 +236,16 @@ public class PlaylistService {
     public Object searchPlaylists(String keyword, SortBy sortBy, Pageable pageable) {
         String keywordNoSpaces = keyword.replace(" ", "");
         Page<Object[]> playlistPage;
+        Member currentMember = memberService.getCurrentMember();
+        Long currentMemberId = currentMember.getMemberId();
         switch (sortBy) {
-            case COUNT -> playlistPage = playlistRepository.findAllByPlaylistNameContainingIgnoreSpacesOrderByCount(keywordNoSpaces, pageable);
-            case NEWEST -> playlistPage = playlistRepository.findAllByPlaylistNameContainingIgnoreSpacesOrderByNewest(keywordNoSpaces, pageable);
-            case ACCURACY -> playlistPage = playlistRepository.findAllByPlaylistNameContainingIgnoreSpacesOrderByAccuracy(keywordNoSpaces, pageable);
+            case COUNT -> playlistPage = playlistRepository.findAllByPlaylistNameContainingIgnoreSpacesOrderByCount(keywordNoSpaces, currentMemberId, pageable);
+            case NEWEST -> playlistPage = playlistRepository.findAllByPlaylistNameContainingIgnoreSpacesOrderByNewest(keywordNoSpaces, currentMemberId, pageable);
+            case ACCURACY -> playlistPage = playlistRepository.findAllByPlaylistNameContainingIgnoreSpacesOrderByAccuracy(keywordNoSpaces, currentMemberId, pageable);
             default -> throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
         }
         // Page<Object[]>를 Page<PlaylistUnitDto>로 변환
         Page<PlaylistUnitDto> playlistUnitPage = playlistPage.map(objects -> {
-            Member currentMember = memberService.getCurrentMember();
             Long playlistId = ((Number) objects[0]).longValue();
             Playlist playlist = findPlaylistById(playlistId);
             List<String> imgPathList = getPlaylistThumbnailImgPathList(playlist);

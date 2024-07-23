@@ -27,4 +27,7 @@ public interface PinRepository extends JpaRepository <Pin, Long> {
     long countByListenedDateYear(@Param("currentYear") int currentYear);
     @Query("SELECT p.genre.genreName, COUNT(p) FROM Pin p GROUP BY p.genre ORDER BY COUNT(p) DESC")
     List<Object[]> findMostPopularGenreName();
+
+    @Query(value = "SELECT * FROM pin ORDER BY pin_id DESC LIMIT 3", nativeQuery = true)
+    List<Pin> findTop3ByOrderByPinIdDesc();
 }
