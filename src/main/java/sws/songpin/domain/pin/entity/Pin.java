@@ -35,9 +35,9 @@ public class Pin extends BaseTimeEntity {
     private Visibility visibility;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", updatable = false)
+    @JoinColumn(name = "creator_id", updatable = false)
     @NotNull
-    private Member member;
+    private Member creator;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "song_id", updatable = false)
@@ -56,12 +56,12 @@ public class Pin extends BaseTimeEntity {
 
     @Builder
     public Pin(Long pinId, LocalDate listenedDate, String memo, Visibility visibility,
-               Member member, Song song, Place place, Genre genre) {
+               Member creator, Song song, Place place, Genre genre) {
         this.pinId = pinId;
         this.listenedDate = listenedDate;
         this.memo = memo;
         this.visibility = visibility;
-        this.member = member;
+        this.creator = creator;
         this.song = song;
         this.place = place;
         this.genre = genre;

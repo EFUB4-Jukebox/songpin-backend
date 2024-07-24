@@ -48,7 +48,7 @@ public class PinService {
 
     // 음악 핀 생성 - 노래, 장소가 없다면 추가하기
     public Long createPin(PinAddRequestDto pinAddRequestDto) {
-        Member member = memberService.getCurrentMember();
+        Member creator = memberService.getCurrentMember();
         Song finalSong = songService.getOrCreateSong(pinAddRequestDto.song());
         Place finalPlace = placeService.getOrCreatePlace(pinAddRequestDto.place());
         Genre genre = genreService.getGenreByGenreName(pinAddRequestDto.genreName());
@@ -57,7 +57,7 @@ public class PinService {
                 .listenedDate(pinAddRequestDto.listenedDate())
                 .memo(pinAddRequestDto.memo())
                 .visibility(pinAddRequestDto.visibility())
-                .member(member)
+                .creator(creator)
                 .song(finalSong)
                 .place(finalPlace)
                 .genre(genre)
@@ -105,7 +105,7 @@ public class PinService {
     public Pin validatePinCreator(Long pinId) {
         Pin pin = getPinById(pinId);
         Member currentMember = memberService.getCurrentMember();
-        if (!pin.getMember().getMemberId().equals(currentMember.getMemberId())){
+        if (!pin.getCreator().getMemberId().equals(currentMember.getMemberId())){
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
         return pin;
@@ -121,16 +121,16 @@ public class PinService {
         List<SongDetailsPinDto> songDetailsPinList;
         if (onlyMyPins) {
             // 내 핀만 보기 - 현재 사용자의 모든 핀 가져오기(visibility 상관없음)
-            pins = pinRepository.findAllBySongAndMember(song, currentMember);
+            pins = pinRepository.findAllBySongAndCreator(song, currentMember);
         } else {
             // 전체 핀 보기 - 내 핀 가져오기(visibility 상관없음) + 타유저의 공개 핀 가져오기
             pins = pinRepository.findAllBySong(song).stream()
-                    .filter(pin -> pin.getVisibility() == Visibility.PUBLIC || pin.getMember().equals(currentMember))
+                    .filter(pin -> pin.getVisibility() == Visibility.PUBLIC || pin.getCreator().equals(currentMember))
                     .collect(Collectors.toList());
         }
         songDetailsPinList = pins.stream()
                 .map(pin -> {
-                    Boolean isMine = pin.getMember().getMemberId().equals(currentMemberId);
+                    Boolean isMine = pin.getCreator().getMemberId().equals(currentMemberId);
                     return SongDetailsPinDto.from(pin, isMine);
                 })
                 .collect(Collectors.toList());
@@ -141,7 +141,7 @@ public class PinService {
     @Transactional(readOnly = true)
     public PinFeedListResponseDto getPublicPinFeed(Long memberId) {
         Member targetMember = memberService.getMemberById(memberId);
-        List<Pin> pins = pinRepository.findAllByMemberAndVisibilityOrderByListenedDateDesc(targetMember, Visibility.PUBLIC);
+        List<Pin> pins = pinRepository.findAllByCreatorAndVisibilityOrderByListenedDateDesc(targetMember, Visibility.PUBLIC);
         return getPinFeedResponse(pins, false);
     }
 
@@ -149,7 +149,7 @@ public class PinService {
     @Transactional(readOnly = true)
     public PinFeedListResponseDto getMyPinFeed() {
         Member currentMember = memberService.getCurrentMember();
-        List<Pin> pins = pinRepository.findAllByMemberOrderByListenedDateDesc(currentMember);
+        List<Pin> pins = pinRepository.findAllByCreatorOrderByListenedDateDesc(currentMember);
         return getPinFeedResponse(pins, true);
     }
 
@@ -166,7 +166,7 @@ public class PinService {
     @Transactional(readOnly = true)
     public PinBasicListResponseDto getMyPinFeedForMonth(int year, int month) {
         Member currentMember = memberService.getCurrentMember();
-        List<Pin> pins = pinRepository.findAllByMemberAndDate(currentMember,year, month);
+        List<Pin> pins = pinRepository.findAllByCreatorAndDate(currentMember,year, month);
         List<PinBasicUnitDto> pinList = pins.stream()
                 .map(pin -> PinBasicUnitDto.from(pin, true))
                 .collect(Collectors.toList());
