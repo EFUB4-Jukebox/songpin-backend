@@ -1,13 +1,17 @@
 package sws.songpin.domain.pin.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.genre.service.GenreService;
+import sws.songpin.domain.member.dto.response.MyPinSearchResponseDto;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
+import sws.songpin.domain.model.SortBy;
 import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.pin.dto.request.PinAddRequestDto;
 import sws.songpin.domain.pin.dto.request.PinUpdateRequestDto;
@@ -22,14 +26,14 @@ import sws.songpin.domain.place.service.PlaceService;
 import sws.songpin.domain.playlist.entity.Playlist;
 import sws.songpin.domain.playlistpin.entity.PlaylistPin;
 import sws.songpin.domain.playlistpin.repository.PlaylistPinRepository;
-import sws.songpin.domain.song.dto.response.SongDetailsPinDto;
-import sws.songpin.domain.song.dto.response.SongDetailsPinListResponseDto;
+import sws.songpin.domain.song.dto.response.*;
 import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.song.repository.SongRepository;
 import sws.songpin.domain.song.service.SongService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -171,6 +175,36 @@ public class PinService {
                 .map(pin -> PinBasicUnitDto.from(pin, true))
                 .collect(Collectors.toList());
         return new PinBasicListResponseDto(pinList, pinList.size());
+    }
+
+    // 마이페이지에서 내 핀 검색
+    @Transactional(readOnly = true)
+    public MyPinSearchResponseDto searchMyPins(String keyword, Pageable pageable) {
+        Member currentMember = memberService.getCurrentMember();
+        Long currentMemberId = currentMember.getMemberId();
+        String keywordNoSpaces = keyword.replace(" ", "");
+        Page<Object[]> myPinPage = pinRepository.findAllBySongNameOrArtistContainingIgnoreSpaces(currentMemberId, keywordNoSpaces, pageable);
+
+        Page<PinBasicUnitDto> myPinUnitPage = myPinPage.map(objects -> {
+            Long pinId = ((Number) objects[0]).longValue();
+            SongInfoDto songInfo = new SongInfoDto(
+                    ((Number) objects[1]).longValue(),
+                    (String) objects[2],
+                    (String) objects[3],
+                    (String) objects[4]
+            );
+            LocalDate listenedDate = ((java.sql.Date) objects[5]).toLocalDate();
+            String placeName = (String) objects[6];
+            double latitude = ((Number) objects[7]).doubleValue();
+            double longitude = ((Number) objects[8]).doubleValue();
+            GenreName genreName = GenreName.valueOf((String) objects[9]);
+            Long creatorId = ((Number) objects[10]).longValue();
+            Boolean isMine = creatorId.equals(currentMemberId);
+
+            return new PinBasicUnitDto(pinId, songInfo, listenedDate, placeName, latitude, longitude, genreName, isMine);
+        });
+
+        return MyPinSearchResponseDto.from(myPinUnitPage);
     }
 
     @Transactional(readOnly = true)

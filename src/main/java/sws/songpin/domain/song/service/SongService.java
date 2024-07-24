@@ -1,17 +1,21 @@
 package sws.songpin.domain.song.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
+import sws.songpin.domain.model.SortBy;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.pin.repository.PinRepository;
+import sws.songpin.domain.place.dto.response.PlaceSearchResponseDto;
+import sws.songpin.domain.place.dto.response.PlaceUnitDto;
 import sws.songpin.domain.song.dto.request.SongAddRequestDto;
-import sws.songpin.domain.song.dto.response.SongDetailsResponseDto;
-import sws.songpin.domain.song.dto.response.SpotifySearchDto;
+import sws.songpin.domain.song.dto.response.*;
 import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.song.repository.SongRepository;
 import sws.songpin.domain.song.spotify.SpotifyUtil;
@@ -58,6 +62,35 @@ public class SongService {
                         .thenComparing(Map.Entry::getKey))
                 .map(Map.Entry::getKey)
                 .findFirst();
+    }
+
+    // 노래 검색
+    @Transactional(readOnly = true)
+    public SongSearchResponseDto searchSongs(String keyword, SortBy sortBy, Pageable pageable) {
+        String keywordNoSpaces = keyword.replace(" ", "");
+        Page<Object[]> songPage;
+
+        switch (sortBy) {
+            case COUNT -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByCount(keywordNoSpaces, pageable);
+            case NEWEST -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByNewest(keywordNoSpaces, pageable);
+            case ACCURACY -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByAccuracy(keywordNoSpaces, pageable);
+            default -> throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
+        }
+
+        Page<SongUnitDto> songUnitPage = songPage.map(objects -> {
+            SongInfoDto songInfo = new SongInfoDto(
+                    ((Number) objects[1]).longValue(),
+                    (String) objects[2],
+                    (String) objects[3],
+                    (String) objects[4]
+            );
+            int songPinCount = ((Number) objects[4]).intValue();
+            GenreName avgGenreName = GenreName.valueOf((String) objects[5]);
+
+            return new SongUnitDto(songInfo, avgGenreName, songPinCount);
+        });
+
+        return SongSearchResponseDto.from(songUnitPage);
     }
 
     public Song createSong(SongAddRequestDto songRequestDto) {

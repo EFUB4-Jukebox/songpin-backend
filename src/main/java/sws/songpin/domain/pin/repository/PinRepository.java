@@ -1,5 +1,7 @@
 package sws.songpin.domain.pin.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,4 +32,20 @@ public interface PinRepository extends JpaRepository <Pin, Long> {
 
     @Query(value = "SELECT * FROM pin ORDER BY pin_id DESC LIMIT 3", nativeQuery = true)
     List<Pin> findTop3ByOrderByPinIdDesc();
+
+    @Query(value = "SELECT p.pin_id, s.song_id, s.title, s.artist, s.img_path, p.listened_date, pl.place_name, pl.latitude, pl.longitude, g.genre_name, p.creator_id " +
+            "FROM pin p " +
+            "LEFT JOIN song s ON p.song_id = s.song_id " +
+            "LEFT JOIN place pl ON p.place_id = pl.place_id " +
+            "LEFT JOIN genre g ON s.genre_id = g.genre_id " +
+            "WHERE (REPLACE(s.title, ' ', '') LIKE %:keywordNoSpaces% OR REPLACE(s.artist, ' ', '') LIKE %:keywordNoSpaces%) " +
+            "AND p.creator_id = :currentMemberId " +
+            "ORDER BY s.title ASC", // 정확도 순 정렬
+            countQuery = "SELECT COUNT(p.pin_id) " +
+                    "FROM pin p " +
+                    "LEFT JOIN song s ON p.song_id = s.song_id " +
+                    "WHERE (REPLACE(s.title, ' ', '') LIKE %:keywordNoSpaces% OR REPLACE(s.artist, ' ', '') LIKE %:keywordNoSpaces%) " +
+                    "AND p.creator_id = :currentMemberId",
+            nativeQuery = true)
+    Page<Object[]> findAllBySongNameOrArtistContainingIgnoreSpaces(@Param("currentMemberId") Long currentMemberId, @Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
 }

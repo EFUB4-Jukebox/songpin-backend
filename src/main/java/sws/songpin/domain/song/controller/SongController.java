@@ -4,12 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import sws.songpin.domain.model.SortBy;
 import sws.songpin.domain.pin.service.PinService;
-import sws.songpin.domain.song.dto.response.SongDetailsPinDto;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import sws.songpin.domain.song.dto.response.SongDetailsPinListResponseDto;
 import sws.songpin.domain.song.dto.response.SongDetailsResponseDto;
 import sws.songpin.domain.song.service.SongService;
@@ -43,5 +42,13 @@ public class SongController {
     public ResponseEntity<?> getMyPinsForSong(@PathVariable("songId") final Long songId) {
         SongDetailsPinListResponseDto myPins = pinService.getPinsForSong(songId, true);
         return ResponseEntity.ok(myPins);
+    }
+
+    @GetMapping
+    @Operation(summary = "노래 검색", description = "노래 검색 결과를 선택한 정렬 기준에 따라 페이징으로 불러옵니다.")
+    public ResponseEntity<?> songSearch(@RequestParam final String keyword,
+                                        @RequestParam(defaultValue = "ACCURACY") final String sortBy,
+                                        @PageableDefault(size = 20) final Pageable pageable){
+        return ResponseEntity.ok().body(songService.searchSongs(keyword, SortBy.from(sortBy), pageable));
     }
 }

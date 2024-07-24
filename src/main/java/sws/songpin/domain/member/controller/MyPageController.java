@@ -6,12 +6,15 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.bookmark.service.BookmarkService;
 import sws.songpin.domain.member.dto.request.ProfileDeactivateRequestDto;
 import sws.songpin.domain.member.dto.request.ProfileUpdateRequestDto;
 import sws.songpin.domain.member.service.ProfileService;
+import sws.songpin.domain.model.SortBy;
 import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.playlist.service.PlaylistService;
 
@@ -60,6 +63,14 @@ public class MyPageController {
     @GetMapping("/calendar")
     public ResponseEntity<?> getMyFeedPinsByMonth(@RequestParam("year") int year, @RequestParam("month") int month) {
         return ResponseEntity.ok(pinService.getMyPinFeedForMonth(year, month));
+    }
+
+    @GetMapping("/pins")
+    @Operation(summary = "마이페이지에서 핀 검색", description = "마이페이지에서의 핀 검색 결과를 선택한 정렬 기준에 따라 페이징으로 불러옵니다.")
+    public ResponseEntity<?> songSearch(@RequestParam final String keyword,
+                                        @RequestParam(defaultValue = "ACCURACY") final String sortBy,
+                                        @PageableDefault(size = 20) final Pageable pageable){
+        return ResponseEntity.ok().body(pinService.searchMyPins(keyword, pageable));
     }
 
     @Operation(summary = "회원 탈퇴", description = "회원 상태를 '탈퇴'로 변경하고 닉네임을 '(알 수 없음)'으로 변경합니다. \t\n해당 회원의 handle을 랜덤 uuid 값으로 변경합니다. \t\nRedis와 쿠키에 저장되었던 회원의 Refresh Token을 삭제합니다. \t\n해당 회원이 등록했던 핀 등의 데이터는 남겨둡니다. \t\n해당 회원의 팔로우, 팔로잉 데이터는 삭제합니다.")
