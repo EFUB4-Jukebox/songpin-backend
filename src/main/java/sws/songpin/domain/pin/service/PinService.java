@@ -117,53 +117,49 @@ public class PinService {
 
     // 특정 노래에 대한 핀 조회
     @Transactional(readOnly = true)
-    public SongDetailsPinListResponseDto getPinsForSong(Long songId, boolean onlyMyPins) {
+    public SongDetailsPinListResponseDto getPinsForSong(Long songId, boolean onlyMyPins, Pageable pageable) {
         Song song = songService.getSongById(songId);
         Member currentMember = memberService.getCurrentMember();
         Long currentMemberId = currentMember != null ? currentMember.getMemberId() : null;
-        List<Pin> pins;
-        List<SongDetailsPinDto> songDetailsPinList;
+        Page<Pin> pinPage;
+
         if (onlyMyPins) {
             // 내 핀만 보기 - 현재 사용자의 모든 핀 가져오기(visibility 상관없음)
-            pins = pinRepository.findAllBySongAndMember(song, currentMember);
+            pinPage = pinRepository.findAllBySongAndMember(song, currentMember, pageable);
         } else {
             // 전체 핀 보기 - 내 핀 가져오기(visibility 상관없음) + 타유저의 공개 핀 가져오기
-            pins = pinRepository.findAllBySong(song).stream()
-                    .filter(pin -> pin.getVisibility() == Visibility.PUBLIC || pin.getMember().equals(currentMember))
-                    .collect(Collectors.toList());
+            pinPage = pinRepository.findPinFeed(song, currentMember, Visibility.PUBLIC, pageable);
         }
-        songDetailsPinList = pins.stream()
-                .map(pin -> {
-                    Boolean isMine = pin.getMember().getMemberId().equals(currentMemberId);
-                    return SongDetailsPinDto.from(pin, isMine);
-                })
-                .collect(Collectors.toList());
-        return SongDetailsPinListResponseDto.from(songDetailsPinList);
+        Page<SongDetailsPinDto> songDetailsPinPage = pinPage.map(pin -> {
+            Boolean isMine = pin.getMember().getMemberId().equals(currentMemberId);
+            return SongDetailsPinDto.from(pin, isMine);
+        });
+        return SongDetailsPinListResponseDto.from(songDetailsPinPage);
     }
 
     // 타 유저의 공개 핀 피드 조회
     @Transactional(readOnly = true)
-    public PinFeedListResponseDto getPublicPinFeed(Long memberId) {
+    public PinFeedListResponseDto getPublicPinFeed(Long memberId, Pageable pageable) {
         Member targetMember = memberService.getMemberById(memberId);
-        List<Pin> pins = pinRepository.findAllByMemberAndVisibilityOrderByListenedDateDesc(targetMember, Visibility.PUBLIC);
-        return getPinFeedResponse(pins, false);
+        Page<Pin> pinPage = pinRepository.findAllByMemberAndVisibilityOrderByListenedDateDesc(targetMember, Visibility.PUBLIC, pageable);
+        return getPinFeedResponse(pinPage, false);
     }
 
     // 내 핀 피드 조회
     @Transactional(readOnly = true)
-    public PinFeedListResponseDto getMyPinFeed() {
+    public PinFeedListResponseDto getMyPinFeed(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
-        List<Pin> pins = pinRepository.findAllByMemberOrderByListenedDateDesc(currentMember);
-        return getPinFeedResponse(pins, true);
+        Page<Pin> pinPage = pinRepository.findAllByMemberOrderByListenedDateDesc(currentMember, pageable);
+        return getPinFeedResponse(pinPage, true);
     }
 
     // 핀피드 조회 공통 메서드
     @Transactional(readOnly = true)
-    private PinFeedListResponseDto getPinFeedResponse(List<Pin> pins, boolean isMine) {
-        List<PinFeedUnitDto> feedPinList = pins.stream()
+    private PinFeedListResponseDto getPinFeedResponse(Page<Pin> pinPage, boolean isMine) {
+        List<PinFeedUnitDto> feedPinList = pinPage.stream()
                 .map(pin -> PinFeedUnitDto.from(pin, isMine))
                 .collect(Collectors.toList());
-        return new PinFeedListResponseDto(feedPinList.size(), feedPinList);
+        return new PinFeedListResponseDto((int)pinPage.getTotalElements(), feedPinList);
     }
 
     // 마이페이지 캘린더

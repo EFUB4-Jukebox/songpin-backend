@@ -16,9 +16,12 @@ import java.util.Optional;
 
 public interface PinRepository extends JpaRepository <Pin, Long> {
     List<Pin> findAllBySong(Song song);
-    List<Pin> findAllBySongAndMember(Song song, Member member);
-    List<Pin> findAllByMemberOrderByListenedDateDesc(Member member);
-    List<Pin> findAllByMemberAndVisibilityOrderByListenedDateDesc(Member member, Visibility visibility);
+    Page<Pin> findAllBySongAndMember(Song song, Member member, Pageable pageable);
+    // 내 핀 가져오기(visibility 상관없음) 또는 타유저의 공개 핀 가져오기
+    @Query("SELECT p FROM Pin p WHERE p.song = :song AND (p.member = :member OR p.visibility = :visibility)")
+    Page<Pin> findPinFeed(@Param("song") Song song, @Param("member") Member member, @Param("visibility") Visibility visibility, Pageable pageable);
+    Page<Pin> findAllByMemberOrderByListenedDateDesc(Member member, Pageable pageable);
+    Page<Pin> findAllByMemberAndVisibilityOrderByListenedDateDesc(Member member, Visibility visibility, Pageable pageable);
     Optional<Pin> findTopBySongAndMemberOrderByListenedDateDesc(Song song, Member member);
     int countBySong(Song song);
     List<Pin> findAllByPlace(Place place);
