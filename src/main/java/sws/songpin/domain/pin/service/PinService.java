@@ -78,6 +78,7 @@ public class PinService {
         Pin pin = validatePinCreator(pinId);
         Genre genre = genreService.getGenreByGenreName(pinUpdateRequestDto.genreName());
         pin.updatePin(pinUpdateRequestDto.listenedDate(), pinUpdateRequestDto.memo(), pinUpdateRequestDto.visibility(), genre);
+        updateSongAvgGenreName(pin.getSong());
         pinRepository.save(pin);
 
         return pin.getSong().getSongId();
@@ -93,6 +94,7 @@ public class PinService {
         }
         playlistPinRepository.deleteAll(playlistPins);
         pinRepository.delete(pin);
+        updateSongAvgGenreName(pin.getSong());
     }
 
     public void updateSongAvgGenreName(Song song) {
