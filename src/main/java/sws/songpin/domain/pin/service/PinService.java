@@ -172,7 +172,7 @@ public class PinService {
         List<PinBasicUnitDto> pinList = pins.stream()
                 .map(pin -> PinBasicUnitDto.from(pin, true))
                 .collect(Collectors.toList());
-        return new PinBasicListResponseDto(pinList, pinList.size());
+        return new PinBasicListResponseDto(pinList);
     }
 
     // 마이페이지에서 내 핀 검색
