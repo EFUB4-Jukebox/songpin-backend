@@ -10,6 +10,7 @@ import sws.songpin.domain.member.dto.response.MemberProfileResponseDto;
 import sws.songpin.domain.member.dto.response.MyProfileResponseDto;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.entity.ProfileImg;
+import sws.songpin.domain.member.entity.Status;
 import sws.songpin.global.auth.RedisService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
@@ -30,8 +31,14 @@ public class ProfileService {
         Member member = memberService.getMemberById(memberId);
         Member currentMember = memberService.getCurrentMember();
 
+        //조회하려는 회원이 본인인 경우 예외 처리
         if(member.equals(currentMember)){
             throw new CustomException(ErrorCode.MEMBER_BAD_REQUEST);
+        }
+
+        //조회하려는 회원이 탈퇴한 경우 예외 처리
+        if(member.getStatus().equals(Status.DELETED)){
+            throw new CustomException(ErrorCode.ALREADY_DELETED_MEMBER);
         }
 
         //팔로워 수
