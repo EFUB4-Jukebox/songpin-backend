@@ -124,4 +124,10 @@ public class FollowService {
         return followRepository.findByFollowerAndFollowing(follower,following)
                 .orElseThrow(()-> new CustomException(ErrorCode.FOLLOW_NOT_FOUND)).getFollowId();
     }
+
+    //회원의 팔로워 및 팔로잉 모두 삭제
+    public void deleteAllFollowerAndFollowingOfMember(Member member){
+        followRepository.deleteAllByFollower(member);
+        followRepository.deleteAllByFollowing(member);
+    }
 }

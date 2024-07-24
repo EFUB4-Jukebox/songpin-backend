@@ -3,6 +3,8 @@ package sws.songpin.domain.member.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sws.songpin.domain.alarm.service.AlarmService;
+import sws.songpin.domain.bookmark.service.BookmarkService;
 import sws.songpin.domain.follow.service.FollowService;
 import sws.songpin.domain.member.dto.request.ProfileDeactivateRequestDto;
 import sws.songpin.domain.member.dto.request.ProfileUpdateRequestDto;
@@ -25,6 +27,8 @@ public class ProfileService {
     private final FollowService followService;
     private final AuthService authService;
     private final RedisService redisService;
+    private final AlarmService alarmService;
+    private final BookmarkService bookmarkService;
 
     @Transactional(readOnly = true)
     public MemberProfileResponseDto getMemberProfile(Long memberId){
@@ -99,6 +103,15 @@ public class ProfileService {
         //Status, Nickname, Handle 변경
         member.deactivate(handle);
         memberService.saveMember(member);
+
+        //follow 테이블 데이터 삭제
+        followService.deleteAllFollowerAndFollowingOfMember(member);
+
+        //bookmark 테이블 데이터 삭제
+        bookmarkService.deleteAllBookmarkOfMember(member);
+
+        //alarm 테이블 데이터 삭제
+        alarmService.deleteAllAlarmOfMember(member);
 
         //Redis에서 Refresh Token 삭제
         redisService.deleteValues(member.getEmail());

@@ -53,6 +53,10 @@ public class AlarmService {
         return AlarmListResponseDto.fromAlarmUnitDto(alarmUnitDtos);
     }
 
+    public void deleteAllAlarmOfMember(Member member){
+        alarmRepository.deleteAllByReceiver(member);
+    }
+
     private List<AlarmUnitDto> getAndReadAlarms() {
         List<AlarmUnitDto> alarmList = new ArrayList<>();
         Member member = memberService.getCurrentMember();

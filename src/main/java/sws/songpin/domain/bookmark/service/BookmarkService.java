@@ -75,4 +75,8 @@ public class BookmarkService {
         return bookmarkRepository.findById(bookmarkId)
                 .orElseThrow(() -> new CustomException(ErrorCode.BOOKMARK_NOT_FOUND));
     }
+
+    public void deleteAllBookmarkOfMember(Member member){
+        bookmarkRepository.deleteAllByMember(member);
+    }
 }

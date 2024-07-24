@@ -9,4 +9,5 @@ import sws.songpin.domain.member.entity.Member;
 public interface AlarmRepository extends JpaRepository<Alarm, Long> {
     Slice<Alarm> findByReceiverOrderByCreatedTimeDesc(Member receiver, Pageable pageable);
     Boolean existsByReceiverAndIsReadFalse(Member member);
+    void deleteAllByReceiver(Member member);
 }
