@@ -36,7 +36,8 @@ public enum ErrorCode {
     // 유효하지 않은 토큰
     INVALID_TOKEN(401, "유효하지 않은 토큰입니다."),
     // 만료된 토큰
-    EXPIRED_TOKEN(401,"만료된 토큰입니다."),
+    EXPIRED_ACCESS_TOKEN(401,"만료된 어세스 토큰입니다."),
+    EXPIRED_REFRESH_TOKEN(401, "만료된 리프레시 토큰입니다."),
     // 탈퇴한 회원
     ALREADY_DELETED_MEMBER(401, "탈퇴한 회원입니다."),
 
