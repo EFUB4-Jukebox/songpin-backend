@@ -40,7 +40,7 @@ public interface PinRepository extends JpaRepository <Pin, Long> {
             "FROM pin p " +
             "LEFT JOIN song s ON p.song_id = s.song_id " +
             "LEFT JOIN place pl ON p.place_id = pl.place_id " +
-            "LEFT JOIN genre g ON s.genre_id = g.genre_id " +
+            "LEFT JOIN genre g ON s.avg_genre_name = g.genre_name " +
             "WHERE (REPLACE(s.title, ' ', '') LIKE %:keywordNoSpaces% OR REPLACE(s.artist, ' ', '') LIKE %:keywordNoSpaces%) " +
             "AND p.creator_id = :currentMemberId " +
             "ORDER BY s.title ASC", // 정확도 순 정렬
