@@ -72,22 +72,21 @@ public class SongService {
 
         switch (sortBy) {
             case COUNT -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByCount(keywordNoSpaces, pageable);
-            case NEWEST -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByNewest(keywordNoSpaces, pageable);
             case ACCURACY -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByAccuracy(keywordNoSpaces, pageable);
             default -> throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
         }
 
         Page<SongUnitDto> songUnitPage = songPage.map(objects -> {
             SongInfoDto songInfo = new SongInfoDto(
-                    ((Number) objects[1]).longValue(),
+                    ((Number) objects[0]).longValue(),
+                    (String) objects[1],
                     (String) objects[2],
-                    (String) objects[3],
-                    (String) objects[4]
+                    (String) objects[3]
             );
-            int songPinCount = ((Number) objects[4]).intValue();
-            GenreName avgGenreName = GenreName.valueOf((String) objects[5]);
+            GenreName avgGenreName = GenreName.valueOf((String) objects[4]);
+            int pinCount = ((Number) objects[5]).intValue();
 
-            return new SongUnitDto(songInfo, avgGenreName, songPinCount);
+            return new SongUnitDto(songInfo, avgGenreName, pinCount);
         });
 
         return SongSearchResponseDto.from(songUnitPage);
