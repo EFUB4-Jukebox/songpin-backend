@@ -16,17 +16,17 @@ import java.util.Optional;
 
 public interface PinRepository extends JpaRepository <Pin, Long> {
     List<Pin> findAllBySong(Song song);
-    Page<Pin> findAllBySongAndMember(Song song, Member member, Pageable pageable);
+    Page<Pin> findAllBySongAndCreator(Song song, Member creator, Pageable pageable);
     // 내 핀 가져오기(visibility 상관없음) 또는 타유저의 공개 핀 가져오기
-    @Query("SELECT p FROM Pin p WHERE p.song = :song AND (p.member = :member OR p.visibility = :visibility)")
-    Page<Pin> findPinFeed(@Param("song") Song song, @Param("member") Member member, @Param("visibility") Visibility visibility, Pageable pageable);
-    Page<Pin> findAllByMemberOrderByListenedDateDesc(Member member, Pageable pageable);
-    Page<Pin> findAllByMemberAndVisibilityOrderByListenedDateDesc(Member member, Visibility visibility, Pageable pageable);
-    Optional<Pin> findTopBySongAndMemberOrderByListenedDateDesc(Song song, Member member);
+    @Query("SELECT p FROM Pin p WHERE p.song = :song AND (p.creator = :creator OR p.visibility = :visibility)")
+    Page<Pin> findPinFeed(@Param("song") Song song, @Param("creator") Member creator, @Param("visibility") Visibility visibility, Pageable pageable);
+    Page<Pin> findAllByCreatorOrderByListenedDateDesc(Member creator, Pageable pageable);
+    Page<Pin> findAllByCreatorAndVisibilityOrderByListenedDateDesc(Member creator, Visibility visibility, Pageable pageable);
+    Optional<Pin> findTopBySongAndCreatorOrderByListenedDateDesc(Song song, Member creator);
     int countBySong(Song song);
     List<Pin> findAllByPlace(Place place);
-    @Query("SELECT p FROM Pin p WHERE p.member = :member AND YEAR(p.listenedDate) = :year AND MONTH(p.listenedDate) = :month")
-    List<Pin> findAllByMemberAndDate(@Param("member") Member member, @Param("year") int year, @Param("month") int month);
+    @Query("SELECT p FROM Pin p WHERE p.creator = :creator AND YEAR(p.listenedDate) = :year AND MONTH(p.listenedDate) = :month")
+    List<Pin> findAllByCreatorAndDate(@Param("creator") Member creator, @Param("year") int year, @Param("month") int month);
 
     @Query("SELECT COUNT(p) FROM Pin p WHERE YEAR(p.listenedDate) = :currentYear")
     long countByListenedDateYear(@Param("currentYear") int currentYear);

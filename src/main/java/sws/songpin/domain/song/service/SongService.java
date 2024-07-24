@@ -120,7 +120,7 @@ public class SongService {
 
     @Transactional(readOnly = true)
     public LocalDate getLastListenedDate(Song song, Member member) {
-        return pinRepository.findTopBySongAndMemberOrderByListenedDateDesc(song, member)
+        return pinRepository.findTopBySongAndCreatorOrderByListenedDateDesc(song, member)
                 .map(Pin::getListenedDate)
                 .orElse(null); // null 반환하면 "아직 듣지 않음"으로 프론트에서 표시
     }
