@@ -142,25 +142,23 @@ public class PinService {
     @Transactional(readOnly = true)
     public PinFeedListResponseDto getPublicPinFeed(Long memberId, Pageable pageable) {
         Member targetMember = memberService.getMemberById(memberId);
-        Page<Pin> pinPage = pinRepository.findAllByCreatorAndVisibilityOrderByListenedDateDesc(targetMember, Visibility.PUBLIC, pageable);
-        return getPinFeedResponse(pinPage, false);
+        Page<Pin> pinFeedPage = pinRepository.findAllByCreatorAndVisibilityOrderByListenedDateDesc(targetMember, Visibility.PUBLIC, pageable);
+        return getPinFeedResponse(pinFeedPage, false);
     }
 
     // 내 핀 피드 조회
     @Transactional(readOnly = true)
     public PinFeedListResponseDto getMyPinFeed(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
-        Page<Pin> pinPage = pinRepository.findAllByCreatorOrderByListenedDateDesc(currentMember, pageable);
-        return getPinFeedResponse(pinPage, true);
+        Page<Pin> pinFeedPage = pinRepository.findAllByCreatorOrderByListenedDateDesc(currentMember, pageable);
+        return getPinFeedResponse(pinFeedPage, true);
     }
 
     // 핀피드 조회 공통 메서드
     @Transactional(readOnly = true)
-    private PinFeedListResponseDto getPinFeedResponse(Page<Pin> pinPage, boolean isMine) {
-        List<PinFeedUnitDto> feedPinList = pinPage.stream()
-                .map(pin -> PinFeedUnitDto.from(pin, isMine))
-                .collect(Collectors.toList());
-        return new PinFeedListResponseDto((int)pinPage.getTotalElements(), feedPinList);
+    public PinFeedListResponseDto getPinFeedResponse(Page<Pin> pinFeedPage, boolean isMine) {
+        Page<PinFeedUnitDto> pinFeedUnitPage = pinFeedPage.map(pin -> PinFeedUnitDto.from(pin, isMine));
+        return PinFeedListResponseDto.from(pinFeedUnitPage);
     }
 
     // 마이페이지 캘린더
