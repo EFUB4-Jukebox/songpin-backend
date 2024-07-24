@@ -61,7 +61,7 @@ public class PinService {
                 .listenedDate(pinAddRequestDto.listenedDate())
                 .memo(pinAddRequestDto.memo())
                 .visibility(pinAddRequestDto.visibility())
-                .member(member)
+                .creator(member)
                 .song(finalSong)
                 .place(finalPlace)
                 .genre(genre)
@@ -111,7 +111,7 @@ public class PinService {
     public Pin validatePinCreator(Long pinId) {
         Pin pin = getPinById(pinId);
         Member currentMember = memberService.getCurrentMember();
-        if (!pin.getMember().getMemberId().equals(currentMember.getMemberId())){
+        if (!pin.getCreator().getMemberId().equals(currentMember.getMemberId())){
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
         return pin;
@@ -133,7 +133,7 @@ public class PinService {
             pinPage = pinRepository.findPinFeed(song, currentMember, Visibility.PUBLIC, pageable);
         }
         Page<SongDetailsPinDto> songDetailsPinPage = pinPage.map(pin -> {
-            Boolean isMine = pin.getMember().getMemberId().equals(currentMemberId);
+            Boolean isMine = pin.getCreator().getMemberId().equals(currentMemberId);
             return SongDetailsPinDto.from(pin, isMine);
         });
         return SongDetailsPinListResponseDto.from(songDetailsPinPage);
