@@ -77,20 +77,22 @@ public class SongService {
             default -> throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
         }
 
-        Page<SongUnitDto> songUnitPage = songPage.map(objects -> {
-            SongInfoDto songInfo = new SongInfoDto(
-                    ((Number) objects[0]).longValue(),
-                    (String) objects[1],
-                    (String) objects[2],
-                    (String) objects[3]
-            );
-            GenreName avgGenreName = GenreName.valueOf((String) objects[4]);
-            int pinCount = ((Number) objects[5]).intValue();
-
-            return new SongUnitDto(songInfo, avgGenreName, pinCount);
-        });
+        Page<SongUnitDto> songUnitPage = songPage.map(this::convertToSongUnitDto);
 
         return SongSearchResponseDto.from(songUnitPage);
+    }
+
+    public SongUnitDto convertToSongUnitDto(Object[] objects) {
+        return new SongUnitDto(
+                new SongInfoDto(
+                        ((Number) objects[0]).longValue(),
+                        (String) objects[1],
+                        (String) objects[2],
+                        (String) objects[3]
+                ),
+                GenreName.valueOf((String) objects[4]),
+                ((Number) objects[5]).intValue()
+        );
     }
 
     public Song createSong(SongAddRequestDto songRequestDto) {

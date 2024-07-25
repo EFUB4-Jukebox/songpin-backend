@@ -18,18 +18,33 @@ public record PinFeedUnitDto(
         Visibility visibility,
         Boolean isMine
 ) {
-    public static PinFeedUnitDto from(Pin pin, String memo, Boolean isMine) {
+
+    public static PinFeedUnitDto from(Pin pin, Boolean isMine) {
         return new PinFeedUnitDto(
                 pin.getPinId(),
                 SongInfoDto.from(pin.getSong()),
                 pin.getListenedDate(),
                 pin.getPlace().getPlaceName(),
-                pin.getPlace().getLatitude( ),
+                pin.getPlace().getLatitude(),
                 pin.getPlace().getLongitude(),
                 pin.getGenre().getGenreName(),
-                memo,
+                pin.getMemo(),
                 pin.getVisibility(),
                 isMine
+        );
+    }
+    public PinFeedUnitDto withMemo(String memo) {
+        return new PinFeedUnitDto(
+                this.pinId(),
+                this.songInfo(),
+                this.listenedDate(),
+                this.placeName(),
+                this.latitude(),
+                this.longitude(),
+                this.genreName(),
+                memo,
+                this.visibility(),
+                this.isMine()
         );
     }
 }

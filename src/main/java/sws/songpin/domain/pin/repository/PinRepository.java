@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import sws.songpin.domain.member.entity.Member;
-import sws.songpin.domain.model.Visibility;
+import sws.songpin.domain.pin.dto.response.PinFeedUnitDto;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.place.entity.Place;
 import sws.songpin.domain.song.entity.Song;
@@ -24,7 +24,7 @@ public interface PinRepository extends JpaRepository <Pin, Long> {
     Page<Pin> findAllBySongAndCreator(Song song, Member creator, Pageable pageable);
     @Query("SELECT p.pinId, p.song.songId, p.song.title, p.song.artist, p.song.imgPath, p.listenedDate, p.place.placeName, p.place.latitude, p.place.longitude, p.genre.genreName, p.creator.memberId, p.memo, p.visibility " +
             "FROM Pin p WHERE p.creator = :creator ORDER BY p.listenedDate DESC")
-    Page<Pin> findPinFeed(@Param("creator") Member creator, Pageable pageable);
+    Page<Object[]> findPinFeed(@Param("creator") Member creator, Pageable pageable);
     List<Pin> findAllByPlace(Place place);
     @Query("SELECT p FROM Pin p WHERE p.creator = :creator AND YEAR(p.listenedDate) = :year AND MONTH(p.listenedDate) = :month")
     List<Pin> findAllByCreatorAndDate(@Param("creator") Member creator, @Param("year") int year, @Param("month") int month);
@@ -56,5 +56,5 @@ public interface PinRepository extends JpaRepository <Pin, Long> {
                     "WHERE (REPLACE(s.title, ' ', '') LIKE %:keywordNoSpaces% OR REPLACE(s.artist, ' ', '') LIKE %:keywordNoSpaces%) " +
                     "AND p.creator_id = :currentMemberId",
             nativeQuery = true)
-    Page<Object[]> findAllBySongNameOrArtistContainingIgnoreSpaces(@Param("currentMemberId") Long currentMemberId, @Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
+    Page<Object[]>  findAllBySongNameOrArtistContainingIgnoreSpaces(@Param("currentMemberId") Long currentMemberId, @Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
 }

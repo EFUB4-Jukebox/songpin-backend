@@ -132,7 +132,7 @@ public class PinService {
         }
         Page<SongDetailsPinDto> songDetailsPinPage = pinPage.map(pin -> {
             Boolean isMine = pin.getCreator().getMemberId().equals(currentMemberId);
-            String memo = getMemoContent(pin, isMine);
+            String memo = getMemoContent(pin.getMemo(), pin.getVisibility(), isMine);
             return SongDetailsPinDto.from(pin, memo, isMine);
         });
         return SongDetailsPinListResponseDto.from(songDetailsPinPage);
@@ -140,9 +140,9 @@ public class PinService {
 
     // 타 유저 핀피드 조회
     @Transactional(readOnly = true)
-    public PinFeedListResponseDto getPublicPinFeed(Long memberId, Pageable pageable) {
+    public PinFeedListResponseDto getMemberPinFeed(Long memberId, Pageable pageable) {
         Member targetMember = memberService.getMemberById(memberId);
-        Page<Pin> pinFeedPage = pinRepository.findPinFeed(targetMember, pageable);
+        Page<Object[]> pinFeedPage = pinRepository.findPinFeed(targetMember, pageable);
         return getPinFeedResponse(pinFeedPage, false);
     }
 
@@ -150,24 +150,41 @@ public class PinService {
     @Transactional(readOnly = true)
     public PinFeedListResponseDto getMyPinFeed(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
-        Page<Pin> pinFeedPage = pinRepository.findPinFeed(currentMember, pageable);
+        Page<Object[]> pinFeedPage = pinRepository.findPinFeed(currentMember, pageable);
         return getPinFeedResponse(pinFeedPage, true);
     }
 
     // 핀피드 조회 공통 메서드
     @Transactional(readOnly = true)
-    public PinFeedListResponseDto getPinFeedResponse(Page<Pin> pinFeedPage, boolean isMine) {
-        Page<PinFeedUnitDto> pinFeedUnitPage = pinFeedPage.map(pin -> {
-            String memo = getMemoContent(pin, isMine);
-            return PinFeedUnitDto.from(pin, memo, isMine);
+    public PinFeedListResponseDto getPinFeedResponse(Page<Object[]> pinFeedPage, boolean isMine) {
+        Page<PinFeedUnitDto> pinFeedUnitPage = pinFeedPage.map(objects -> {
+            PinFeedUnitDto pinFeedUnitDto = new PinFeedUnitDto(
+                    ((Number) objects[0]).longValue(),
+                    new SongInfoDto(
+                            ((Number) objects[1]).longValue(),
+                            (String) objects[2],
+                            (String) objects[3],
+                            (String) objects[4]
+                    ),
+                    ((java.sql.Date) objects[5]).toLocalDate(),
+                    (String) objects[6],
+                    ((Number) objects[7]).doubleValue(),
+                    ((Number) objects[8]).doubleValue(),
+                    GenreName.valueOf((String) objects[9]),
+                    (String) objects[10],
+                    Visibility.valueOf((String) objects[11]),
+                    isMine
+            );
+            String memo = getMemoContent(pinFeedUnitDto.memo(), pinFeedUnitDto.visibility(), isMine);
+            return pinFeedUnitDto.withMemo(memo);
         });
         return PinFeedListResponseDto.from(pinFeedUnitPage);
     }
 
     // 내 메모 또는 공개메모핀이 아니면 "비공개인 메모입니다." 반환
     @Transactional(readOnly = true)
-    public String getMemoContent(Pin pin, boolean isMine) {
-        return (isMine || pin.getVisibility() == Visibility.PUBLIC) ? pin.getMemo() : "비공개인 메모입니다.";
+    private String getMemoContent(String memo, Visibility visibility, boolean isMine) {
+        return (isMine || visibility == Visibility.PUBLIC) ? memo : "비공개인 메모입니다.";
     }
 
     // 마이페이지 캘린더

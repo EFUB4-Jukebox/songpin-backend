@@ -46,10 +46,10 @@ public class MemberController {
         return ResponseEntity.ok(playlistService.getAllPlaylists(memberId));
     }
 
-    @Operation(summary = "타 유저의 공개 핀 피드 조회", description = "타 유저의 공개 핀 피드를 조회합니다.")
+    @Operation(summary = "타 유저의 핀 피드 조회", description = "타 유저의 핀 피드를 조회합니다.")
     @GetMapping("/{memberId}/feed")
-    public ResponseEntity<?> getPublicFeedPins(@PathVariable("memberId") Long memberId, @PageableDefault(size = 20) Pageable pageable) {
-        return ResponseEntity.ok(pinService.getPublicPinFeed(memberId, pageable));
+    public ResponseEntity<?> getMemberFeedPins(@PathVariable("memberId") Long memberId, @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(pinService.getMemberPinFeed(memberId, pageable));
     }
 
     @Operation(summary = "유저의 팔로잉 목록 조회", description = "유저의 팔로잉 목록을 불러옵니다.")
