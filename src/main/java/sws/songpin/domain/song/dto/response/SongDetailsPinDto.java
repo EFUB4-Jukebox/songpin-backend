@@ -20,8 +20,8 @@ public record SongDetailsPinDto(
     public static SongDetailsPinDto from(Pin pin, Boolean isMine) {
         return new SongDetailsPinDto(
                 pin.getPinId(),
-                pin.getMember().getMemberId(),
-                pin.getMember().getNickname(),
+                pin.getCreator().getMemberId(),
+                pin.getCreator().getNickname(),
                 pin.getListenedDate(),
                 pin.getMemo(),
                 pin.getVisibility(),

@@ -76,16 +76,16 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
             p.placeId, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
-        JOIN p.pins pin ON pin.member.memberId = :memberId
-        LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.member.memberId = :memberId AND latestPin.listenedDate = (
+        JOIN p.pins pin ON pin.creator.memberId = :memberId
+        LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.creator.memberId = :memberId AND latestPin.listenedDate = (
             SELECT MAX(innerPin.listenedDate)
             FROM Pin innerPin
-            WHERE innerPin.place = p AND innerPin.member.memberId = :memberId
+            WHERE innerPin.place = p AND innerPin.creator.memberId = :memberId
         )
         GROUP BY p.placeId, p.latitude, p.longitude, latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         ORDER BY latestPin.listenedDate DESC, p.placeId DESC
     """)
-    Slice<MapPlaceProjectionDto> findPlacesWithLatestPinsByMember(Long memberId, Pageable pageable);
+    Slice<MapPlaceProjectionDto> findPlacesWithLatestPinsByCreator(Long memberId, Pageable pageable);
 
     //// 통계 페이지
     // 모든 장르 통틀어 가장 핀이 많이 등록된 장소 가져오기

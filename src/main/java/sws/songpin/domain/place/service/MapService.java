@@ -85,7 +85,7 @@ public class MapService {
     // 유저가 핀을 등록한 장소 좌표들 가져오기
     public MapPlaceFetchResponseDto getMapPlacesOfMember(Long memberId) {
         Pageable pageable = PageRequest.of(0, 300);
-        Slice<MapPlaceProjectionDto> dtoSlice = mapPlaceRepository.findPlacesWithLatestPinsByMember(memberId, pageable);
+        Slice<MapPlaceProjectionDto> dtoSlice = mapPlaceRepository.findPlacesWithLatestPinsByCreator(memberId, pageable);
         return MapPlaceFetchResponseDto.from(dtoSlice);
     }
 }

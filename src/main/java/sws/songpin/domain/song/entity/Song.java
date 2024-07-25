@@ -34,7 +34,7 @@ public class Song {
     @Column(name = "provider_track_code")
     private String providerTrackCode;
 
-    @Column(name = "avg_genre", length = 30)
+    @Column(name = "avg_genre_name", length = 30)
     @Enumerated(EnumType.STRING)
     private GenreName avgGenreName;
 
