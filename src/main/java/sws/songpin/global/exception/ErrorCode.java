@@ -38,7 +38,7 @@ public enum ErrorCode {
     // 만료된 토큰
     EXPIRED_TOKEN(401,"만료된 토큰입니다."),
     // 탈퇴한 회원
-    ALREADY_DELETED_MEMBER(401, "탈퇴한 회원입니다."),
+    MEMBER_STATUS_DELETED(401, "탈퇴한 회원입니다."),
 
     // 404 Not Found
     // 각 리소스를 찾지 못함
@@ -58,7 +58,7 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTS(409, "이미 가입된 이메일입니다."),
     FOLLOW_ALREADY_EXISTS(409, "이미 팔로우하고 있습니다."),
     BOOKMARK_ALREADY_EXISTS(409, "이미 북마크가 되어있습니다."),
-    PIN_ALREADY_EXISTS(409, "이미 플레이리스트에 추가된 핀입니다."),
+    PLAYLIST_PIN_ALREADY_EXISTS(409, "이미 플레이리스트에 추가된 핀입니다."),
     HANDLE_ALREADY_EXISTS(409,"이미 존재하는 핸들입니다."),
 
     // 500 Internal Server Error

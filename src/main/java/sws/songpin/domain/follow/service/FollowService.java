@@ -3,7 +3,6 @@ package sws.songpin.domain.follow.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sws.songpin.domain.alarm.entity.AlarmType;
 import sws.songpin.domain.alarm.service.AlarmService;
 import sws.songpin.domain.follow.dto.request.FollowAddRequestDto;
 import sws.songpin.domain.follow.dto.response.FollowAddResponseDto;
@@ -12,11 +11,11 @@ import sws.songpin.domain.follow.dto.response.FollowListResponseDto;
 import sws.songpin.domain.follow.entity.Follow;
 import sws.songpin.domain.follow.repository.FollowRepository;
 import sws.songpin.domain.member.entity.Member;
+import sws.songpin.domain.member.entity.Status;
 import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
-import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +31,8 @@ public class FollowService {
 
     // 팔로우 추가
     public FollowAddResponseDto addFollow(FollowAddRequestDto followAddRequestDto){
-        Member follower = memberService.getMemberById(followAddRequestDto.followerId());
-        Member following = memberService.getMemberById(followAddRequestDto.followingId());
+        Member follower = memberService.getCurrentMember();
+        Member following = memberService.getActiveMemberById(followAddRequestDto.targetMemberId());
 
         if (!follower.equals(memberService.getCurrentMember())){ // follower가 자신이어야 함
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
@@ -60,7 +59,7 @@ public class FollowService {
 
     // 특정 사용자의 팔로잉/팔로워 목록 조회
     public FollowListResponseDto getFollowList(Long memberId, boolean isFollowingList) {
-        Member targetMember = memberService.getMemberById(memberId);
+        Member targetMember = memberService.getActiveMemberById(memberId);
         Member currentMember = memberService.getCurrentMember();
         Map<Member, Long> currentMemberFollowingCache = getMemberFollowingCache(currentMember);
         List<Follow> followList = isFollowingList ? findAllFollowingsOfMember(targetMember) : findAllFollowersOfMember(targetMember);
@@ -114,6 +113,7 @@ public class FollowService {
     public long getFollowerCount(Member member){
         return followRepository.countByFollowing(member);
     }
+
     @Transactional(readOnly = true)
     public long getFollowingCount(Member member){
         return followRepository.countByFollower(member);
@@ -123,5 +123,11 @@ public class FollowService {
     public Long getFollowId(Member follower, Member following){
         return followRepository.findByFollowerAndFollowing(follower,following)
                 .orElseThrow(()-> new CustomException(ErrorCode.FOLLOW_NOT_FOUND)).getFollowId();
+    }
+
+    //회원의 팔로워 및 팔로잉 모두 삭제
+    public void deleteAllFollowsOfMember(Member member){
+        followRepository.deleteAllByFollower(member);
+        followRepository.deleteAllByFollowing(member);
     }
 }

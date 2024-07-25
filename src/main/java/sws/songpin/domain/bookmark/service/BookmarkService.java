@@ -11,6 +11,7 @@ import sws.songpin.domain.bookmark.repository.BookmarkRepository;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.bookmark.dto.response.BookmarkListResponseDto;
+import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.playlist.dto.response.PlaylistUnitDto;
 import sws.songpin.domain.playlist.entity.Playlist;
 import sws.songpin.domain.playlist.service.PlaylistService;
@@ -34,6 +35,9 @@ public class BookmarkService {
     public BookmarkAddResponseDto createBookmark(BookmarkAddRequestDto requestDto) {
         Member member = memberService.getCurrentMember();
         Playlist playlist = playlistService.findPlaylistById(requestDto.playlistId());
+        if (!member.equals(playlist.getCreator()) && playlist.getVisibility().equals(Visibility.PRIVATE)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
+        }
         getBookmarkByPlaylistAndMember(playlist, member).ifPresent(bookmark -> {
             throw new CustomException(ErrorCode.BOOKMARK_ALREADY_EXISTS);
         });
@@ -57,11 +61,14 @@ public class BookmarkService {
     public BookmarkListResponseDto getAllBookmarks() {
         Member currentMember = memberService.getCurrentMember();
         List<Bookmark> bookmarks = bookmarkRepository.findAllByMember(currentMember);
-        List<PlaylistUnitDto> bookmarkList = bookmarks.stream().map(bookmark -> {
-            Playlist playlist = bookmark.getPlaylist();
-            List<String> imgPathList = playlistService.getPlaylistThumbnailImgPathList(playlist);
-            return PlaylistUnitDto.from(playlist, imgPathList, true);
-        }).collect(Collectors.toList());
+        List<PlaylistUnitDto> bookmarkList = bookmarks.stream()
+                .map(bookmark -> bookmark.getPlaylist())
+                .filter(playlist -> playlist.getVisibility() == Visibility.PUBLIC || playlist.getCreator().equals(currentMember))
+                .map(playlist -> {
+                    List<String> imgPathList = playlistService.getPlaylistThumbnailImgPathList(playlist);
+                    return PlaylistUnitDto.from(playlist, imgPathList, true);
+                })
+                .collect(Collectors.toList());
         return BookmarkListResponseDto.from(bookmarkList);
     }
 
@@ -74,5 +81,9 @@ public class BookmarkService {
     public Bookmark findBookmarkById(Long bookmarkId) {
         return bookmarkRepository.findById(bookmarkId)
                 .orElseThrow(() -> new CustomException(ErrorCode.BOOKMARK_NOT_FOUND));
+    }
+
+    public void deleteAllBookmarksOfMember(Member member){
+        bookmarkRepository.deleteAllByMember(member);
     }
 }

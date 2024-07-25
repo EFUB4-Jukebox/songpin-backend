@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.member.dto.response.MemberSearchResponseDto;
 import sws.songpin.domain.member.dto.response.MemberUnitDto;
 import sws.songpin.domain.member.entity.Member;
+import sws.songpin.domain.member.entity.Status;
 import sws.songpin.domain.member.repository.MemberRepository;
+import sws.songpin.global.auth.CustomUserDetails;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
@@ -37,14 +39,27 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Member getCurrentMember(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return memberRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_AUTHENTICATED));
+        Member member = ((CustomUserDetails) authentication.getPrincipal()).getMember();
+        if (member == null)
+            throw new CustomException(ErrorCode.NOT_AUTHENTICATED);
+        if (member.getStatus().equals(Status.DELETED))
+            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
+        return member;
     }
 
     @Transactional(readOnly = true)
     public Member getMemberById(Long memberId){
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public Member getActiveMemberById(Long memberId){
+        Member member = getMemberById(memberId);
+        if (member.getStatus().equals(Status.DELETED)) {
+            throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
+        }
+        return member;
     }
 
     @Transactional(readOnly = true)
