@@ -29,7 +29,7 @@ public class AlarmService {
     private final MemberService memberService;
 
     // 최근 알림 목록 읽어오기
-    public AlarmListResponseDto getRecentAlarms(){
+    public AlarmListResponseDto getAndReadRecentAlarms(){
         Pageable pageable = PageRequest.of(0, 30);
         List<AlarmUnitDto> alarmUnitDtos = getAndReadAlarms(pageable);
         return AlarmListResponseDto.fromAlarmUnitDto(alarmUnitDtos);
