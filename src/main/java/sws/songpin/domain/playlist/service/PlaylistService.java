@@ -60,6 +60,9 @@ public class PlaylistService {
     public PlaylistDetailsResponseDto getPlaylist(Long playlistId) {
         Member currentMember = memberService.getCurrentMember();
         Playlist playlist = findPlaylistById(playlistId);
+        if (!currentMember.equals(playlist.getCreator()) && playlist.getVisibility() == Visibility.PRIVATE) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
+        }
         List<PlaylistPin> playlistPinList = playlist.getPlaylistPins();
         // imgPathList, pinList
         List<PlaylistPinUnitDto> pinList = new ArrayList<>();
