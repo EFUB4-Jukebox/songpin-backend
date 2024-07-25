@@ -32,17 +32,12 @@ public class ProfileService {
 
     @Transactional(readOnly = true)
     public MemberProfileResponseDto getMemberProfile(Long memberId){
-        Member member = memberService.getMemberById(memberId);
+        Member member = memberService.getActiveMemberById(memberId);
         Member currentMember = memberService.getCurrentMember();
 
         //조회하려는 회원이 본인인 경우 예외 처리
         if(member.equals(currentMember)){
             throw new CustomException(ErrorCode.MEMBER_BAD_REQUEST);
-        }
-
-        //조회하려는 회원이 탈퇴한 경우 예외 처리
-        if(member.getStatus().equals(Status.DELETED)){
-            throw new CustomException(ErrorCode.ALREADY_DELETED_MEMBER);
         }
 
         //팔로워 수
@@ -105,13 +100,13 @@ public class ProfileService {
         memberService.saveMember(member);
 
         //follow 테이블 데이터 삭제
-        followService.deleteAllFollowerAndFollowingOfMember(member);
+        followService.deleteAllFollowsOfMember(member);
 
         //bookmark 테이블 데이터 삭제
-        bookmarkService.deleteAllBookmarkOfMember(member);
+        bookmarkService.deleteAllBookmarksOfMember(member);
 
         //alarm 테이블 데이터 삭제
-        alarmService.deleteAllAlarmOfMember(member);
+        alarmService.deleteAllAlarmsOfMember(member);
 
         //Redis에서 Refresh Token 삭제
         redisService.deleteValues(member.getEmail());

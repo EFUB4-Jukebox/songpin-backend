@@ -53,7 +53,8 @@ public class AlarmService {
         return AlarmListResponseDto.fromAlarmUnitDto(alarmUnitDtos);
     }
 
-    public void deleteAllAlarmOfMember(Member member){
+    public void deleteAllAlarmsOfMember(Member member){
+        alarmRepository.deleteAllBySender(member);
         alarmRepository.deleteAllByReceiver(member);
     }
 

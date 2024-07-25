@@ -38,7 +38,7 @@ public enum ErrorCode {
     // 만료된 토큰
     EXPIRED_TOKEN(401,"만료된 토큰입니다."),
     // 탈퇴한 회원
-    ALREADY_DELETED_MEMBER(401, "탈퇴한 회원입니다."),
+    MEMBER_STATUS_DELETED(401, "탈퇴한 회원입니다."),
 
     // 404 Not Found
     // 각 리소스를 찾지 못함
