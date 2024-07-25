@@ -16,4 +16,5 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     List<Bookmark> findAllByMember(Member member);
     @Query("SELECT b.playlist.playlistId FROM Bookmark b WHERE b.member = :member AND b.playlist.playlistId IN :playlistIds")
     List<Long> findBookmarkedPlaylistIdsByMemberAndPlaylistIds(@Param("member") Member member, @Param("playlistIds") List<Long> playlistIds);
+    void deleteAllByMember(Member member);
 }

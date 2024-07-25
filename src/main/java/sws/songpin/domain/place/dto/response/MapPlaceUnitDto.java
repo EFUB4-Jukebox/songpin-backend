@@ -8,8 +8,8 @@ public record MapPlaceUnitDto(
         Double latitude,
         Double longitude,
         Long placePinCount,
-        Long songId,
-        GenreName genreName
+        Long latestSongId,
+        GenreName latestGenreName
 ){
     public static MapPlaceUnitDto from(MapPlaceProjectionDto dto) {
         return new MapPlaceUnitDto(dto.placeId(), dto.latitude(), dto.longitude(), dto.placePinCount(), dto.songId(), dto.genreName());
