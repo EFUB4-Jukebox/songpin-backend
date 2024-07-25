@@ -14,8 +14,8 @@ import sws.songpin.domain.member.dto.response.TokenDto;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.entity.Status;
 import sws.songpin.domain.member.repository.MemberRepository;
-import sws.songpin.global.auth.CustomUserDetailsService;
 import sws.songpin.global.auth.JwtUtil;
+import sws.songpin.global.auth.RedisService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
@@ -30,7 +30,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-    private final CustomUserDetailsService userDetailsService;
+    private final RedisService redisService;
 
     public void signUp(SignUpRequestDto requestDto) {
 
@@ -68,12 +68,34 @@ public class AuthService {
                     )
             );
 
-            TokenDto responseDto = new TokenDto(jwtUtil.generateAccessToken(authentication), jwtUtil.generateRefreshToken(authentication) );
-
-            return responseDto;
+            return new TokenDto(jwtUtil.generateAccessToken(authentication), jwtUtil.generateRefreshToken(authentication) );
         } catch (BadCredentialsException e){
             throw new CustomException(ErrorCode.LOGIN_FAIL);
         }
+    }
+
+    public TokenDto reissueToken(String accessToken, String refreshToken){
+
+        //Access Token 이 아직 만료되지 않은 경우 예외 처리
+        if(!jwtUtil.isTokenExpired(accessToken)){
+            throw new CustomException(ErrorCode.ACCESS_TOKEN_NOT_EXPIRED);
+        }
+
+        //쿠키의 Refresh Token 유효성 검사
+        jwtUtil.validateRefreshToken(refreshToken);
+
+        //Access Token 에 담긴 Authentication 과 매치되는 Refresh Token 을 Redis 에서 조회
+        Authentication authentication = jwtUtil.getAuthentication(accessToken);
+        String storedRefreshToken = (String) redisService.getValues(authentication.getName());
+
+        //쿠키의 Refresh Token 과 Redis의 Refresh Token 비교
+        if(!(refreshToken.equals(storedRefreshToken))){
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
+
+        //Access Token 및 Refresh Token 재발급
+        return new TokenDto(jwtUtil.generateAccessToken(authentication), jwtUtil.generateRefreshToken(authentication) );
+
     }
 
     @Transactional(readOnly = true)

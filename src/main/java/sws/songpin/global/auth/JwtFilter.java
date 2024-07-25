@@ -30,7 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             try{
                 if(jwtUtil.validateAccessToken(accessToken)){
-                    Authentication authentication = jwtUtil.getAuthentication(accessToken,true);
+                    Authentication authentication = jwtUtil.getAuthentication(accessToken);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (RedisConnectionFailureException e){

@@ -2,7 +2,7 @@ package sws.songpin.domain.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import sws.songpin.domain.member.dto.request.LoginRequestDto;
 import sws.songpin.domain.member.dto.request.SignUpRequestDto;
 import sws.songpin.domain.member.dto.response.LoginResponseDto;
+import sws.songpin.domain.member.dto.response.ReissueResponseDto;
 import sws.songpin.domain.member.dto.response.TokenDto;
 import sws.songpin.domain.member.service.AuthService;
+import sws.songpin.global.auth.CookieUtil;
 import sws.songpin.global.auth.RedisService;
+import sws.songpin.global.exception.CustomException;
+import sws.songpin.global.exception.ErrorCode;
 
 @Tag(name = "Auth", description = "인증 관련 API입니다.")
 @RestController
@@ -26,6 +30,7 @@ import sws.songpin.global.auth.RedisService;
 public class AuthController {
     private final AuthService authService;
     private final RedisService redisService;
+    private final CookieUtil cookieUtil;
 
     @Operation(summary = "회원가입", description = "회원 가입을 통해 유저 생성")
     @PostMapping("/signup")
@@ -39,13 +44,7 @@ public class AuthController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDto requestDto, HttpServletResponse response){
         TokenDto tokenDto = authService.login(requestDto);
 
-        Cookie refreshTokenCookie = new Cookie("refreshToken", tokenDto.refreshToken());
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(tokenDto.refreshTokenMaxAge());
-
-        response.addCookie(refreshTokenCookie);
+        cookieUtil.addCookie(response, "refreshToken", tokenDto.refreshToken(), tokenDto.refreshTokenMaxAge());
 
         return ResponseEntity.ok(new LoginResponseDto(tokenDto.accessToken()));
     }
@@ -55,6 +54,30 @@ public class AuthController {
     public ResponseEntity<?> logout(HttpServletResponse response){
 
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "토큰 재발급", description = "Access Token 만료 시 Refresh Token 을 이용하여 Access Token 및 Refresh Token 재발급")
+    @PostMapping("/token")
+    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response){
+
+        //헤더에서 Access Token 추출
+        String bearerToken = request.getHeader("Authorization");
+        if(bearerToken == null || !bearerToken.startsWith("Bearer ")){
+            throw new CustomException(ErrorCode.NOT_AUTHENTICATED);
+        }
+        String accessToken = bearerToken.substring(7);
+
+        //쿠키에서 Refresh Token 추출
+        String refreshToken = cookieUtil.getCookieValue(request,"refreshToken");
+
+        //토큰 재발급 서비스 로직
+        TokenDto tokenDto = authService.reissueToken(accessToken,refreshToken);
+
+        //새로 발급 받은 리프레시 토큰을 쿠키에 설정
+        cookieUtil.addCookie(response, "refreshToken", tokenDto.refreshToken(), tokenDto.refreshTokenMaxAge());
+
+        //새로 발급 받은 어세스 토큰을 Response Body를 통해 전달
+        return ResponseEntity.ok(new ReissueResponseDto(tokenDto.accessToken()));
     }
 
     @Operation(summary = "refresh 토큰 저장 테스트", description = "로그인 후 refresh Token이 Redis에 잘 저장되었는지 확인 후 refresh token 반환")

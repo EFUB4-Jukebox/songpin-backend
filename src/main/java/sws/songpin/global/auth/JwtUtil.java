@@ -76,10 +76,9 @@ public class JwtUtil {
         }
     }
 
-    public boolean validateRefreshToken(String refreshToken){
+    public void validateRefreshToken(String refreshToken){
         try{
             Jwts.parserBuilder().setSigningKey(refreshKey).build().parseClaimsJws(refreshToken);
-            return true;
         } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e){
             throw new CustomException(ErrorCode.INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
@@ -87,14 +86,33 @@ public class JwtUtil {
         }
     }
 
-    public Authentication getAuthentication(String token, boolean isAccessToken){
-        String userPrincipal = Jwts.parserBuilder()
-                .setSigningKey(isAccessToken? accessKey:refreshKey)
-                .build().parseClaimsJws(token)
-                .getBody().getSubject();
-        UserDetails userDetails = userDetailsService.loadUserByUsername(userPrincipal);
+    public Authentication getAuthentication(String token){
+        try{
+            String userPrincipal = Jwts.parserBuilder()
+                    .setSigningKey(accessKey)
+                    .build().parseClaimsJws(token)
+                    .getBody().getSubject();
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userPrincipal);
 
-        return new UsernamePasswordAuthenticationToken(userDetails,"",userDetails.getAuthorities());
+            return new UsernamePasswordAuthenticationToken(userDetails,"",userDetails.getAuthorities());
+        } catch (ExpiredJwtException e){
+            String userPrincipal = e.getClaims().getSubject();
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userPrincipal);
+
+            return new UsernamePasswordAuthenticationToken(userDetails,"",userDetails.getAuthorities());
+        }
+    }
+
+    //Access Token 재발급에서 사용
+    public boolean isTokenExpired(String accessToken) {
+        try {
+            Claims claims = Jwts.parser().setSigningKey(accessKey).parseClaimsJws(accessToken).getBody();
+            return claims.getExpiration().before(new Date());
+        } catch (ExpiredJwtException e){
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
     }
 
 }
