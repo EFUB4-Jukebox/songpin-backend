@@ -15,6 +15,8 @@ import sws.songpin.domain.place.dto.request.MapFetchRecentPeriodRequestDto;
 import sws.songpin.domain.place.dto.response.MapPlaceFetchResponseDto;
 import sws.songpin.domain.place.dto.projection.MapPlaceProjectionDto;
 import sws.songpin.domain.place.repository.MapPlaceRepository;
+import sws.songpin.global.exception.CustomException;
+import sws.songpin.global.exception.ErrorCode;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -39,10 +41,10 @@ public class MapService {
         LocalDate startDate;
         LocalDate endDate = LocalDate.now();
         switch (requestDto.periodFilter()) {
-            case "week" -> startDate = endDate.minusWeeks(1);
-            case "month" -> startDate = endDate.minusMonths(1);
-            case "threeMonths"-> startDate = endDate.minusMonths(3);
-            default -> throw new IllegalArgumentException("Invalid period filter: " + requestDto.periodFilter());
+            case WEEK -> startDate = endDate.minusWeeks(1);
+            case MONTH -> startDate = endDate.minusMonths(1);
+            case THREE_MONTHS-> startDate = endDate.minusMonths(3);
+            default -> throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
         }
         List<GenreName> genreNameList =  getSelectedGenreNames(requestDto.genreNameFilters());
         Slice<MapPlaceProjectionDto> dtoSlice = getMapPlaceSlicesWithinBoundsAndDateRange(requestDto.boundCoords(), genreNameList, startDate, endDate);
