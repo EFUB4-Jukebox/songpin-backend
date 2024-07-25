@@ -55,7 +55,7 @@ public class AuthService {
         String handle = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 12);
 
         //Member 객체 생성 후 저장
-        Member member = requestDto.toEntity(handle, passwordEncoder.encode(requestDto.password()));
+        Member member = requestDto.toEntity(handle, encodePassword(requestDto.password()));
         memberRepository.save(member);
     }
 
@@ -101,6 +101,10 @@ public class AuthService {
     @Transactional(readOnly = true)
     public boolean checkPassword(Member member, String password){
         return passwordEncoder.matches(password, member.getPassword());
+    }
+
+    public String encodePassword(String password){
+        return passwordEncoder.encode(password);
     }
 
 }
