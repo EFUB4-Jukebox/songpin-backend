@@ -43,8 +43,8 @@ public class PlaylistService {
 
     // 플레이리스트 생성
     public PlaylistAddResponseDto createPlaylist(PlaylistAddRequestDto requestDto) {
-        Member creator = memberService.getCurrentMember();
-        Playlist playlist = requestDto.toEntity(creator);
+        Member currentMember = memberService.getCurrentMember();
+        Playlist playlist = requestDto.toEntity(currentMember);
         Playlist savedPlaylist = playlistRepository.save(playlist);
         return PlaylistAddResponseDto.from(savedPlaylist);
     }

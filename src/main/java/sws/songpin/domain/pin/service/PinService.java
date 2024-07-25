@@ -1,8 +1,6 @@
 package sws.songpin.domain.pin.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.genre.entity.Genre;
@@ -51,7 +49,7 @@ public class PinService {
 
     // 음악 핀 생성 - 노래, 장소가 없다면 추가하기
     public Long createPin(PinAddRequestDto pinAddRequestDto) {
-        Member creator = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Song finalSong = songService.getOrCreateSong(pinAddRequestDto.song());
         Place finalPlace = placeService.getOrCreatePlace(pinAddRequestDto.place());
         Genre genre = genreService.getGenreByGenreName(pinAddRequestDto.genreName());
@@ -60,7 +58,7 @@ public class PinService {
                 .listenedDate(pinAddRequestDto.listenedDate())
                 .memo(pinAddRequestDto.memo())
                 .visibility(pinAddRequestDto.visibility())
-                .creator(creator)
+                .creator(currentMember)
                 .song(finalSong)
                 .place(finalPlace)
                 .genre(genre)
@@ -77,7 +75,6 @@ public class PinService {
         Pin pin = validatePinCreator(pinId);
         Genre genre = genreService.getGenreByGenreName(pinUpdateRequestDto.genreName());
         pin.updatePin(pinUpdateRequestDto.listenedDate(), pinUpdateRequestDto.memo(), pinUpdateRequestDto.visibility(), genre);
-        updateSongAvgGenreName(pin.getSong());
         pinRepository.save(pin);
 
         return pin.getSong().getSongId();
