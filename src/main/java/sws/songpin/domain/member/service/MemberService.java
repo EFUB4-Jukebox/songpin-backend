@@ -1,6 +1,7 @@
 package sws.songpin.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -16,6 +17,7 @@ import sws.songpin.global.auth.CustomUserDetails;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -37,13 +39,13 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Member getCurrentMember(){
+    public Member getCurrentMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Member member = ((CustomUserDetails) authentication.getPrincipal()).getMember();
-        if (member == null)
-            throw new CustomException(ErrorCode.NOT_AUTHENTICATED);
-        if (member.getStatus().equals(Status.DELETED))
-            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
+        Member member = memberRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_AUTHENTICATED));
+        if (member.getStatus().equals(Status.DELETED)) {
+            throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
+        }
         return member;
     }
 
