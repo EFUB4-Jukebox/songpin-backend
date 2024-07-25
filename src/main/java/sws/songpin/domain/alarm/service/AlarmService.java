@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sws.songpin.domain.alarm.dto.response.AlarmCheckResponseDto;
 import sws.songpin.domain.alarm.dto.response.AlarmUnitDto;
 import sws.songpin.domain.alarm.dto.ssedata.AlarmFollowDataDto;
 import sws.songpin.domain.alarm.dto.response.AlarmListResponseDto;
@@ -28,6 +29,20 @@ public class AlarmService {
     private final EmitterService emitterService;
     private final MemberService memberService;
 
+    // 안 읽은 알림 존재 여부 확인
+    public AlarmCheckResponseDto checkForUnreadAlarms() {
+        Member currentMember = memberService.getCurrentMember();
+        boolean isUnchecked = alarmRepository.existsByReceiverAndIsReadFalse(currentMember);
+        return new AlarmCheckResponseDto(isUnchecked);
+    }
+
+    // 최근 알림 목록 읽어오기
+    public AlarmListResponseDto getRecentAlarms(){
+        Pageable pageable = PageRequest.of(0, 30);
+        List<AlarmUnitDto> alarmUnitDtos = getAndReadAlarms(pageable);
+        return AlarmListResponseDto.fromAlarmUnitDto(alarmUnitDtos);
+    }
+
     // 일반 알림 생성 (message, sender는 필수 요소 x)
     public void createAlarm(AlarmType alarmType, String message, Member sender, Member receiver, Object data) {
         Alarm alarm = Alarm.builder()
@@ -47,22 +62,15 @@ public class AlarmService {
         createAlarm(AlarmType.FOLLOW, alarmMessage, follower, following, AlarmFollowDataDto.from(follower));
     }
 
-    // 최근 알림 목록 읽어오기
-    public AlarmListResponseDto getAlarmList(){
-        List<AlarmUnitDto> alarmUnitDtos = getAndReadAlarms();
-        return AlarmListResponseDto.fromAlarmUnitDto(alarmUnitDtos);
-    }
-
     public void deleteAllAlarmsOfMember(Member member){
         alarmRepository.deleteAllBySender(member);
         alarmRepository.deleteAllByReceiver(member);
     }
 
-    private List<AlarmUnitDto> getAndReadAlarms() {
+    private List<AlarmUnitDto> getAndReadAlarms(Pageable pageable) {
         List<AlarmUnitDto> alarmList = new ArrayList<>();
-        Member member = memberService.getCurrentMember();
-        Pageable pageable = PageRequest.of(0, 30);
-        Slice<Alarm> alarmSlice = alarmRepository.findByReceiverOrderByCreatedTimeDesc(member, pageable);
+        Member currentMember = memberService.getCurrentMember();
+        Slice<Alarm> alarmSlice = alarmRepository.findByReceiverOrderByCreatedTimeDesc(currentMember, pageable);
         if (alarmSlice != null && alarmSlice.hasContent()) {
             for (Alarm alarm : alarmSlice) {
                 alarmList.add(AlarmUnitDto.from(alarm));
