@@ -1,6 +1,5 @@
 package sws.songpin.domain.member.service;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -11,18 +10,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.member.dto.request.LoginRequestDto;
 import sws.songpin.domain.member.dto.request.PasswordResetRequestDto;
-import sws.songpin.domain.member.dto.request.PasswordUpdateRequestDto;
 import sws.songpin.domain.member.dto.request.SignUpRequestDto;
 import sws.songpin.domain.member.dto.response.TokenDto;
 import sws.songpin.domain.member.entity.Member;
-import sws.songpin.domain.member.entity.Status;
-import sws.songpin.domain.member.repository.MemberRepository;
 import sws.songpin.global.auth.JwtUtil;
 import sws.songpin.global.auth.RedisService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -38,7 +33,10 @@ public class AuthService {
     public void signUp(SignUpRequestDto requestDto) {
 
         //이메일 중복 검사
-        if (memberService.getActiveMemberByEmail(requestDto.email()) != null) {
+        if (memberService.checkMemberExistsByEmail(requestDto.email())) {
+
+            //탈퇴한 회원 예외 처리
+            memberService.getActiveMemberByEmail(requestDto.email());
 
             throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }

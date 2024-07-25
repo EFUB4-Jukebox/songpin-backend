@@ -13,7 +13,6 @@ import sws.songpin.domain.member.dto.response.MemberUnitDto;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.entity.Status;
 import sws.songpin.domain.member.repository.MemberRepository;
-import sws.songpin.global.auth.CustomUserDetails;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
@@ -77,6 +76,11 @@ public class MemberService {
             throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
         }
         return member;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean checkMemberExistsByEmail(String email){
+        return memberRepository.existsByEmail(email);
     }
 
     @Transactional(readOnly = true)
