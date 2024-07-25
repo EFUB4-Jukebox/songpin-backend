@@ -27,10 +27,10 @@ public class PlaylistPinService {
         Playlist playlist = playlistService.findPlaylistById(requestDto.playlistId());
         Pin pin = pinService.getPinById(requestDto.pinId());
         // 중복 핀 체크
-        boolean pinExists = playlist.getPlaylistPins().stream()
+        boolean playlistPinExists = playlist.getPlaylistPins().stream()
                 .anyMatch(playlistPin -> playlistPin.getPin().getPinId().equals(pin.getPinId()));
-        if (pinExists) {
-            throw new CustomException(ErrorCode.PIN_ALREADY_EXISTS);
+        if (playlistPinExists) {
+            throw new CustomException(ErrorCode.PLAYLIST_PIN_ALREADY_EXISTS);
         }
         PlaylistPin playlistPin = createPlaylistPin(playlist, pin);
         // modifiedTime 갱신

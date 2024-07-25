@@ -51,7 +51,7 @@ public class PlaceService {
         Pin latestPin = pins.stream()
                 .max(Comparator.comparing(BaseTimeEntity::getCreatedTime))
                 .orElse(null);
-        return PlaceDetailsResponseDto.from(place, latestPin, pins.size(), songUnitDtos);
+        return PlaceDetailsResponseDto.from(place, pins.size(), latestPin, songUnitDtos);
     }
 
     // 장소 검색 (네이티브 쿼리 이용)
