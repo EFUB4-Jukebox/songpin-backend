@@ -6,13 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.alarm.service.AlarmService;
 import sws.songpin.domain.bookmark.service.BookmarkService;
 import sws.songpin.domain.follow.service.FollowService;
+import sws.songpin.domain.member.dto.request.PasswordUpdateRequestDto;
 import sws.songpin.domain.member.dto.request.ProfileDeactivateRequestDto;
 import sws.songpin.domain.member.dto.request.ProfileUpdateRequestDto;
 import sws.songpin.domain.member.dto.response.MemberProfileResponseDto;
 import sws.songpin.domain.member.dto.response.MyProfileResponseDto;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.entity.ProfileImg;
-import sws.songpin.domain.member.entity.Status;
 import sws.songpin.global.auth.RedisService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
@@ -110,6 +110,19 @@ public class ProfileService {
 
         //Redis에서 Refresh Token 삭제
         redisService.deleteValues(member.getEmail());
+    }
+
+    public void updatePassword(PasswordUpdateRequestDto requestDto){
+        Member member = memberService.getCurrentMember();
+
+        //비밀번호 일치 검사
+        if (!requestDto.password().equals(requestDto.confirmPassword())) {
+            throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
+        }
+
+        member.modifyPassword(authService.encodePassword(requestDto.password()));
+
+        memberService.saveMember(member);
     }
 
 }

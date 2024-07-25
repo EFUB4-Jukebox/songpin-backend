@@ -80,4 +80,8 @@ public class Member extends BaseTimeEntity {
         this.nickname = "(알 수 없음)";
         this.handle = handle;
     }
+
+    public void modifyPassword(String encodedPassword){
+        this.password = encodedPassword;
+    }
 }

@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.bookmark.service.BookmarkService;
+import sws.songpin.domain.member.dto.request.PasswordUpdateRequestDto;
 import sws.songpin.domain.member.dto.request.ProfileDeactivateRequestDto;
 import sws.songpin.domain.member.dto.request.ProfileUpdateRequestDto;
 import sws.songpin.domain.member.service.ProfileService;
@@ -77,5 +78,14 @@ public class MyPageController {
 
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "비밀번호 변경", description = "로그인한 회원의 비밀번호를 변경합니다.")
+    @PatchMapping("/pw")
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid PasswordUpdateRequestDto requestDto){
+        profileService.updatePassword(requestDto);
+        return ResponseEntity.ok().build();
+    }
+
+
 
 }
