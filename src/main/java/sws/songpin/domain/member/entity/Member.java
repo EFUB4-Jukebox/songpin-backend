@@ -65,7 +65,6 @@ public class Member extends BaseTimeEntity {
         this.handle= handle;
         this.profileImg = ProfileImg.POP;
         this.status = Status.ACTIVE;
-        //this.isNewAlarm = false;
         this.pins = new ArrayList<>();
     }
 

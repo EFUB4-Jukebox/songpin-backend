@@ -53,6 +53,6 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
                     "WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces%",
             nativeQuery = true)
     Page<Object[]> findAllByPlaceNameContainingIgnoreSpacesOrderByAccuracy(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
-    @Query(value = "SELECT * FROM Place p ORDER BY p.place_id DESC LIMIT 3", nativeQuery = true)
+    @Query(value = "SELECT * FROM place p ORDER BY p.place_id DESC LIMIT 3", nativeQuery = true)
     List<Place> findTop3ByOrderByPlaceIdDesc();
 }

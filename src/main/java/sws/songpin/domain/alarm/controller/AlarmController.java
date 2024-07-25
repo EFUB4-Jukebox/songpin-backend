@@ -24,10 +24,9 @@ public class AlarmController {
         return ResponseEntity.ok(emitterService.subscribe());
     }
 
-    // 신규 알림 목록 읽어오기 API
     @Operation(summary = "알림 목록 조회 및 읽음 처리", description = "알림 목록을 조회하고 읽음 처리합니다.")
-    @PatchMapping("/list")
-    public ResponseEntity<?> getUnreadAlarms() {
-        return ResponseEntity.ok(alarmService.getAlarmList());
+    @PatchMapping
+    public ResponseEntity<?> getRecentAlarms() {
+        return ResponseEntity.ok(alarmService.getAndReadRecentAlarms());
     }
 }

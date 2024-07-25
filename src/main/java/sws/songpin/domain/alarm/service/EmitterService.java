@@ -50,8 +50,10 @@ public class EmitterService {
 
     private void sendToClientIfNewAlarmExists(Member member) {
         Boolean isMissedAlarms = alarmRepository.existsByReceiverAndIsReadFalse(member);
-        if (isMissedAlarms.equals(false)) {
-            sendToClient(member.getMemberId(), AlarmDefaultDataDto.from(member), "new sse alarm exists");
+        if (isMissedAlarms.equals(true)) {
+            sendToClient(member.getMemberId(), AlarmDefaultDataDto.from(true), "new sse alarm exists");
+        } else {
+            sendToClient(member.getMemberId(), AlarmDefaultDataDto.from(false), "new sse alarm doesn't exists");
         }
     }
 
