@@ -24,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(()-> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         if(member.getStatus().equals(Status.DELETED)){
-            throw new CustomException(ErrorCode.ALREADY_DELETED_MEMBER);
+            throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
         }
 
         return new CustomUserDetails(member);
