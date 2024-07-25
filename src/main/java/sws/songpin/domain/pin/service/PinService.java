@@ -48,7 +48,7 @@ public class PinService {
 
     // 음악 핀 생성 - 노래, 장소가 없다면 추가하기
     public Long createPin(PinAddRequestDto pinAddRequestDto) {
-        Member creator = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Song finalSong = songService.getOrCreateSong(pinAddRequestDto.song());
         Place finalPlace = placeService.getOrCreatePlace(pinAddRequestDto.place());
         Genre genre = genreService.getGenreByGenreName(pinAddRequestDto.genreName());
@@ -57,7 +57,7 @@ public class PinService {
                 .listenedDate(pinAddRequestDto.listenedDate())
                 .memo(pinAddRequestDto.memo())
                 .visibility(pinAddRequestDto.visibility())
-                .creator(creator)
+                .creator(currentMember)
                 .song(finalSong)
                 .place(finalPlace)
                 .genre(genre)
