@@ -40,7 +40,7 @@ public class AuthService {
         if (memberOptional.isPresent()) {
 
             if(memberOptional.get().getStatus().equals(Status.DELETED)){
-                throw new CustomException(ErrorCode.ALREADY_DELETED_MEMBER);
+                throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
             }
 
             throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
