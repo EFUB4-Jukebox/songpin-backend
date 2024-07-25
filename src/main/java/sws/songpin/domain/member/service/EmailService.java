@@ -44,7 +44,7 @@ public class EmailService {
         String email = requestDto.email();
 
         //요청받은 이메일로 가입한 회원이 탈퇴하거나 없는 경우 예외 처리
-
+        memberService.getActiveMemberByEmail(email);
 
 
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");

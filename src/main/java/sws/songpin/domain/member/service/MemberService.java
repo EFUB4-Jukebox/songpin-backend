@@ -58,6 +58,21 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
+    public Member getMemberByEmail(String email){
+        return memberRepository.findByEmail(email)
+                .orElseThrow(()-> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public Member getActiveMemberByEmail(String email) {
+        Member member = getMemberByEmail(email);
+        if (member.getStatus().equals(Status.DELETED)) {
+            throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
+        }
+        return member;
+    }
+
+    @Transactional(readOnly = true)
     public boolean checkMemberExistsByHandle(String handle){
         return memberRepository.existsByHandle(handle);
     }
