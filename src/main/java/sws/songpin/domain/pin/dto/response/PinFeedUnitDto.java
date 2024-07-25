@@ -18,7 +18,7 @@ public record PinFeedUnitDto(
         Visibility visibility,
         Boolean isMine
 ) {
-    public static PinFeedUnitDto from(Pin pin, Boolean isMine) {
+    public static PinFeedUnitDto from(Pin pin, String memo, Boolean isMine) {
         return new PinFeedUnitDto(
                 pin.getPinId(),
                 SongInfoDto.from(pin.getSong()),
@@ -27,7 +27,7 @@ public record PinFeedUnitDto(
                 pin.getPlace().getLatitude( ),
                 pin.getPlace().getLongitude(),
                 pin.getGenre().getGenreName(),
-                pin.getMemo(),
+                memo,
                 pin.getVisibility(),
                 isMine
         );

@@ -1,5 +1,7 @@
 package sws.songpin.domain.pin.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,7 +96,7 @@ public class PinService {
     }
 
     public void updateSongAvgGenreName(Song song) {
-        List<Genre> genres = pinRepository.findAllBySong(song).stream()
+        List<Genre> genres = pinRepository.findBySong(song).stream()
                 .map(Pin::getGenre)
                 .collect(Collectors.toList());
         Optional<GenreName> avgGenreName = songService.calculateAvgGenreName(genres);
@@ -126,36 +128,46 @@ public class PinService {
             pinPage = pinRepository.findAllBySongAndCreator(song, currentMember, pageable);
         } else {
             // 전체 핀 보기 - 내 핀 가져오기(visibility 상관없음) + 타유저의 공개 핀 가져오기
-            pinPage = pinRepository.findPinFeed(song, currentMember, Visibility.PUBLIC, pageable);
+            pinPage = pinRepository.findAllBySong(song, pageable);
         }
         Page<SongDetailsPinDto> songDetailsPinPage = pinPage.map(pin -> {
             Boolean isMine = pin.getCreator().getMemberId().equals(currentMemberId);
-            return SongDetailsPinDto.from(pin, isMine);
+            String memo = getMemoContent(pin, isMine);
+            return SongDetailsPinDto.from(pin, memo, isMine);
         });
         return SongDetailsPinListResponseDto.from(songDetailsPinPage);
     }
 
-    // 타 유저의 공개 핀 피드 조회
+    // 타 유저 핀피드 조회
     @Transactional(readOnly = true)
     public PinFeedListResponseDto getPublicPinFeed(Long memberId, Pageable pageable) {
         Member targetMember = memberService.getMemberById(memberId);
-        Page<Pin> pinFeedPage = pinRepository.findAllByCreatorAndVisibilityOrderByListenedDateDesc(targetMember, Visibility.PUBLIC, pageable);
+        Page<Pin> pinFeedPage = pinRepository.findPinFeed(targetMember, pageable);
         return getPinFeedResponse(pinFeedPage, false);
     }
 
-    // 내 핀 피드 조회
+    // 내 핀 핀피드 조회
     @Transactional(readOnly = true)
     public PinFeedListResponseDto getMyPinFeed(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
-        Page<Pin> pinFeedPage = pinRepository.findAllByCreatorOrderByListenedDateDesc(currentMember, pageable);
+        Page<Pin> pinFeedPage = pinRepository.findPinFeed(currentMember, pageable);
         return getPinFeedResponse(pinFeedPage, true);
     }
 
     // 핀피드 조회 공통 메서드
     @Transactional(readOnly = true)
     public PinFeedListResponseDto getPinFeedResponse(Page<Pin> pinFeedPage, boolean isMine) {
-        Page<PinFeedUnitDto> pinFeedUnitPage = pinFeedPage.map(pin -> PinFeedUnitDto.from(pin, isMine));
+        Page<PinFeedUnitDto> pinFeedUnitPage = pinFeedPage.map(pin -> {
+            String memo = getMemoContent(pin, isMine);
+            return PinFeedUnitDto.from(pin, memo, isMine);
+        });
         return PinFeedListResponseDto.from(pinFeedUnitPage);
+    }
+
+    // 내 메모 또는 공개메모핀이 아니면 "비공개인 메모입니다." 반환
+    @Transactional(readOnly = true)
+    public String getMemoContent(Pin pin, boolean isMine) {
+        return (isMine || pin.getVisibility() == Visibility.PUBLIC) ? pin.getMemo() : "비공개인 메모입니다.";
     }
 
     // 마이페이지 캘린더

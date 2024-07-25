@@ -15,20 +15,16 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PinRepository extends JpaRepository <Pin, Long> {
-    List<Pin> findAllBySong(Song song);
+    List<Pin> findBySong(Song song);
+    Page<Pin> findAllBySong(Song song, Pageable pageable);
+
     int countBySong(Song song);
+    // 노래 상세보기 페이지에서 "들은날짜" = 등록한 핀 중 가장 최신의 listenedDate
     Optional<Pin> findTopBySongAndCreatorOrderByListenedDateDesc(Song song, Member member);
     Page<Pin> findAllBySongAndCreator(Song song, Member creator, Pageable pageable);
-    // 내 핀 가져오기(visibility 상관없음) 또는 타유저의 공개 핀 가져오기
-    @Query("SELECT p FROM Pin p WHERE p.song = :song AND (p.creator = :creator OR p.visibility = :visibility)")
-    Page<Pin> findPinFeed(@Param("song") Song song, @Param("creator") Member creator, @Param("visibility") Visibility visibility, Pageable pageable);
-    @Query("SELECT p.pinId, p.song.songId, p.song.title, p.song.artist, p.song.imgPath, p.listenedDate, p.place.placeName, p.place.latitude, p.place.longitude, p.genre.genreName, p.creator.memberId, p.memo, p.visibility " +
-            "FROM Pin p WHERE p.creator = :creator AND p.visibility = :visibility ORDER BY p.listenedDate DESC")
-    Page<Pin> findAllByCreatorAndVisibilityOrderByListenedDateDesc(@Param("creator") Member creator, @Param("visibility") Visibility visibility, Pageable pageable);
-
     @Query("SELECT p.pinId, p.song.songId, p.song.title, p.song.artist, p.song.imgPath, p.listenedDate, p.place.placeName, p.place.latitude, p.place.longitude, p.genre.genreName, p.creator.memberId, p.memo, p.visibility " +
             "FROM Pin p WHERE p.creator = :creator ORDER BY p.listenedDate DESC")
-    Page<Pin> findAllByCreatorOrderByListenedDateDesc(@Param("creator") Member creator, Pageable pageable);
+    Page<Pin> findPinFeed(@Param("creator") Member creator, Pageable pageable);
     List<Pin> findAllByPlace(Place place);
     @Query("SELECT p FROM Pin p WHERE p.creator = :creator AND YEAR(p.listenedDate) = :year AND MONTH(p.listenedDate) = :month")
     List<Pin> findAllByCreatorAndDate(@Param("creator") Member creator, @Param("year") int year, @Param("month") int month);
