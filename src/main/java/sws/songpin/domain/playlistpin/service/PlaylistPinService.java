@@ -3,6 +3,8 @@ package sws.songpin.domain.playlistpin.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sws.songpin.domain.member.entity.Member;
+import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.playlist.dto.request.PlaylistPinAddRequestDto;
@@ -21,16 +23,22 @@ public class PlaylistPinService {
     private final PlaylistService playlistService;
     private final PinService pinService;
     private final PlaylistRepository playlistRepository;
+    private final MemberService memberService;
 
     // 플레이리스트에 핀 추가
     public void addPlaylistPin(PlaylistPinAddRequestDto requestDto) {
         Playlist playlist = playlistService.findPlaylistById(requestDto.playlistId());
         Pin pin = pinService.getPinById(requestDto.pinId());
+        Member currentMember = memberService.getCurrentMember();
         // 중복 핀 체크
         boolean playlistPinExists = playlist.getPlaylistPins().stream()
                 .anyMatch(playlistPin -> playlistPin.getPin().getPinId().equals(pin.getPinId()));
         if (playlistPinExists) {
             throw new CustomException(ErrorCode.PLAYLIST_PIN_ALREADY_EXISTS);
+        }
+        // 내 핀인지 확인
+        if (!pin.getCreator().equals(currentMember)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
         PlaylistPin playlistPin = createPlaylistPin(playlist, pin);
         // modifiedTime 갱신
