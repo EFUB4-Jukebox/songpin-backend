@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sws.songpin.domain.alarm.dto.response.AlarmCheckResponseDto;
 import sws.songpin.domain.alarm.dto.response.AlarmUnitDto;
 import sws.songpin.domain.alarm.dto.ssedata.AlarmDefaultDataDto;
 import sws.songpin.domain.alarm.dto.response.AlarmListResponseDto;
@@ -28,13 +27,6 @@ public class AlarmService {
     private final AlarmRepository alarmRepository;
     private final EmitterService emitterService;
     private final MemberService memberService;
-
-    // 안 읽은 알림 존재 여부 확인
-    public AlarmCheckResponseDto checkForUnreadAlarms() {
-        Member currentMember = memberService.getCurrentMember();
-        boolean isUnchecked = alarmRepository.existsByReceiverAndIsReadFalse(currentMember);
-        return new AlarmCheckResponseDto(isUnchecked);
-    }
 
     // 최근 알림 목록 읽어오기
     public AlarmListResponseDto getRecentAlarms(){

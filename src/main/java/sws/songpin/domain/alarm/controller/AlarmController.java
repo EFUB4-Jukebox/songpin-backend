@@ -24,12 +24,6 @@ public class AlarmController {
         return ResponseEntity.ok(emitterService.subscribe());
     }
 
-    @Operation(summary = "안 읽은 알림 존재 여부 확인", description = "안 읽은 알림이 있는지 확인합니다.")
-    @GetMapping("/check")
-    public ResponseEntity<?> checkForUnreadAlarms() {
-        return ResponseEntity.ok(alarmService.checkForUnreadAlarms());
-    }
-
     @Operation(summary = "알림 목록 조회 및 읽음 처리", description = "알림 목록을 조회하고 읽음 처리합니다.")
     @PatchMapping
     public ResponseEntity<?> getRecentAlarms() {
