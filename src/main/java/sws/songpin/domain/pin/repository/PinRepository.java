@@ -44,7 +44,12 @@ public interface PinRepository extends JpaRepository <Pin, Long> {
             "LEFT JOIN genre g ON s.avg_genre_name = g.genre_name " +
             "WHERE (REPLACE(s.title, ' ', '') LIKE %:keywordNoSpaces% OR REPLACE(s.artist, ' ', '') LIKE %:keywordNoSpaces%) " +
             "AND p.creator_id = :currentMemberId " +
-            "ORDER BY s.title ASC", // 정확도 순 정렬
+            "GROUP BY p.pin_id " +
+            "ORDER BY " +
+            "CASE " +
+            "WHEN REPLACE(s.title, ' ', '') LIKE :keywordNoSpaces THEN 1 " +
+            "WHEN REPLACE(s.artist, ' ', '') LIKE :keywordNoSpaces THEN 2 " +
+            "END",
             countQuery = "SELECT COUNT(p.pin_id) " +
                     "FROM pin p " +
                     "LEFT JOIN song s ON p.song_id = s.song_id " +
