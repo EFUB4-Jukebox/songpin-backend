@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.alarm.dto.response.AlarmCheckResponseDto;
 import sws.songpin.domain.alarm.dto.response.AlarmUnitDto;
-import sws.songpin.domain.alarm.dto.ssedata.AlarmFollowDataDto;
+import sws.songpin.domain.alarm.dto.ssedata.AlarmDefaultDataDto;
 import sws.songpin.domain.alarm.dto.response.AlarmListResponseDto;
 import sws.songpin.domain.alarm.entity.Alarm;
 import sws.songpin.domain.alarm.entity.AlarmType;
@@ -59,7 +59,7 @@ public class AlarmService {
     // 팔로우 알림 생성
     public void createFollowAlarm(Member follower, Member following) {
         String alarmMessage = MessageFormat.format(AlarmType.FOLLOW.getMessagePattern(), follower.getNickname(), follower.getHandle());
-        createAlarm(AlarmType.FOLLOW, alarmMessage, follower, following, AlarmFollowDataDto.from(follower));
+        createAlarm(AlarmType.FOLLOW, alarmMessage, follower, following, AlarmDefaultDataDto.from(true));
     }
 
     public void deleteAllAlarmsOfMember(Member member){

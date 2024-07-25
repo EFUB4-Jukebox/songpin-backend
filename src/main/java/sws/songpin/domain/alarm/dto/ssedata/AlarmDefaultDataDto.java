@@ -1,13 +1,9 @@
 package sws.songpin.domain.alarm.dto.ssedata;
 
-import sws.songpin.domain.member.entity.Member;
-
 public record AlarmDefaultDataDto(
-        Long memberId
+        Boolean isNewAlarm
 ) {
-    public static AlarmDefaultDataDto from (Member member) {
-        return new AlarmDefaultDataDto(
-                member.getMemberId()
-        );
+    public static AlarmDefaultDataDto from (Boolean isNewAlarm) {
+        return new AlarmDefaultDataDto(isNewAlarm);
     }
 }
