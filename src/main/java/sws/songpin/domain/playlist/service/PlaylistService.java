@@ -60,7 +60,7 @@ public class PlaylistService {
     public PlaylistDetailsResponseDto getPlaylist(Long playlistId) {
         Member currentMember = memberService.getCurrentMember();
         Playlist playlist = findPlaylistById(playlistId);
-        if (!currentMember.equals(playlist.getCreator()) && playlist.getVisibility() == Visibility.PRIVATE) {
+        if (!currentMember.equals(playlist.getCreator()) && playlist.getVisibility().equals(Visibility.PRIVATE)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
         List<PlaylistPin> playlistPinList = playlist.getPlaylistPins();

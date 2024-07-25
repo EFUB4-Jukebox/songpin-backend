@@ -35,7 +35,7 @@ public class BookmarkService {
     public BookmarkAddResponseDto createBookmark(BookmarkAddRequestDto requestDto) {
         Member member = memberService.getCurrentMember();
         Playlist playlist = playlistService.findPlaylistById(requestDto.playlistId());
-        if (!member.equals(playlist.getCreator()) && playlist.getVisibility() == Visibility.PRIVATE) {
+        if (!member.equals(playlist.getCreator()) && playlist.getVisibility().equals(Visibility.PRIVATE)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
         getBookmarkByPlaylistAndMember(playlist, member).ifPresent(bookmark -> {
