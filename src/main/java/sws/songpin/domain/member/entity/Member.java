@@ -57,10 +57,10 @@ public class Member extends BaseTimeEntity {
     private List<Pin> pins;
 
     @Builder
-    public Member(Long memberId, String email, String password, String nickname, String handle) {
+    public Member(Long memberId, String email, String encodedPassword, String nickname, String handle) {
         this.memberId = memberId;
         this.email = email;
-        this.password = password;
+        this.password = encodedPassword;
         this.nickname = nickname;
         this.handle= handle;
         this.profileImg = ProfileImg.POP;
