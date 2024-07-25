@@ -60,6 +60,9 @@ public class PlaylistService {
     public PlaylistDetailsResponseDto getPlaylist(Long playlistId) {
         Member currentMember = memberService.getCurrentMember();
         Playlist playlist = findPlaylistById(playlistId);
+        if (!currentMember.equals(playlist.getCreator()) && playlist.getVisibility().equals(Visibility.PRIVATE)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
+        }
         List<PlaylistPin> playlistPinList = playlist.getPlaylistPins();
         // imgPathList, pinList
         List<PlaylistPinUnitDto> pinList = new ArrayList<>();
@@ -99,6 +102,10 @@ public class PlaylistService {
     // 플레이리스트 편집
     public void updatePlaylist(Long playlistId, PlaylistUpdateRequestDto requestDto) {
         Playlist playlist = findPlaylistById(playlistId);
+        Member currentMember = memberService.getCurrentMember();
+        if(!currentMember.equals(playlist.getCreator())){
+            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
+        }
         // 플레이리스트 정보 수정
         playlist.updatePlaylistName(requestDto.playlistName());
         playlist.updateVisibility(requestDto.visibility());
