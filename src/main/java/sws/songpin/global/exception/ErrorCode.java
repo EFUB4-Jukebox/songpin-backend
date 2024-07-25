@@ -71,6 +71,7 @@ public enum ErrorCode {
     // 외부 API 사용 도중 에러
     REDIS_CONNECTION_ERROR(500, "서버에서 Redis 연결 중 문제가 발생했습니다."),
     EXTERNAL_API_ERROR(500, "외부 API 사용 중 문제가 발생했습니다."),
+    EMAIL_ERROR(500, "이메일 전송 중 문제가 발생했습니다.")
 
     ;
 

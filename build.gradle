@@ -44,6 +44,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis' //redis
 	implementation 'org.springframework.boot:spring-boot-starter-cache' //캐시
 	implementation 'org.json:json:20231013' //JsonObject 사용 관련
+	implementation 'org.springframework.boot:spring-boot-starter-mail:3.2.2' //mail
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:3.1.2' //thymeleaf
 }
 
 tasks.named('test') {

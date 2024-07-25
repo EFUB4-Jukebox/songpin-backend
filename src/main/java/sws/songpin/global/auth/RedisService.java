@@ -17,6 +17,10 @@ public class RedisService {
         redisTemplate.opsForValue().set(key,value,timeout);
     }
 
+    public boolean setValuesWithTimeoutIfAbsent(String key, String value, Duration timeout){
+         return redisTemplate.opsForValue().setIfAbsent(key, value, timeout);
+    }
+
     public Object getValues(String key){
         return redisTemplate.opsForValue().get(key);
     }
