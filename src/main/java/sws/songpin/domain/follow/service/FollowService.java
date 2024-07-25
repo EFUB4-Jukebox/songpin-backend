@@ -31,8 +31,8 @@ public class FollowService {
 
     // 팔로우 추가
     public FollowAddResponseDto addFollow(FollowAddRequestDto followAddRequestDto){
-        Member follower = memberService.getMemberById(followAddRequestDto.followerId());
-        Member following = memberService.getActiveMemberById(followAddRequestDto.followingId());
+        Member follower = memberService.getCurrentMember();
+        Member following = memberService.getActiveMemberById(followAddRequestDto.targetMemberId());
 
         if (!follower.equals(memberService.getCurrentMember())){ // follower가 자신이어야 함
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
