@@ -40,8 +40,10 @@ public class MemberService {
     public Member getCurrentMember(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Member member = ((CustomUserDetails) authentication.getPrincipal()).getMember();
-        if (member == null || member.getStatus().equals(Status.DELETED))
+        if (member == null)
             throw new CustomException(ErrorCode.NOT_AUTHENTICATED);
+        if (member.getStatus().equals(Status.DELETED))
+            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         return member;
     }
 
