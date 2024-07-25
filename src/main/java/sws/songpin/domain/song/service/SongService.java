@@ -71,6 +71,7 @@ public class SongService {
         Page<Object[]> songPage;
 
         switch (sortBy) {
+            case NEWEST -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByNewest(keywordNoSpaces, pageable);
             case COUNT -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByCount(keywordNoSpaces, pageable);
             case ACCURACY -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByAccuracy(keywordNoSpaces, pageable);
             default -> throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
