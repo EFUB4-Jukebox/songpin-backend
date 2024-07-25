@@ -1,5 +1,6 @@
 package sws.songpin.domain.member.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -9,6 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.member.dto.request.LoginRequestDto;
+import sws.songpin.domain.member.dto.request.PasswordResetRequestDto;
+import sws.songpin.domain.member.dto.request.PasswordUpdateRequestDto;
 import sws.songpin.domain.member.dto.request.SignUpRequestDto;
 import sws.songpin.domain.member.dto.response.TokenDto;
 import sws.songpin.domain.member.entity.Member;
@@ -26,7 +29,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional
 public class AuthService {
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
@@ -34,14 +37,8 @@ public class AuthService {
 
     public void signUp(SignUpRequestDto requestDto) {
 
-        Optional<Member> memberOptional = memberRepository.findByEmail(requestDto.email());
-
         //이메일 중복 검사
-        if (memberOptional.isPresent()) {
-
-            if(memberOptional.get().getStatus().equals(Status.DELETED)){
-                throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
-            }
+        if (memberService.getActiveMemberByEmail(requestDto.email()) != null) {
 
             throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }
@@ -56,7 +53,7 @@ public class AuthService {
 
         //Member 객체 생성 후 저장
         Member member = requestDto.toEntity(handle, encodePassword(requestDto.password()));
-        memberRepository.save(member);
+        memberService.saveMember(member);
     }
 
     public TokenDto login(LoginRequestDto requestDto){
@@ -96,6 +93,26 @@ public class AuthService {
         //Access Token 및 Refresh Token 재발급
         return new TokenDto(jwtUtil.generateAccessToken(authentication), jwtUtil.generateRefreshToken(authentication) );
 
+    }
+
+    public void resetPassword(PasswordResetRequestDto requestDto){
+
+        String key = "password_uuid:" + requestDto.uuid();
+
+        String email = (String) redisService.getValues(key);
+
+        Member member = memberService.getActiveMemberByEmail(email);
+
+        //비밀번호 일치 검사
+        if (!requestDto.password().equals(requestDto.confirmPassword())) {
+            throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
+        }
+
+        member.modifyPassword(encodePassword(requestDto.password()));
+
+        memberService.saveMember(member);
+
+        redisService.deleteValues(key);
     }
 
     @Transactional(readOnly = true)

@@ -9,11 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.member.dto.request.LoginRequestDto;
+import sws.songpin.domain.member.dto.request.PasswordResetRequestDto;
+import sws.songpin.domain.member.dto.request.PasswordUpdateRequestDto;
 import sws.songpin.domain.member.dto.request.SignUpRequestDto;
 import sws.songpin.domain.member.dto.response.LoginResponseDto;
 import sws.songpin.domain.member.dto.response.ReissueResponseDto;
@@ -79,6 +78,14 @@ public class AuthController {
         //새로 발급 받은 어세스 토큰을 Response Body를 통해 전달
         return ResponseEntity.ok(new ReissueResponseDto(tokenDto.accessToken()));
     }
+
+    @Operation(summary = "비밀번호 재설정 링크를 통해 비밀번호 변경", description = "이메일로 전송된 비밀번호 재설정 링크를 통해 비밀번호 변경")
+    @PatchMapping("/login/pw")
+    public ResponseEntity<?> resetPassword(@RequestBody @Valid PasswordResetRequestDto requestDto){
+        authService.resetPassword(requestDto);
+        return ResponseEntity.ok().build();
+    }
+
 
     @Operation(summary = "refresh 토큰 저장 테스트", description = "로그인 후 refresh Token이 Redis에 잘 저장되었는지 확인 후 refresh token 반환")
     @GetMapping("/redisTest")
