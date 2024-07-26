@@ -65,7 +65,7 @@ public class MyPageController {
         return ResponseEntity.ok(pinService.getMyPinFeedForMonth(year, month));
     }
 
-    @Operation(summary = "마이페이지에서 핀 검색", description = "마이페이지에서의 핀 검색 결과를 선택한 정렬 기준에 따라 페이징으로 불러옵니다.")
+    @Operation(summary = "마이페이지에서 핀 검색", description = "마이페이지에서의 핀 검색 결과를 페이징으로 불러옵니다.")
     @GetMapping("/pins")
     public ResponseEntity<?> songSearch(@RequestParam("keyword") final String keyword,
                                         @PageableDefault(size = 20) final Pageable pageable){

@@ -146,7 +146,7 @@ public class PinService {
         return getPinFeedResponse(pinFeedPage, false);
     }
 
-    // 내 핀피드(마에피이지 핀피드) 조회
+    // 내 핀피드(마이페이지 핀피드) 조회
     @Transactional(readOnly = true)
     public PinFeedListResponseDto getMyPinFeed(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
