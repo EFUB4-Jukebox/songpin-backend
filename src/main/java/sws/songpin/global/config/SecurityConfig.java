@@ -42,11 +42,11 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
-                .requestMatchers("/error", "/favicon.ico");
+                .requestMatchers("/error", "/favicon.ico",
+                        "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs", "/v3/api-docs/**");
     }
 
     private static final String[] AUTH_WHITELIST = {
-            "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs", "/v3/api-docs/**",
             "/signup", "/login", "/login/pw",
             "/stats/**", "/map", "/map/period/**"
     };
@@ -57,7 +57,8 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
-                "https://localhost:3000"));
+                "https://localhost:3000",
+                "https://api.songpin.n-e.kr"));
 
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
