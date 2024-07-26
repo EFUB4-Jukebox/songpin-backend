@@ -57,7 +57,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:5000",
-                                        "http://localhost:5173", "http://localhost:5174", "https://api.songpin.n-e.kr/"));
+                                        "http://localhost:5173", "http://localhost:5174", "https://api.songpin.n-e.kr"));
 
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
