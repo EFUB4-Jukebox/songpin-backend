@@ -191,7 +191,7 @@ public class PinService {
 
     // 내 메모 또는 공개메모핀이 아니면 "비공개인 메모입니다." 반환
     @Transactional(readOnly = true)
-    private String getMemoContent(String memo, Visibility visibility, boolean isMine) {
+    public String getMemoContent(String memo, Visibility visibility, boolean isMine) {
         return (isMine || visibility == Visibility.PUBLIC) ? memo : "비공개인 메모입니다.";
     }
 
