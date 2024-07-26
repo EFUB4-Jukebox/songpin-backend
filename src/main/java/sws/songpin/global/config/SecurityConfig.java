@@ -27,6 +27,8 @@ import sws.songpin.global.auth.JwtAuthenticationEntryPoint;
 import sws.songpin.global.auth.JwtFilter;
 import sws.songpin.global.auth.JwtUtil;
 
+import java.util.Arrays;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
@@ -37,6 +39,12 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CustomLogoutHandler logoutHandler;
 
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring()
+                .requestMatchers("/error", "/favicon.ico");
+    }
+
     private static final String[] AUTH_WHITELIST = {
             "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs", "/v3/api-docs/**",
             "/signup", "/login", "/login/pw", "/token",
@@ -45,22 +53,12 @@ public class SecurityConfig {
     };
 
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring()
-                .requestMatchers("/error", "/favicon.ico")
-                .requestMatchers(AUTH_WHITELIST);
-    }
-
-    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.addAllowedOrigin("http://localhost:3000");
-        configuration.addAllowedOrigin("http://localhost:5173");
-        configuration.addAllowedOrigin("http://localhost:5174");
-        configuration.addAllowedOrigin("http://localhost:8080");
-        configuration.addAllowedOrigin("https://api.songpin.n-e.kr/");
-        configuration.addAllowedOrigin("https://songpin.vercel.app");
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",
+                "https://localhost:3000"));
 
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
@@ -69,8 +67,7 @@ public class SecurityConfig {
         configuration.addExposedHeader("Set-Cookie");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
-        source.registerCorsConfiguration("/**", configuration); //위에서 설정한 Configuration 적용
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
@@ -78,6 +75,7 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{
         return authenticationConfiguration.getAuthenticationManager();
