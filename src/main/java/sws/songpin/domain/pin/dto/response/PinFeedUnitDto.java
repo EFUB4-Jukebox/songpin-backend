@@ -33,18 +33,4 @@ public record PinFeedUnitDto(
                 isMine
         );
     }
-    public PinFeedUnitDto withMemo(String memo) {
-        return new PinFeedUnitDto(
-                this.pinId(),
-                this.songInfo(),
-                this.listenedDate(),
-                this.placeName(),
-                this.latitude(),
-                this.longitude(),
-                this.genreName(),
-                memo,
-                this.visibility(),
-                this.isMine()
-        );
-    }
 }

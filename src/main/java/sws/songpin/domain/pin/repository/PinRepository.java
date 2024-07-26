@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import sws.songpin.domain.member.entity.Member;
-import sws.songpin.domain.pin.dto.response.PinFeedUnitDto;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.place.entity.Place;
 import sws.songpin.domain.song.entity.Song;
@@ -22,9 +21,13 @@ public interface PinRepository extends JpaRepository <Pin, Long> {
     // 노래 상세보기 페이지에서 "들은날짜" = 등록한 핀 중 가장 최신의 listenedDate
     Optional<Pin> findTopBySongAndCreatorOrderByListenedDateDesc(Song song, Member member);
     Page<Pin> findAllBySongAndCreator(Song song, Member creator, Pageable pageable);
-    @Query("SELECT p.pinId, p.song.songId, p.song.title, p.song.artist, p.song.imgPath, p.listenedDate, p.place.placeName, p.place.latitude, p.place.longitude, p.genre.genreName, p.creator.memberId, p.memo, p.visibility " +
-            "FROM Pin p WHERE p.creator = :creator ORDER BY p.listenedDate DESC")
+    @Query("SELECT p.pinId, p.song.songId, p.song.title, p.song.artist, p.song.imgPath, p.listenedDate, p.place.placeName, p.place.latitude, p.place.longitude, g.genreName, p.memo, p.visibility " +
+            "FROM Pin p " +
+            "LEFT JOIN p.genre g " +
+            "WHERE p.creator = :creator " +
+            "ORDER BY p.listenedDate DESC")
     Page<Object[]> findPinFeed(@Param("creator") Member creator, Pageable pageable);
+
     List<Pin> findAllByPlace(Place place);
     @Query("SELECT p FROM Pin p WHERE p.creator = :creator AND YEAR(p.listenedDate) = :year AND MONTH(p.listenedDate) = :month")
     List<Pin> findAllByCreatorAndDate(@Param("creator") Member creator, @Param("year") int year, @Param("month") int month);
@@ -41,7 +44,7 @@ public interface PinRepository extends JpaRepository <Pin, Long> {
             "FROM pin p " +
             "LEFT JOIN song s ON p.song_id = s.song_id " +
             "LEFT JOIN place pl ON p.place_id = pl.place_id " +
-            "LEFT JOIN genre g ON s.avg_genre_name = g.genre_name " +
+            "LEFT JOIN genre g ON p.genre_id = g.genre_id " +
             "WHERE (REPLACE(s.title, ' ', '') LIKE %:keywordNoSpaces% OR REPLACE(s.artist, ' ', '') LIKE %:keywordNoSpaces%) " +
             "AND p.creator_id = :currentMemberId " +
             "GROUP BY p.pin_id " +
@@ -56,5 +59,6 @@ public interface PinRepository extends JpaRepository <Pin, Long> {
                     "WHERE (REPLACE(s.title, ' ', '') LIKE %:keywordNoSpaces% OR REPLACE(s.artist, ' ', '') LIKE %:keywordNoSpaces%) " +
                     "AND p.creator_id = :currentMemberId",
             nativeQuery = true)
-    Page<Object[]>  findAllBySongNameOrArtistContainingIgnoreSpaces(@Param("currentMemberId") Long currentMemberId, @Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
+    Page<Object[]> findAllBySongNameOrArtistContainingIgnoreSpaces(@Param("currentMemberId") Long currentMemberId, @Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
+
 }

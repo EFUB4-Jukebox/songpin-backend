@@ -158,25 +158,33 @@ public class PinService {
     @Transactional(readOnly = true)
     public PinFeedListResponseDto getPinFeedResponse(Page<Object[]> pinFeedPage, boolean isMine) {
         Page<PinFeedUnitDto> pinFeedUnitPage = pinFeedPage.map(objects -> {
-            PinFeedUnitDto pinFeedUnitDto = new PinFeedUnitDto(
-                    ((Number) objects[0]).longValue(),
-                    new SongInfoDto(
-                            ((Number) objects[1]).longValue(),
-                            (String) objects[2],
-                            (String) objects[3],
-                            (String) objects[4]
-                    ),
-                    ((java.sql.Date) objects[5]).toLocalDate(),
-                    (String) objects[6],
-                    ((Number) objects[7]).doubleValue(),
-                    ((Number) objects[8]).doubleValue(),
-                    GenreName.valueOf((String) objects[9]),
-                    (String) objects[10],
-                    Visibility.valueOf((String) objects[11]),
+            Long pinId = ((Number) objects[0]).longValue();
+            SongInfoDto songInfo = new SongInfoDto(
+                    ((Number) objects[1]).longValue(),
+                    (String) objects[2],
+                    (String) objects[3],
+                    (String) objects[4]
+            );
+            LocalDate listenedDate = (LocalDate) objects[5];
+            String placeName = (String) objects[6];
+            double latitude = ((Number) objects[7]).doubleValue();
+            double longitude = ((Number) objects[8]).doubleValue();
+            GenreName genreName = GenreName.valueOf(objects[9].toString());
+            String memo = (String) objects[10];
+            Visibility visibility = Visibility.valueOf(objects[11].toString());
+            String adjustedMemo = getMemoContent(memo, visibility, isMine);
+            return new PinFeedUnitDto(
+                    pinId,
+                    songInfo,
+                    listenedDate,
+                    placeName,
+                    latitude,
+                    longitude,
+                    genreName,
+                    adjustedMemo,
+                    visibility,
                     isMine
             );
-            String memo = getMemoContent(pinFeedUnitDto.memo(), pinFeedUnitDto.visibility(), isMine);
-            return pinFeedUnitDto.withMemo(memo);
         });
         return PinFeedListResponseDto.from(pinFeedUnitPage);
     }
@@ -214,11 +222,13 @@ public class PinService {
                     (String) objects[3],
                     (String) objects[4]
             );
-            LocalDate listenedDate = ((java.sql.Date) objects[5]).toLocalDate();
+            // java.sql.Date를 LocalDate로 변환
+            java.sql.Date sqlDate = (java.sql.Date) objects[5];
+            LocalDate listenedDate = sqlDate.toLocalDate();
             String placeName = (String) objects[6];
             double latitude = ((Number) objects[7]).doubleValue();
             double longitude = ((Number) objects[8]).doubleValue();
-            GenreName genreName = GenreName.valueOf((String) objects[9]);
+            GenreName genreName = GenreName.valueOf(objects[9].toString());
             Long creatorId = ((Number) objects[10]).longValue();
             Boolean isMine = creatorId.equals(currentMemberId);
 
