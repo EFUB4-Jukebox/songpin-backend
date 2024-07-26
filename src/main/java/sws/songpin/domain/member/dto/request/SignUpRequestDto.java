@@ -15,12 +15,12 @@ public record SignUpRequestDto(
         @NotBlank(message = "INVALID_INPUT_VALUE-비밀번호는 한 글자 이상 입력해야 합니다.")
         String password,
         String confirmPassword) {
-    public Member toEntity(String handle, String password){
+    public Member toEntity(String handle, String encodedPassword){
         return Member.builder()
                 .email(this.email)
                 .nickname(this.nickname)
                 .handle(handle)
-                .password(password)
+                .encodedPassword(encodedPassword)
                 .build();
     }
 }
