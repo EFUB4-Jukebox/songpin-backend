@@ -13,11 +13,13 @@ import sws.songpin.domain.member.dto.request.PasswordResetRequestDto;
 import sws.songpin.domain.member.dto.request.SignUpRequestDto;
 import sws.songpin.domain.member.dto.response.TokenDto;
 import sws.songpin.domain.member.entity.Member;
+import sws.songpin.domain.member.entity.Status;
 import sws.songpin.global.auth.JwtUtil;
 import sws.songpin.global.auth.RedisService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -32,11 +34,15 @@ public class AuthService {
 
     public void signUp(SignUpRequestDto requestDto) {
 
+        Optional<Member> memberOptional = memberService.getMemberOptionalByEmail(requestDto.email());
+
         //이메일 중복 검사
-        if (memberService.checkMemberExistsByEmail(requestDto.email())) {
+        if (memberOptional.isPresent()) {
 
             //탈퇴한 회원 예외 처리
-            memberService.getActiveMemberByEmail(requestDto.email());
+            if(memberOptional.get().getStatus().equals(Status.DELETED)){
+                throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
+            }
 
             throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
         }

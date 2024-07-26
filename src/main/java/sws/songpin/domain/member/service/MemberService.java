@@ -16,6 +16,8 @@ import sws.songpin.domain.member.repository.MemberRepository;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @Transactional
@@ -79,8 +81,8 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public boolean checkMemberExistsByEmail(String email){
-        return memberRepository.existsByEmail(email);
+    public Optional<Member> getMemberOptionalByEmail(String email){
+        return memberRepository.findByEmail(email);
     }
 
     @Transactional(readOnly = true)

@@ -12,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.member.dto.request.LoginRequestDto;
 import sws.songpin.domain.member.dto.request.PasswordResetRequestDto;
-import sws.songpin.domain.member.dto.request.PasswordUpdateRequestDto;
 import sws.songpin.domain.member.dto.request.SignUpRequestDto;
 import sws.songpin.domain.member.dto.response.LoginResponseDto;
 import sws.songpin.domain.member.dto.response.ReissueResponseDto;
