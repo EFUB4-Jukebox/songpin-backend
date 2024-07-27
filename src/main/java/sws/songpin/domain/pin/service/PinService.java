@@ -1,11 +1,14 @@
 package sws.songpin.domain.pin.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.genre.service.GenreService;
+import sws.songpin.domain.member.dto.response.MyPinSearchResponseDto;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.model.Visibility;
@@ -22,14 +25,14 @@ import sws.songpin.domain.place.service.PlaceService;
 import sws.songpin.domain.playlist.entity.Playlist;
 import sws.songpin.domain.playlistpin.entity.PlaylistPin;
 import sws.songpin.domain.playlistpin.repository.PlaylistPinRepository;
-import sws.songpin.domain.song.dto.response.SongDetailsPinDto;
-import sws.songpin.domain.song.dto.response.SongDetailsPinListResponseDto;
+import sws.songpin.domain.song.dto.response.*;
 import sws.songpin.domain.song.entity.Song;
 import sws.songpin.domain.song.repository.SongRepository;
 import sws.songpin.domain.song.service.SongService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -89,10 +92,11 @@ public class PinService {
         }
         playlistPinRepository.deleteAll(playlistPins);
         pinRepository.delete(pin);
+        updateSongAvgGenreName(pin.getSong());
     }
 
     public void updateSongAvgGenreName(Song song) {
-        List<Genre> genres = pinRepository.findAllBySong(song).stream()
+        List<Genre> genres = pinRepository.findBySong(song).stream()
                 .map(Pin::getGenre)
                 .collect(Collectors.toList());
         Optional<GenreName> avgGenreName = songService.calculateAvgGenreName(genres);
@@ -113,53 +117,82 @@ public class PinService {
 
     // 특정 노래에 대한 핀 조회
     @Transactional(readOnly = true)
-    public SongDetailsPinListResponseDto getPinsForSong(Long songId, boolean onlyMyPins) {
+    public SongDetailsPinListResponseDto getPinsForSong(Long songId, boolean onlyMyPins, Pageable pageable) {
         Song song = songService.getSongById(songId);
         Member currentMember = memberService.getCurrentMember();
         Long currentMemberId = currentMember != null ? currentMember.getMemberId() : null;
-        List<Pin> pins;
-        List<SongDetailsPinDto> songDetailsPinList;
+        Page<Pin> pinPage;
+
         if (onlyMyPins) {
             // 내 핀만 보기 - 현재 사용자의 모든 핀 가져오기(visibility 상관없음)
-            pins = pinRepository.findAllBySongAndCreator(song, currentMember);
+            pinPage = pinRepository.findAllBySongAndCreator(song, currentMember, pageable);
         } else {
             // 전체 핀 보기 - 내 핀 가져오기(visibility 상관없음) + 타유저의 공개 핀 가져오기
-            pins = pinRepository.findAllBySong(song).stream()
-                    .filter(pin -> pin.getVisibility() == Visibility.PUBLIC || pin.getCreator().equals(currentMember))
-                    .collect(Collectors.toList());
+            pinPage = pinRepository.findAllBySong(song, pageable);
         }
-        songDetailsPinList = pins.stream()
-                .map(pin -> {
-                    Boolean isMine = pin.getCreator().getMemberId().equals(currentMemberId);
-                    return SongDetailsPinDto.from(pin, isMine);
-                })
-                .collect(Collectors.toList());
-        return SongDetailsPinListResponseDto.from(songDetailsPinList);
+        Page<SongDetailsPinDto> songDetailsPinPage = pinPage.map(pin -> {
+            Boolean isMine = pin.getCreator().getMemberId().equals(currentMemberId);
+            String memo = getMemoContent(pin.getMemo(), pin.getVisibility(), isMine);
+            return SongDetailsPinDto.from(pin, memo, isMine);
+        });
+        return SongDetailsPinListResponseDto.from(songDetailsPinPage);
     }
 
-    // 타 유저의 공개 핀 피드 조회
+    // 타 유저 핀피드 조회
     @Transactional(readOnly = true)
-    public PinFeedListResponseDto getPublicPinFeed(Long memberId) {
+    public PinFeedListResponseDto getMemberPinFeed(Long memberId, Pageable pageable) {
         Member targetMember = memberService.getMemberById(memberId);
-        List<Pin> pins = pinRepository.findAllByCreatorAndVisibilityOrderByListenedDateDesc(targetMember, Visibility.PUBLIC);
-        return getPinFeedResponse(pins, false);
+        Page<Object[]> pinFeedPage = pinRepository.findPinFeed(targetMember, pageable);
+        return getPinFeedResponse(pinFeedPage, false);
     }
 
-    // 내 핀 피드 조회
+    // 내 핀피드(마이페이지 핀피드) 조회
     @Transactional(readOnly = true)
-    public PinFeedListResponseDto getMyPinFeed() {
+    public PinFeedListResponseDto getMyPinFeed(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
-        List<Pin> pins = pinRepository.findAllByCreatorOrderByListenedDateDesc(currentMember);
-        return getPinFeedResponse(pins, true);
+        Page<Object[]> pinFeedPage = pinRepository.findPinFeed(currentMember, pageable);
+        return getPinFeedResponse(pinFeedPage, true);
     }
 
     // 핀피드 조회 공통 메서드
     @Transactional(readOnly = true)
-    private PinFeedListResponseDto getPinFeedResponse(List<Pin> pins, boolean isMine) {
-        List<PinFeedUnitDto> feedPinList = pins.stream()
-                .map(pin -> PinFeedUnitDto.from(pin, isMine))
-                .collect(Collectors.toList());
-        return new PinFeedListResponseDto(feedPinList.size(), feedPinList);
+    public PinFeedListResponseDto getPinFeedResponse(Page<Object[]> pinFeedPage, boolean isMine) {
+        Page<PinFeedUnitDto> pinFeedUnitPage = pinFeedPage.map(objects -> {
+            Long pinId = ((Number) objects[0]).longValue();
+            SongInfoDto songInfo = new SongInfoDto(
+                    ((Number) objects[1]).longValue(),
+                    (String) objects[2],
+                    (String) objects[3],
+                    (String) objects[4]
+            );
+            LocalDate listenedDate = (LocalDate) objects[5];
+            String placeName = (String) objects[6];
+            double latitude = ((Number) objects[7]).doubleValue();
+            double longitude = ((Number) objects[8]).doubleValue();
+            GenreName genreName = GenreName.valueOf(objects[9].toString());
+            String memo = (String) objects[10];
+            Visibility visibility = Visibility.valueOf(objects[11].toString());
+            String adjustedMemo = getMemoContent(memo, visibility, isMine);
+            return new PinFeedUnitDto(
+                    pinId,
+                    songInfo,
+                    listenedDate,
+                    placeName,
+                    latitude,
+                    longitude,
+                    genreName,
+                    adjustedMemo,
+                    visibility,
+                    isMine
+            );
+        });
+        return PinFeedListResponseDto.from(pinFeedUnitPage);
+    }
+
+    // 내 메모 또는 공개메모핀이 아니면 "비공개인 메모입니다." 반환
+    @Transactional(readOnly = true)
+    public String getMemoContent(String memo, Visibility visibility, boolean isMine) {
+        return (isMine || visibility == Visibility.PUBLIC) ? memo : "비공개인 메모입니다.";
     }
 
     // 마이페이지 캘린더
@@ -170,7 +203,39 @@ public class PinService {
         List<PinBasicUnitDto> pinList = pins.stream()
                 .map(pin -> PinBasicUnitDto.from(pin, true))
                 .collect(Collectors.toList());
-        return new PinBasicListResponseDto(pinList, pinList.size());
+        return new PinBasicListResponseDto(pinList);
+    }
+
+    // 마이페이지에서 내 핀 검색
+    @Transactional(readOnly = true)
+    public MyPinSearchResponseDto searchMyPins(String keyword, Pageable pageable) {
+        Member currentMember = memberService.getCurrentMember();
+        Long currentMemberId = currentMember.getMemberId();
+        String keywordNoSpaces = keyword.replace(" ", "");
+        Page<Object[]> myPinPage = pinRepository.findAllBySongNameOrArtistContainingIgnoreSpaces(currentMemberId, keywordNoSpaces, pageable);
+
+        Page<PinBasicUnitDto> myPinUnitPage = myPinPage.map(objects -> {
+            Long pinId = ((Number) objects[0]).longValue();
+            SongInfoDto songInfo = new SongInfoDto(
+                    ((Number) objects[1]).longValue(),
+                    (String) objects[2],
+                    (String) objects[3],
+                    (String) objects[4]
+            );
+            // java.sql.Date를 LocalDate로 변환
+            java.sql.Date sqlDate = (java.sql.Date) objects[5];
+            LocalDate listenedDate = sqlDate.toLocalDate();
+            String placeName = (String) objects[6];
+            double latitude = ((Number) objects[7]).doubleValue();
+            double longitude = ((Number) objects[8]).doubleValue();
+            GenreName genreName = GenreName.valueOf(objects[9].toString());
+            Long creatorId = ((Number) objects[10]).longValue();
+            Boolean isMine = creatorId.equals(currentMemberId);
+
+            return new PinBasicUnitDto(pinId, songInfo, listenedDate, placeName, latitude, longitude, genreName, isMine);
+        });
+
+        return MyPinSearchResponseDto.from(myPinUnitPage);
     }
 
     @Transactional(readOnly = true)

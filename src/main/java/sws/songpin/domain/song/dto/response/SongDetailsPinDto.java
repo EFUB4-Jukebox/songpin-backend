@@ -17,13 +17,13 @@ public record SongDetailsPinDto(
         double longitude,
         Boolean isMine) {
 
-    public static SongDetailsPinDto from(Pin pin, Boolean isMine) {
+    public static SongDetailsPinDto from(Pin pin, String memo, Boolean isMine) {
         return new SongDetailsPinDto(
                 pin.getPinId(),
                 pin.getCreator().getMemberId(),
                 pin.getCreator().getNickname(),
                 pin.getListenedDate(),
-                pin.getMemo(),
+                memo,
                 pin.getVisibility(),
                 pin.getPlace().getPlaceName(),
                 pin.getPlace().getLatitude( ),
