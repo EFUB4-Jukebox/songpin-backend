@@ -2,7 +2,6 @@ package sws.songpin.domain.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +17,7 @@ import sws.songpin.domain.member.service.ProfileService;
 import sws.songpin.domain.model.SortBy;
 import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.playlist.service.PlaylistService;
+import sws.songpin.global.auth.CookieUtil;
 
 @Tag(name = "MyPage", description = "MyPage 관련 API입니다.")
 @RestController
@@ -28,6 +28,7 @@ public class MyPageController {
     private final BookmarkService bookmarkService;
     private final ProfileService profileService;
     private final PinService pinService;
+    private final CookieUtil cookieUtil;
 
     @Operation(summary = "내 플레이리스트 목록 조회", description = "마이페이지에서 내 플레이리스트 목록 조회")
     @GetMapping("/playlists")
@@ -79,12 +80,7 @@ public class MyPageController {
         profileService.deactivateProfile(requestDto);
 
         //쿠키 삭제
-        Cookie refreshTokenCookie = new Cookie("refreshToken",null);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(0);
-
-        response.addCookie(refreshTokenCookie);
+        cookieUtil.deleteCookie(response, "refreshToken");
 
         return ResponseEntity.ok().build();
     }

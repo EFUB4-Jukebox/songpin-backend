@@ -13,9 +13,10 @@ import sws.songpin.domain.member.dto.response.MemberUnitDto;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.entity.Status;
 import sws.songpin.domain.member.repository.MemberRepository;
-import sws.songpin.global.auth.CustomUserDetails;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -62,6 +63,26 @@ public class MemberService {
             throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
         }
         return member;
+    }
+
+    @Transactional(readOnly = true)
+    public Member getMemberByEmail(String email){
+        return memberRepository.findByEmail(email)
+                .orElseThrow(()-> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public Member getActiveMemberByEmail(String email) {
+        Member member = getMemberByEmail(email);
+        if (member.getStatus().equals(Status.DELETED)) {
+            throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
+        }
+        return member;
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Member> getMemberOptionalByEmail(String email){
+        return memberRepository.findByEmail(email);
     }
 
     @Transactional(readOnly = true)
