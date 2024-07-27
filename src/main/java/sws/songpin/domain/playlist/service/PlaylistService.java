@@ -93,9 +93,7 @@ public class PlaylistService {
         // isMine
         boolean isMine = playlist.getCreator().equals(currentMember);
         // bookmarkId
-        Long bookmarkId = bookmarkRepository.findByPlaylistAndMember(playlist, currentMember)
-                .map(Bookmark::getBookmarkId)
-                .orElse(null);
+        Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
         return PlaylistDetailsResponseDto.from(playlist, imgPathList, pinList, isMine, bookmarkId);
     }
 
@@ -184,9 +182,9 @@ public class PlaylistService {
                 .map(playlist -> {
                     // imgPathList
                     List<String> imgPathList = getPlaylistThumbnailImgPathList(playlist);
-                    // isBookmarked
-                    boolean isBookmarked = bookmarkedPlaylistIds.contains(playlist.getPlaylistId());
-                    return PlaylistUnitDto.from(playlist, imgPathList, isBookmarked);
+                    // bookmarkId
+                    Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
+                    return PlaylistUnitDto.from(playlist, imgPathList, bookmarkId);
                 }).collect(Collectors.toList());
 
         return PlaylistListResponseDto.from(playlistList);
@@ -214,8 +212,8 @@ public class PlaylistService {
                 .limit(4)
                 .map(playlist -> {
                     List<String> imgPathList = getPlaylistThumbnailImgPathList(playlist);
-                    boolean isBookmarked = bookmarkRepository.existsByPlaylistAndMember(playlist, currentMember);
-                    return PlaylistUnitDto.from(playlist, imgPathList, isBookmarked);
+                    Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
+                    return PlaylistUnitDto.from(playlist, imgPathList, bookmarkId);
                 })
                 .collect(Collectors.toList());
 
@@ -230,8 +228,8 @@ public class PlaylistService {
                 .limit(4)
                 .map(playlist -> {
                     List<String> imgPathList = getPlaylistThumbnailImgPathList(playlist);
-                    boolean isBookmarked = bookmarkRepository.existsByPlaylistAndMember(playlist, currentMember);
-                    return PlaylistUnitDto.from(playlist, imgPathList, isBookmarked);
+                    Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
+                    return PlaylistUnitDto.from(playlist, imgPathList, bookmarkId);
                 })
                 .collect(Collectors.toList());
 
@@ -256,10 +254,18 @@ public class PlaylistService {
             Long playlistId = ((Number) objects[0]).longValue();
             Playlist playlist = findPlaylistById(playlistId);
             List<String> imgPathList = getPlaylistThumbnailImgPathList(playlist);
-            boolean isBookmarked = bookmarkRepository.existsByPlaylistAndMember(playlist, currentMember);
-            return PlaylistUnitDto.from(playlist, imgPathList, isBookmarked);
+            Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
+            return PlaylistUnitDto.from(playlist, imgPathList, bookmarkId);
         });
         // PlaylistSearchResponseDto를 반환
         return PlaylistSearchResponseDto.from(playlistUnitPage);
     }
+
+    @Transactional(readOnly = true)
+    public Long getBookmarkIdForPlaylistAndMember(Playlist playlist, Member member) {
+        return bookmarkRepository.findByPlaylistAndMember(playlist, member)
+                .map(Bookmark::getBookmarkId)
+                .orElse(null);
+    }
+
 }

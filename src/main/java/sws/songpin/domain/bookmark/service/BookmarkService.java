@@ -66,7 +66,8 @@ public class BookmarkService {
                 .filter(playlist -> playlist.getVisibility() == Visibility.PUBLIC || playlist.getCreator().equals(currentMember))
                 .map(playlist -> {
                     List<String> imgPathList = playlistService.getPlaylistThumbnailImgPathList(playlist);
-                    return PlaylistUnitDto.from(playlist, imgPathList, true);
+                    Long bookmarkId = playlistService.getBookmarkIdForPlaylistAndMember(playlist, currentMember);
+                    return PlaylistUnitDto.from(playlist, imgPathList, bookmarkId);
                 })
                 .collect(Collectors.toList());
         return BookmarkListResponseDto.from(bookmarkList);

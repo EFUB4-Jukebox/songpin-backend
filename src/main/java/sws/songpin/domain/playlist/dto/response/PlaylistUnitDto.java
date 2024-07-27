@@ -15,9 +15,9 @@ public record PlaylistUnitDto(
         LocalDateTime updatedDate,
         Visibility visibility,
         List<String> imgPathList,
-        Boolean isBookmarked
+        Long bookmarkId
 ) {
-    public static PlaylistUnitDto from (Playlist playlist, List<String> imgPathList, Boolean isBookmarked) {
+    public static PlaylistUnitDto from (Playlist playlist, List<String> imgPathList, Long bookmarkId) {
         return new PlaylistUnitDto(
                 playlist.getPlaylistId(),
                 playlist.getPlaylistName(),
@@ -26,7 +26,7 @@ public record PlaylistUnitDto(
                 playlist.getModifiedTime(),
                 playlist.getVisibility(),
                 imgPathList,
-                isBookmarked
+                bookmarkId
         );
     }
 }

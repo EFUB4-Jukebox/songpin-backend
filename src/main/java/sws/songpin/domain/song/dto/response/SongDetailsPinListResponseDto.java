@@ -1,15 +1,23 @@
 package sws.songpin.domain.song.dto.response;
 
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 public record SongDetailsPinListResponseDto(
-    int pinCount,
+    int currentPage,
+    int pageSize,
+    long totalElements,
+    int totalPages,
     List<SongDetailsPinDto> songDetailsPinList){
 
-    public static SongDetailsPinListResponseDto from(List<SongDetailsPinDto> songDetailsPinList) {
+    public static SongDetailsPinListResponseDto from(Page<SongDetailsPinDto> songDetailsPage) {
         return new SongDetailsPinListResponseDto(
-                songDetailsPinList.size(),
-                songDetailsPinList
+                songDetailsPage.getNumber(),
+                songDetailsPage.getSize(),
+                songDetailsPage.getTotalElements(),
+                songDetailsPage.getTotalPages(),
+                songDetailsPage.getContent()
         );
     }
 }

@@ -18,13 +18,14 @@ public record PinFeedUnitDto(
         Visibility visibility,
         Boolean isMine
 ) {
+
     public static PinFeedUnitDto from(Pin pin, Boolean isMine) {
         return new PinFeedUnitDto(
                 pin.getPinId(),
                 SongInfoDto.from(pin.getSong()),
                 pin.getListenedDate(),
                 pin.getPlace().getPlaceName(),
-                pin.getPlace().getLatitude( ),
+                pin.getPlace().getLatitude(),
                 pin.getPlace().getLongitude(),
                 pin.getGenre().getGenreName(),
                 pin.getMemo(),

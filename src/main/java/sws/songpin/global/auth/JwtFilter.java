@@ -26,11 +26,11 @@ public class JwtFilter extends OncePerRequestFilter {
         String authorizationHeader = request.getHeader("Authorization");
 
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer")){
-            String token = authorizationHeader.substring(7);
+            String accessToken = authorizationHeader.substring(7);
 
             try{
-                if(jwtUtil.validateToken(token)){
-                    Authentication authentication = jwtUtil.getAuthentication(token);
+                if(jwtUtil.validateAccessToken(accessToken)){
+                    Authentication authentication = jwtUtil.getAuthentication(accessToken);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (RedisConnectionFailureException e){

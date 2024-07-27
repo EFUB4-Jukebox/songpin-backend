@@ -34,36 +34,12 @@ public class JwtUtil {
     }
 
     public String generateAccessToken(Authentication authentication){
-
-        Claims claims = Jwts.claims();
-        claims.setSubject(authentication.getName());
-
-        Date now = new Date();
-        Date expireDate = new Date(now.getTime()+ACCESS_TOKEN_EXPIRE_TIME.toMillis());
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(expireDate)
-                .signWith(accessKey, SignatureAlgorithm.HS256)
-                .compact();
-
+        return generateToken(authentication, accessKey, ACCESS_TOKEN_EXPIRE_TIME);
     }
 
     public String generateRefreshToken(Authentication authentication){
 
-        Claims claims = Jwts.claims();
-        claims.setSubject(authentication.getName());
-
-        Date now = new Date();
-        Date expireDate = new Date(now.getTime()+REFRESH_TOKEN_EXPIRE_TIME.toMillis());
-
-        String refreshToken = Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(expireDate)
-                .signWith(refreshKey,SignatureAlgorithm.HS256)
-                .compact();
+        String refreshToken = generateToken(authentication, refreshKey, REFRESH_TOKEN_EXPIRE_TIME);
 
         //refresh token을 redis에 저장
         redisService.setValuesWithTimeout(authentication.getName(), refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
@@ -71,26 +47,72 @@ public class JwtUtil {
         return refreshToken;
     }
 
+    private String generateToken(Authentication authentication, Key key, Duration expiredTime){
+        Claims claims = Jwts.claims();
+        claims.setSubject(authentication.getName());
 
-    public boolean validateToken(String token){
+        Date now = new Date();
+        Date expireDate = new Date(now.getTime()+expiredTime.toMillis());
+
+        String token = Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(expireDate)
+                .signWith(key,SignatureAlgorithm.HS256)
+                .compact();
+
+        return token;
+    }
+
+
+    public boolean validateAccessToken(String accessToken){
         try {
-            Jwts.parserBuilder().setSigningKey(accessKey).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(accessKey).build().parseClaimsJws(accessToken);
             return true;
         } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e){
             throw new CustomException(ErrorCode.INVALID_TOKEN);
         } catch (ExpiredJwtException e) {
-            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
+            throw new CustomException(ErrorCode.EXPIRED_ACCESS_TOKEN);
+        }
+    }
+
+    public void validateRefreshToken(String refreshToken){
+        try{
+            Jwts.parserBuilder().setSigningKey(refreshKey).build().parseClaimsJws(refreshToken);
+        } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e){
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        } catch (ExpiredJwtException e) {
+            throw new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
     }
 
     public Authentication getAuthentication(String token){
-        String userPrincipal = Jwts.parserBuilder()
-                .setSigningKey(accessKey)
-                .build().parseClaimsJws(token)
-                .getBody().getSubject();
-        UserDetails userDetails = userDetailsService.loadUserByUsername(userPrincipal);
+        try{
+            String userPrincipal = Jwts.parserBuilder()
+                    .setSigningKey(accessKey)
+                    .build().parseClaimsJws(token)
+                    .getBody().getSubject();
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userPrincipal);
 
-        return new UsernamePasswordAuthenticationToken(userDetails,"",userDetails.getAuthorities());
+            return new UsernamePasswordAuthenticationToken(userDetails,"",userDetails.getAuthorities());
+        } catch (ExpiredJwtException e){
+            String userPrincipal = e.getClaims().getSubject();
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userPrincipal);
+
+            return new UsernamePasswordAuthenticationToken(userDetails,"",userDetails.getAuthorities());
+        }
+    }
+
+    //Access Token 재발급에서 사용
+    public boolean isTokenExpired(String accessToken) {
+        try {
+            Claims claims = Jwts.parser().setSigningKey(accessKey).parseClaimsJws(accessToken).getBody();
+            return claims.getExpiration().before(new Date());
+        } catch (ExpiredJwtException e){
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
     }
 
 }
