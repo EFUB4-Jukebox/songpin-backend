@@ -6,11 +6,11 @@ import sws.songpin.global.exception.ErrorCode;
 
 public enum GenreName {
     POP, // 팝
-    ROCK, // 락&메탈
+    ROCK, // 록/메탈
     BALLAD, // 발라드
     JAZZ, // 재즈
     HIPHOP, // 힙합
-    LOFI, // 로파이
+    LOFI, // Lo-Fi
     DANCE, // 댄스
     EXTRA // 나머지
     ;
