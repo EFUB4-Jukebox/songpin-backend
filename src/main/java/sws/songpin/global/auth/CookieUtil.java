@@ -24,21 +24,25 @@ public class CookieUtil {
     }
 
     public void addCookie(HttpServletResponse response, String name, String value, int maxAge){
-        Cookie refreshTokenCookie = new Cookie(name, value);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(maxAge);
 
-        response.addCookie(refreshTokenCookie);
+        StringBuilder cookieHeader = new StringBuilder();
+        cookieHeader.append(name).append("=").append(value).append(";");
+        cookieHeader.append("Max-Age=").append(maxAge).append(";");
+        cookieHeader.append("Expires=").append(new java.util.Date(System.currentTimeMillis() + maxAge * 1000L)).append(";");
+        cookieHeader.append("Path=/;");
+        cookieHeader.append("HttpOnly;");
+        cookieHeader.append("Secure;");
+        cookieHeader.append("SameSite=None;");
+
+        response.addHeader("Set-Cookie", cookieHeader.toString());
+
     }
 
     public void deleteCookie(HttpServletResponse response, String name){
-        Cookie refreshTokenCookie = new Cookie(name,null);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(0);
+        Cookie cookie = new Cookie(name,null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
 
-        response.addCookie(refreshTokenCookie);
-    }
+        response.addCookie(cookie);}
 }
