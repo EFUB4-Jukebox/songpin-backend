@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.bookmark.entity.Bookmark;
@@ -11,6 +14,8 @@ import sws.songpin.domain.bookmark.repository.BookmarkRepository;
 import sws.songpin.domain.follow.service.FollowService;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.follow.entity.Follow;
+import sws.songpin.domain.member.entity.Status;
+import sws.songpin.domain.member.repository.MemberRepository;
 import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.model.SortBy;
 import sws.songpin.domain.model.Visibility;
@@ -28,6 +33,7 @@ import sws.songpin.global.exception.ErrorCode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,6 +45,7 @@ public class PlaylistService {
     private final PlaylistRepository playlistRepository;
     private final PlaylistPinRepository playlistPinRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final MemberRepository memberRepository;
     private final FollowService followService;
 
     // 플레이리스트 생성
@@ -58,9 +65,11 @@ public class PlaylistService {
     // 플레이리스트 상세 정보 가져오기
     @Transactional(readOnly = true)
     public PlaylistDetailsResponseDto getPlaylist(Long playlistId) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = getMemberForPlaylistDetails();
         Playlist playlist = findPlaylistById(playlistId);
-        if (!currentMember.equals(playlist.getCreator()) && playlist.getVisibility().equals(Visibility.PRIVATE)) {
+        // isMine
+        boolean isMine = currentMember != null && currentMember.equals(playlist.getCreator());
+        if (!isMine && playlist.getVisibility().equals(Visibility.PRIVATE)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
         List<PlaylistPin> playlistPinList = playlist.getPlaylistPins();
@@ -90,8 +99,6 @@ public class PlaylistService {
                         imgPathList.add(playlistPin.getPin().getSong().getImgPath());
                     }
                 });
-        // isMine
-        boolean isMine = playlist.getCreator().equals(currentMember);
         // bookmarkId
         Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
         return PlaylistDetailsResponseDto.from(playlist, imgPathList, pinList, isMine, bookmarkId);
@@ -266,6 +273,26 @@ public class PlaylistService {
         return bookmarkRepository.findByPlaylistAndMember(playlist, member)
                 .map(Bookmark::getBookmarkId)
                 .orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public Member getMemberForPlaylistDetails() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // 로그인하지 않은 경우
+        if (authentication == null || !authentication.isAuthenticated() ||
+                authentication instanceof AnonymousAuthenticationToken) {
+            return null;
+        }
+        Optional<Member> memberOpt = memberRepository.findByEmail(authentication.getName());
+        if (!memberOpt.isPresent()) {
+            return null;
+        }
+        Member member = memberOpt.get();
+        if (member.getStatus().equals(Status.DELETED)) {
+            throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
+        }
+
+        return member;
     }
 
 }
