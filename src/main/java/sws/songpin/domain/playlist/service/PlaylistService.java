@@ -67,10 +67,10 @@ public class PlaylistService {
     public PlaylistDetailsResponseDto getPlaylist(Long playlistId) {
         Member currentMember = getMemberForPlaylistDetails();
         Playlist playlist = findPlaylistById(playlistId);
-        if (currentMember == null || !currentMember.equals(playlist.getCreator())) {
-            if (playlist.getVisibility().equals(Visibility.PRIVATE)) {
-                throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
-            }
+        // isMine
+        boolean isMine = currentMember != null && currentMember.equals(playlist.getCreator());
+        if (!isMine && playlist.getVisibility().equals(Visibility.PRIVATE)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
         List<PlaylistPin> playlistPinList = playlist.getPlaylistPins();
         // imgPathList, pinList
@@ -99,8 +99,6 @@ public class PlaylistService {
                         imgPathList.add(playlistPin.getPin().getSong().getImgPath());
                     }
                 });
-        // isMine
-        boolean isMine = currentMember != null && currentMember.equals(playlist.getCreator());
         // bookmarkId
         Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
         return PlaylistDetailsResponseDto.from(playlist, imgPathList, pinList, isMine, bookmarkId);
