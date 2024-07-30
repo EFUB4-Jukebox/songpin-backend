@@ -102,9 +102,9 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtFilter(jwtUtil), LogoutFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(AUTH_WHITELIST).permitAll()
-                        .requestMatchers(HttpMethod.GET,"/places/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/places/{placeId}").permitAll()
                         .requestMatchers(HttpMethod.GET,"/playlists/main").authenticated()
-                        .requestMatchers(HttpMethod.GET,"/playlists/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/playlists/{playlistId}").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(e -> e.authenticationEntryPoint(jwtAuthenticationEntryPoint))
         ;
