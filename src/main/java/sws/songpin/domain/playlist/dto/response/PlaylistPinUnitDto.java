@@ -16,7 +16,7 @@ public record PlaylistPinUnitDto(
         GenreName genreName,
         int pinIndex
 ) {
-    public static PlaylistPinUnitDto fromEntity(PlaylistPin playlistPin) {
+    public static PlaylistPinUnitDto from (PlaylistPin playlistPin) {
         SongInfoDto songInfo = SongInfoDto.from(playlistPin.getPin().getSong());
             return new PlaylistPinUnitDto(
                 playlistPin.getPlaylistPinId(),
