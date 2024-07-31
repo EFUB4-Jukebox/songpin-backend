@@ -19,13 +19,13 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         Object exception = request.getAttribute("exception");
         if(exception instanceof  ErrorCode){
             ErrorCode errorCode = (ErrorCode) exception;
-            setResponse(response,errorCode);
+            setResponse(request, response,errorCode);
             return;
         }
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
 
-    private void setResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException{
+    private void setResponse(HttpServletRequest request, HttpServletResponse response, ErrorCode errorCode) throws IOException{
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         JSONObject jsonObject = new JSONObject();
@@ -33,6 +33,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         jsonObject.put("status",errorCode.getStatus());
         jsonObject.put("errorCode", errorCode.name());
         jsonObject.put("message", errorCode.getMessage());
+        jsonObject.put("path", request.getRequestURI());
         response.getWriter().println(jsonObject);
 
     }
