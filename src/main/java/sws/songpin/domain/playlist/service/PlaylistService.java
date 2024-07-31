@@ -134,7 +134,7 @@ public class PlaylistService {
         playlistRepository.delete(playlist);
     }
 
-    // Playlist를 PlaylistUnitDto로 전환
+    // Playlist를 PlaylistUnitDto로 변환
     @Transactional(readOnly = true)
     public PlaylistUnitDto convertToPlaylistUnitDto(Playlist playlist, Member currentMember) {
         List<String> imgPathList = getPlaylistThumbnailImgPathList(playlist);
