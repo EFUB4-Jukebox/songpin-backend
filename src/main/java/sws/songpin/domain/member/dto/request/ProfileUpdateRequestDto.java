@@ -13,8 +13,7 @@ public record ProfileUpdateRequestDto (
         String nickname,
         @NotBlank
         @Pattern(regexp = "^[a-z0-9_]+$", message = "INVALID_INPUT_FORMAT-핸들은 영어 소문자, 숫자, 언더바(_) 조합만 허용됩니다.")
-        @Size(min = 3, message = "INVALID_INPUT_LENGTH-핸들은 최소 3자 이상이어야 합니다.")
-        @Size(max = 12, message = "INVALID_INPUT_LENGTH-핸들은 12자 이내여야 합니다.")
+        @Size(min = 3, max = 12, message = "INVALID_INPUT_LENGTH-핸들은 최소 3자 이상, 12자 이내만 허용됩니다.")
         String handle
 ){
 }

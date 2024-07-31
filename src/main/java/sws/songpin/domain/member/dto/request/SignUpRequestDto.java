@@ -10,8 +10,7 @@ public record SignUpRequestDto(
         @Pattern(regexp = "^[가-힣a-zA-Z0-9]+$", message = "INVALID_INPUT_FORMAT-닉네임은 한글 문자, 영어 대소문자, 숫자만 허용됩니다. 공백은 허용되지 않습니다.")
         @Size(max = 8, message = "INVALID_INPUT_LENGTH-닉네임은 8자 이내여야 합니다.")
         String nickname,
-        @Size(min = 8, message = "INVALID_INPUT_LENGTH-비밀번호는 최소 8자 이상이어야 합니다.")
-        @Size(max = 20, message = "INVALID_INPUT_LENGTH-비밀번호는 20자 이내여야 합니다.")
+        @Size(min = 8, max = 20, message = "INVALID_INPUT_LENGTH-비밀번호는 최소 8자 이상, 20자 이내만 허용됩니다.")
         @NotBlank(message = "INVALID_INPUT_VALUE-비밀번호는 한 글자 이상 입력해야 합니다.")
         String password,
         String confirmPassword) {
