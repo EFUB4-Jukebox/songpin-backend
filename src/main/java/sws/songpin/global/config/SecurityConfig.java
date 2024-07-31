@@ -28,6 +28,7 @@ import sws.songpin.global.auth.JwtFilter;
 import sws.songpin.global.auth.JwtUtil;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -61,11 +62,11 @@ public class SecurityConfig {
                 "https://localhost:3000",
                 "https://api.songpin.n-e.kr"));
 
-        configuration.addAllowedMethod("*");
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
         configuration.addAllowedHeader("*");
+        configuration.addExposedHeader("Set-Cookie");
         configuration.setAllowCredentials(true);
 
-        configuration.addExposedHeader("Set-Cookie");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
