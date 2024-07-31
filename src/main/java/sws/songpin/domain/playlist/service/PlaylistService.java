@@ -136,21 +136,21 @@ public class PlaylistService {
 
     // 내 플레이리스트 조회
     @Transactional(readOnly = true)
-    public PlaylistListResponseDto getAllPlaylistsOfMember(){
+    public PlaylistListResponseDto getMemberPlaylists(){
         Member currentMember = memberService.getCurrentMember();
-        return getAllPlaylistsOfMember(currentMember, currentMember);
+        return getMemberPlaylists(currentMember, currentMember);
     }
 
     // 타 유저 플레이리스트 조회
     @Transactional(readOnly = true)
-    public PlaylistListResponseDto getAllPlaylistsOfMember(Long memberId) {
+    public PlaylistListResponseDto getMemberPlaylists(Long memberId) {
         Member creator = memberService.getMemberById(memberId);
         Member currentMember = memberService.getCurrentMember();
-        return getAllPlaylistsOfMember(creator, currentMember);
+        return getMemberPlaylists(creator, currentMember);
     }
 
     @Transactional(readOnly = true)
-    public PlaylistListResponseDto getAllPlaylistsOfMember(Member creator, Member currentMember) {
+    public PlaylistListResponseDto getMemberPlaylists(Member creator, Member currentMember) {
         List<Playlist> playlists;
         if (creator.equals(currentMember)) {
             playlists = playlistRepository.findAllByCreator(creator);
