@@ -26,8 +26,8 @@ public class PlaceController {
     @Operation(summary = "장소 검색", description = "장소 검색 결과를 선택한 정렬 기준에 따라 페이징으로 불러옵니다.")
     @GetMapping
     public ResponseEntity<?> placeSearch(@RequestParam final String keyword,
-                                         @RequestParam(defaultValue = "ACCURACY") final SortBy sortBy,
+                                         @RequestParam(defaultValue = "ACCURACY") final String sortBy,
                                          @PageableDefault(size = 20) final Pageable pageable) {
-        return ResponseEntity.ok().body(placeService.searchPlaces(keyword, sortBy, pageable));
+        return ResponseEntity.ok().body(placeService.searchPlaces(keyword, SortBy.from(sortBy), pageable));
     }
 }
