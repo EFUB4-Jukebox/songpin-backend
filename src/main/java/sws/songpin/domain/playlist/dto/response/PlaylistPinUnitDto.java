@@ -1,6 +1,7 @@
 package sws.songpin.domain.playlist.dto.response;
 
 import sws.songpin.domain.genre.entity.GenreName;
+import sws.songpin.domain.playlistpin.entity.PlaylistPin;
 import sws.songpin.domain.song.dto.response.SongInfoDto;
 import java.time.LocalDate;
 
@@ -13,5 +14,20 @@ public record PlaylistPinUnitDto(
         double placeLatitude,
         double placeLongitude,
         GenreName genreName,
-        int pinIndex) {
+        int pinIndex
+) {
+    public static PlaylistPinUnitDto fromEntity(PlaylistPin playlistPin) {
+        SongInfoDto songInfo = SongInfoDto.from(playlistPin.getPin().getSong());
+            return new PlaylistPinUnitDto(
+                playlistPin.getPlaylistPinId(),
+                playlistPin.getPin().getPinId(),
+                songInfo,
+                playlistPin.getPin().getListenedDate(),
+                playlistPin.getPin().getPlace().getPlaceName(),
+                playlistPin.getPin().getPlace().getLatitude(),
+                playlistPin.getPin().getPlace().getLongitude(),
+                playlistPin.getPin().getGenre().getGenreName(),
+                playlistPin.getPinIndex()
+        );
+    }
 }

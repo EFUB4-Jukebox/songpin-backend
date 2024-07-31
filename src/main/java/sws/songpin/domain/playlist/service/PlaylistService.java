@@ -4,9 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.bookmark.entity.Bookmark;
@@ -14,8 +11,6 @@ import sws.songpin.domain.bookmark.repository.BookmarkRepository;
 import sws.songpin.domain.follow.service.FollowService;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.follow.entity.Follow;
-import sws.songpin.domain.member.entity.Status;
-import sws.songpin.domain.member.repository.MemberRepository;
 import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.model.SortBy;
 import sws.songpin.domain.model.Visibility;
@@ -33,7 +28,6 @@ import sws.songpin.global.exception.ErrorCode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -68,32 +62,17 @@ public class PlaylistService {
         Playlist playlist = findPlaylistById(playlistId);
         // isMine
         boolean isMine = currentMember != null && currentMember.equals(playlist.getCreator());
-        if (!isMine || playlist.getVisibility().equals(Visibility.PRIVATE)) {
+        if (!isMine && playlist.getVisibility().equals(Visibility.PRIVATE)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
-        List<PlaylistPin> playlistPinList = playlist.getPlaylistPins();
+        List<PlaylistPin> playlistPins = playlist.getPlaylistPins();
         // imgPathList, pinList
         List<PlaylistPinUnitDto> pinList = new ArrayList<>();
         List<String> imgPathList = new ArrayList<>();
-
-        playlistPinList.stream()
+        playlistPins.stream()
                 .sorted(Comparator.comparingInt(PlaylistPin::getPinIndex).reversed())
                 .forEach(playlistPin -> {
-                    // SongInfo
-                    SongInfoDto songInfo = SongInfoDto.from(playlistPin.getPin().getSong());
-                    PlaylistPinUnitDto pinListDto = new PlaylistPinUnitDto(
-                            playlistPin.getPlaylistPinId(),
-                            playlistPin.getPin().getPinId(),
-                            songInfo,
-                            playlistPin.getPin().getListenedDate(),
-                            playlistPin.getPin().getPlace().getPlaceName(),
-                            playlistPin.getPin().getPlace().getLatitude(),
-                            playlistPin.getPin().getPlace().getLongitude(),
-                            playlistPin.getPin().getGenre().getGenreName(),
-                            playlistPin.getPinIndex()
-                    );
-                    pinList.add(pinListDto);
-
+                    pinList.add(PlaylistPinUnitDto.fromEntity(playlistPin));
                     if (imgPathList.size() < 3) {
                         imgPathList.add(playlistPin.getPin().getSong().getImgPath());
                     }
@@ -189,13 +168,6 @@ public class PlaylistService {
         return PlaylistListResponseDto.from(playlistList);
     }
 
-    private boolean validatePlaylistAccess(Member member, Playlist playlist) {
-        boolean isMine = member != null && member.equals(playlist.getCreator());
-        if (!isMine && playlist.getVisibility().equals(Visibility.PRIVATE)) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
-        }
-        return isMine;
-    }
     // imgPathList
     @Transactional(readOnly = true)
     public List<String> getPlaylistThumbnailImgPathList(Playlist playlist) {
