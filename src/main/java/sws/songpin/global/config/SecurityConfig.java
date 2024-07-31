@@ -61,11 +61,11 @@ public class SecurityConfig {
                 "https://localhost:3000",
                 "https://api.songpin.n-e.kr"));
 
-        configuration.addAllowedMethod("*");
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
         configuration.addAllowedHeader("*");
+        configuration.addExposedHeader("Set-Cookie");
         configuration.setAllowCredentials(true);
 
-        configuration.addExposedHeader("Set-Cookie");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
