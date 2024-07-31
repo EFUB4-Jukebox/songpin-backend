@@ -41,11 +41,10 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class PlaylistService {
-    private final MemberService memberService;
     private final PlaylistRepository playlistRepository;
     private final PlaylistPinRepository playlistPinRepository;
     private final BookmarkRepository bookmarkRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final FollowService followService;
 
     // 플레이리스트 생성
@@ -65,11 +64,11 @@ public class PlaylistService {
     // 플레이리스트 상세 정보 가져오기
     @Transactional(readOnly = true)
     public PlaylistDetailsResponseDto getPlaylist(Long playlistId) {
-        Member currentMember = getMemberForPlaylistDetails();
+        Member currentMember = getCurrentMemberForPlaylistDetails();
         Playlist playlist = findPlaylistById(playlistId);
         // isMine
         boolean isMine = currentMember != null && currentMember.equals(playlist.getCreator());
-        if (!isMine && playlist.getVisibility().equals(Visibility.PRIVATE)) {
+        if (!isMine || playlist.getVisibility().equals(Visibility.PRIVATE)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
         List<PlaylistPin> playlistPinList = playlist.getPlaylistPins();
@@ -174,29 +173,29 @@ public class PlaylistService {
 
     @Transactional(readOnly = true)
     public PlaylistListResponseDto getAllPlaylists(Member creator, Member currentMember) {
-        Boolean isMine = creator.equals(currentMember)? true : false;
-        List<Playlist> playlists = playlistRepository.findAllByCreator(creator);
-        // 플레이리스트 ID 목록 생성
-        List<Long> playlistIds = playlists.stream()
-                .map(Playlist::getPlaylistId)
-                .collect(Collectors.toList());
-
-        // 내가 북마크한 플레이리스트 ID 조회
-        List<Long> bookmarkedPlaylistIds = bookmarkRepository.findBookmarkedPlaylistIdsByMemberAndPlaylistIds(currentMember, playlistIds);
-
+        List<Playlist> playlists;
+        if (creator.equals(currentMember)) {
+            playlists = playlistRepository.findAllByCreator(creator);
+        } else {
+            playlists = playlistRepository.findAllPublicByCreator(creator);
+        }
         List<PlaylistUnitDto> playlistList = playlists.stream()
-                .filter(playlist -> isMine || playlist.getVisibility().equals(Visibility.PUBLIC))
                 .map(playlist -> {
-                    // imgPathList
-                    List<String> imgPathList = getPlaylistThumbnailImgPathList(playlist);
-                    // bookmarkId
-                    Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
+                    List<String> imgPathList = getPlaylistThumbnailImgPathList(playlist); // imgPathList
+                    Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember); // bookmarkId
                     return PlaylistUnitDto.from(playlist, imgPathList, bookmarkId);
                 }).collect(Collectors.toList());
 
         return PlaylistListResponseDto.from(playlistList);
     }
 
+    private boolean validatePlaylistAccess(Member member, Playlist playlist) {
+        boolean isMine = member != null && member.equals(playlist.getCreator());
+        if (!isMine && playlist.getVisibility().equals(Visibility.PRIVATE)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
+        }
+        return isMine;
+    }
     // imgPathList
     @Transactional(readOnly = true)
     public List<String> getPlaylistThumbnailImgPathList(Playlist playlist) {
@@ -276,23 +275,12 @@ public class PlaylistService {
     }
 
     @Transactional(readOnly = true)
-    public Member getMemberForPlaylistDetails() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // 로그인하지 않은 경우
-        if (authentication == null || !authentication.isAuthenticated() ||
-                authentication instanceof AnonymousAuthenticationToken) {
+    public Member getCurrentMemberForPlaylistDetails() {
+        try {
+            Member currentMember = memberService.getCurrentMember();
+            return currentMember;
+        } catch (CustomException e) { // 로그인하지 않은 경우
             return null;
         }
-        Optional<Member> memberOpt = memberRepository.findByEmail(authentication.getName());
-        if (!memberOpt.isPresent()) {
-            return null;
-        }
-        Member member = memberOpt.get();
-        if (member.getStatus().equals(Status.DELETED)) {
-            throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
-        }
-
-        return member;
     }
-
 }

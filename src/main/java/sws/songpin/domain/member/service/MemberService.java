@@ -40,7 +40,7 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Member getCurrentMember() {
+    public Member getCurrentMember() throws CustomException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Member member = memberRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_AUTHENTICATED));
