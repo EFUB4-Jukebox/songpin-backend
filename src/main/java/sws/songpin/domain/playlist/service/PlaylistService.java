@@ -134,15 +134,6 @@ public class PlaylistService {
         playlistRepository.delete(playlist);
     }
 
-    // Playlist를 PlaylistUnitDto로 변환
-    @Transactional(readOnly = true)
-    public PlaylistUnitDto convertToPlaylistUnitDto(Playlist playlist, Member currentMember) {
-        List<String> imgPathList = getPlaylistThumbnailImgPathList(playlist);
-        Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
-        return PlaylistUnitDto.from(playlist, imgPathList, bookmarkId);
-    }
-
-
     // 내 플레이리스트 조회
     @Transactional(readOnly = true)
     public PlaylistListResponseDto getAllPlaylistsOfMember(){
@@ -170,15 +161,6 @@ public class PlaylistService {
                 .map(playlist -> convertToPlaylistUnitDto(playlist, currentMember))
                 .collect(Collectors.toList());
         return PlaylistListResponseDto.from(playlistList);
-    }
-
-    // imgPathList
-    @Transactional(readOnly = true)
-    public List<String> getPlaylistThumbnailImgPathList(Playlist playlist) {
-        return playlist.getPlaylistPins().stream()
-                .map(playlistPin -> playlistPin.getPin().getSong().getImgPath())
-                .limit(3)
-                .collect(Collectors.toList());
     }
 
     // 플레이리스트 메인 페이지 조회
@@ -231,6 +213,17 @@ public class PlaylistService {
         });
         // PlaylistSearchResponseDto를 반환
         return PlaylistSearchResponseDto.from(playlistUnitPage);
+    }
+
+    // Playlist를 PlaylistUnitDto로 변환
+    @Transactional(readOnly = true)
+    public PlaylistUnitDto convertToPlaylistUnitDto(Playlist playlist, Member currentMember) {
+        List<String> imgPathList = playlist.getPlaylistPins().stream()
+                .map(playlistPin -> playlistPin.getPin().getSong().getImgPath())
+                .limit(3)
+                .collect(Collectors.toList());
+        Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
+        return PlaylistUnitDto.from(playlist, imgPathList, bookmarkId);
     }
 
     @Transactional(readOnly = true)
