@@ -51,6 +51,15 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
+    public Member getCurrentMemberOrNull() {
+        try {
+            return getCurrentMember();
+        } catch (CustomException e) { // 로그인하지 않은 경우
+            return null;
+        }
+    }
+
+    @Transactional(readOnly = true)
     public Member getMemberById(Long memberId){
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));

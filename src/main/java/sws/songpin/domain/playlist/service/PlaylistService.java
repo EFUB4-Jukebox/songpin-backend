@@ -57,7 +57,7 @@ public class PlaylistService {
     // 플레이리스트 상세 정보 가져오기
     @Transactional(readOnly = true)
     public PlaylistDetailsResponseDto getPlaylist(Long playlistId) {
-        Member currentMember = getCurrentMemberOrNullForPlaylistDetails();
+        Member currentMember = memberService.getCurrentMemberOrNull();
         Playlist playlist = findPlaylistById(playlistId);
         // isMine
         boolean isMine = currentMember != null && currentMember.equals(playlist.getCreator());
@@ -71,7 +71,7 @@ public class PlaylistService {
         playlistPins.stream()
                 .sorted(Comparator.comparingInt(PlaylistPin::getPinIndex).reversed())
                 .forEach(playlistPin -> {
-                    pinList.add(PlaylistPinUnitDto.fromEntity(playlistPin));
+                    pinList.add(PlaylistPinUnitDto.from(playlistPin));
                     if (imgPathList.size() < 3) {
                         imgPathList.add(playlistPin.getPin().getSong().getImgPath());
                     }
@@ -231,14 +231,5 @@ public class PlaylistService {
         return bookmarkRepository.findByPlaylistAndMember(playlist, member)
                 .map(Bookmark::getBookmarkId)
                 .orElse(null);
-    }
-
-    @Transactional(readOnly = true)
-    public Member getCurrentMemberOrNullForPlaylistDetails() {
-        try {
-            return memberService.getCurrentMember();
-        } catch (CustomException e) { // 로그인하지 않은 경우
-            return null;
-        }
     }
 }
