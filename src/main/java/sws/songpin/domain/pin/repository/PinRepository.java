@@ -60,6 +60,6 @@ public interface PinRepository extends JpaRepository <Pin, Long> {
                     "WHERE (REPLACE(s.title, ' ', '') LIKE %:keywordNoSpaces% OR REPLACE(s.artist, ' ', '') LIKE %:keywordNoSpaces%) " +
                     "AND p.creator_id = :currentMemberId",
             nativeQuery = true)
-    Page<Object[]> findAllBySongNameOrArtistContainingIgnoreSpaces(@Param("currentMemberId") Long currentMemberId, @Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
+    Page<Object[]> findAllBySongNameOrArtistOrPlaceNameContainingIgnoreSpaces(@Param("currentMemberId") Long currentMemberId, @Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
 
 }
