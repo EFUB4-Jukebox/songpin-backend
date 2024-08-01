@@ -1,5 +1,6 @@
 package sws.songpin.domain.song.spotify;
 
+import com.neovisionaries.i18n.CountryCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.michaelthelin.spotify.SpotifyApi;
@@ -44,6 +45,7 @@ public class SpotifyUtil {
         SearchTracksRequest searchTracksRequest = spotifyApi.searchTracks(query)
                 .limit(LIMIT)
                 .offset(offset)
+                .market(CountryCode.KR)
                 .build();
 
         try {
