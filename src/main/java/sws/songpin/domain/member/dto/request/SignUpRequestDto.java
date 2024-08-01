@@ -12,6 +12,7 @@ public record SignUpRequestDto(
         @Size(max = 8, message = "INVALID_INPUT_LENGTH-닉네임은 8자 이내여야 합니다.")
         @NotEmpty(message = "INVALID_INPUT_VALUE-닉네임을 입력하세요.")
         String nickname,
+        @Pattern(regexp = "^[a-zA-Z0-9!@#$%^&*()]+$", message = "INVALID_INPUT_FORMAT-비밀번호는 영문 대소문자, 숫자, 특수문자 !@#$%^&*()만 사용 가능합니다.")
         @Size(min = 8, max = 20, message = "INVALID_INPUT_LENGTH-비밀번호는 최소 8자 이상, 20자 이내여야 합니다.")
         @NotEmpty(message = "INVALID_INPUT_VALUE-비밀번호를 입력하세요.")
         String password,
