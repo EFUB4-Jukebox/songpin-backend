@@ -212,7 +212,7 @@ public class PinService {
         Member currentMember = memberService.getCurrentMember();
         Long currentMemberId = currentMember.getMemberId();
         String keywordNoSpaces = keyword.replace(" ", "");
-        Page<Object[]> myPinPage = pinRepository.findAllBySongNameOrArtistContainingIgnoreSpaces(currentMemberId, keywordNoSpaces, pageable);
+        Page<Object[]> myPinPage = pinRepository.findAllBySongNameOrArtistOrPlaceNameContainingIgnoreSpaces(currentMemberId, keywordNoSpaces, pageable);
 
         Page<PinBasicUnitDto> myPinUnitPage = myPinPage.map(objects -> {
             Long pinId = ((Number) objects[0]).longValue();
