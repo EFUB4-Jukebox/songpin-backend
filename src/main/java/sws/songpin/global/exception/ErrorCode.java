@@ -19,7 +19,7 @@ public enum ErrorCode {
     INVALID_INPUT_VALUE(400, "입력값이 잘못되었습니다."),
     MISSING_PARAMETER(400, "필수 파라미터가 누락되었습니다."),
     // 비밀번호, 비밀번호 확인이 서로 불일치
-    PASSWORD_MISMATCH(400, "비밀번호가 일치하지 않습니다."),
+    PASSWORD_MISMATCH(400, "confirmPassword:비밀번호가 일치하지 않습니다."),
     // enum 값이 잘못됨 (Visibility, GenreName, SortBy)
     INVALID_ENUM_VALUE(400, "enum 값이 잘못되었습니다."),
     // 자신과 관련해 불가능한 요청
@@ -40,7 +40,6 @@ public enum ErrorCode {
     EXPIRED_REFRESH_TOKEN(401, "만료된 리프레시 토큰입니다."),
     // 탈퇴한 회원
     MEMBER_STATUS_DELETED(401, "탈퇴한 회원입니다."),
-    ALREADY_DELETED_MEMBER(401, "탈퇴한 회원입니다."),
     // 어세스 토큰이 만료되지 않은 상황에서 재발급받으려는 경우
     ACCESS_TOKEN_NOT_EXPIRED(401,"액세스 토큰이 아직 만료되지 않았습니다."),
     // 쿠키에 리프레시 토큰이 들어있지 않은 경우
@@ -61,11 +60,11 @@ public enum ErrorCode {
 
     // 409 Conflict
     // 중복 리소스 생성 시도
-    EMAIL_ALREADY_EXISTS(409, "이미 가입된 이메일입니다."),
+    EMAIL_ALREADY_EXISTS(409, "email:이미 가입된 이메일입니다."),
+    HANDLE_ALREADY_EXISTS(409,"handle:이미 다른 사람이 사용 중인 핸들입니다."),
     FOLLOW_ALREADY_EXISTS(409, "이미 팔로우하고 있습니다."),
     BOOKMARK_ALREADY_EXISTS(409, "이미 북마크가 되어있습니다."),
-    PLAYLIST_PIN_ALREADY_EXISTS(409, "이미 플레이리스트에 추가된 핀입니다."),
-    HANDLE_ALREADY_EXISTS(409,"이미 다른 사람이 사용 중인 핸들입니다."),
+    PLAYLIST_PIN_ALREADY_EXISTS(409, "이미 담겨 있습니다."),
 
     // 500 Internal Server Error
     // 외부 API 사용 도중 에러
