@@ -64,7 +64,7 @@ public enum ErrorCode {
     HANDLE_ALREADY_EXISTS(409,"handle:이미 다른 사람이 사용 중인 핸들입니다."),
     FOLLOW_ALREADY_EXISTS(409, "이미 팔로우하고 있습니다."),
     BOOKMARK_ALREADY_EXISTS(409, "이미 북마크가 되어있습니다."),
-    PLAYLIST_PIN_ALREADY_EXISTS(409, "이미 담겨 있습니다."),
+    PLAYLIST_PIN_ALREADY_EXISTS(409, "이미 해당 핀이 담겨 있습니다."),
 
     // 500 Internal Server Error
     // 외부 API 사용 도중 에러
