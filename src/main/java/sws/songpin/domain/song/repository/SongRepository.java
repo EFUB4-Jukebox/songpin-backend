@@ -43,7 +43,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
             "LEFT JOIN pin p ON s.song_id = p.song_id " +
             "WHERE REPLACE(s.title, ' ', '') LIKE %:keywordNoSpaces% " +
             "OR REPLACE(s.artist, ' ', '') LIKE %:keywordNoSpaces% " +
-            "GROUP BY s.song_id" +
+            "GROUP BY s.song_id " +
             "ORDER BY pin_count DESC, s.title ASC",
             countQuery = "SELECT COUNT(DISTINCT s.song_id) " +
                     "FROM song s " +
