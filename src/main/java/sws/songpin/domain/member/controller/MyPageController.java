@@ -33,7 +33,7 @@ public class MyPageController {
     @Operation(summary = "내 플레이리스트 목록 조회", description = "마이페이지에서 내 플레이리스트 목록 조회")
     @GetMapping("/playlists")
     public ResponseEntity<?> getAllPlaylists(){
-        return ResponseEntity.ok(playlistService.getAllPlaylists());
+        return ResponseEntity.ok(playlistService.getMemberPlaylists());
     }
 
     @Operation(summary = "내 북마크 목록 조회", description = "마이페이지에서 북마크 목록 조회")

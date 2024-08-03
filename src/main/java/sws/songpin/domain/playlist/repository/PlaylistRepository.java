@@ -6,12 +6,17 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import sws.songpin.domain.member.entity.Member;
+import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.playlist.entity.Playlist;
 
 import java.util.List;
 
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
     List<Playlist> findAllByCreator(Member member);
+
+    @Query("SELECT p FROM Playlist p WHERE p.creator = :creator AND p.visibility = 'PUBLIC'")
+    List<Playlist> findAllPublicByCreator(@Param("creator") Member creator);
+
 
     @Query(value = "SELECT p.playlist_id, p.playlist_name, COUNT(pin.pin_id) AS pin_count " +
             "FROM playlist p " +
