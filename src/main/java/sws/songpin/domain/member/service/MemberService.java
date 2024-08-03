@@ -40,7 +40,7 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Member getCurrentMember() {
+    public Member getCurrentMember() throws CustomException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Member member = memberRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_AUTHENTICATED));
@@ -48,6 +48,15 @@ public class MemberService {
             throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
         }
         return member;
+    }
+
+    @Transactional(readOnly = true)
+    public Member getCurrentMemberOrNull() {
+        try {
+            return getCurrentMember();
+        } catch (CustomException e) { // 로그인하지 않은 경우
+            return null;
+        }
     }
 
     @Transactional(readOnly = true)

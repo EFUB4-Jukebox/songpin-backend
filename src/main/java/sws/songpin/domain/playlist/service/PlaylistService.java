@@ -4,9 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.bookmark.entity.Bookmark;
@@ -14,8 +11,6 @@ import sws.songpin.domain.bookmark.repository.BookmarkRepository;
 import sws.songpin.domain.follow.service.FollowService;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.follow.entity.Follow;
-import sws.songpin.domain.member.entity.Status;
-import sws.songpin.domain.member.repository.MemberRepository;
 import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.model.SortBy;
 import sws.songpin.domain.model.Visibility;
@@ -26,14 +21,12 @@ import sws.songpin.domain.playlist.entity.Playlist;
 import sws.songpin.domain.playlist.repository.PlaylistRepository;
 import sws.songpin.domain.playlistpin.entity.PlaylistPin;
 import sws.songpin.domain.playlistpin.repository.PlaylistPinRepository;
-import sws.songpin.domain.song.dto.response.SongInfoDto;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -41,11 +34,10 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class PlaylistService {
-    private final MemberService memberService;
     private final PlaylistRepository playlistRepository;
     private final PlaylistPinRepository playlistPinRepository;
     private final BookmarkRepository bookmarkRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final FollowService followService;
 
     // 플레이리스트 생성
@@ -65,36 +57,21 @@ public class PlaylistService {
     // 플레이리스트 상세 정보 가져오기
     @Transactional(readOnly = true)
     public PlaylistDetailsResponseDto getPlaylist(Long playlistId) {
-        Member currentMember = getMemberForPlaylistDetails();
+        Member currentMember = memberService.getCurrentMemberOrNull();
         Playlist playlist = findPlaylistById(playlistId);
         // isMine
         boolean isMine = currentMember != null && currentMember.equals(playlist.getCreator());
-        if (!isMine && playlist.getVisibility().equals(Visibility.PRIVATE)) {
+        if (!isMine && playlist.getVisibility() == Visibility.PRIVATE) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
-        List<PlaylistPin> playlistPinList = playlist.getPlaylistPins();
+        List<PlaylistPin> playlistPins = playlist.getPlaylistPins();
         // imgPathList, pinList
         List<PlaylistPinUnitDto> pinList = new ArrayList<>();
         List<String> imgPathList = new ArrayList<>();
-
-        playlistPinList.stream()
+        playlistPins.stream()
                 .sorted(Comparator.comparingInt(PlaylistPin::getPinIndex).reversed())
                 .forEach(playlistPin -> {
-                    // SongInfo
-                    SongInfoDto songInfo = SongInfoDto.from(playlistPin.getPin().getSong());
-                    PlaylistPinUnitDto pinListDto = new PlaylistPinUnitDto(
-                            playlistPin.getPlaylistPinId(),
-                            playlistPin.getPin().getPinId(),
-                            songInfo,
-                            playlistPin.getPin().getListenedDate(),
-                            playlistPin.getPin().getPlace().getPlaceName(),
-                            playlistPin.getPin().getPlace().getLatitude(),
-                            playlistPin.getPin().getPlace().getLongitude(),
-                            playlistPin.getPin().getGenre().getGenreName(),
-                            playlistPin.getPinIndex()
-                    );
-                    pinList.add(pinListDto);
-
+                    pinList.add(PlaylistPinUnitDto.from(playlistPin));
                     if (imgPathList.size() < 3) {
                         imgPathList.add(playlistPin.getPin().getSong().getImgPath());
                     }
@@ -108,7 +85,7 @@ public class PlaylistService {
     public void updatePlaylist(Long playlistId, PlaylistUpdateRequestDto requestDto) {
         Playlist playlist = findPlaylistById(playlistId);
         Member currentMember = memberService.getCurrentMember();
-        if(!currentMember.equals(playlist.getCreator())){
+        if (!currentMember.equals(playlist.getCreator())){
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
         // 플레이리스트 정보 수정
@@ -121,7 +98,7 @@ public class PlaylistService {
         // 요청된 핀 리스트 가져오기
         List<Long> requestedPinIds = requestDto.pinList().stream()
                 .map(PlaylistPinUpdateDto::playlistPinId)
-                .collect(Collectors.toList());
+                .toList();
 
         // 핀 삭제 & 순서 변경
         List<PlaylistPin> updatedPins = new ArrayList<>();
@@ -151,7 +128,7 @@ public class PlaylistService {
     public void deletePlaylist(Long playlistId) {
         Playlist playlist = findPlaylistById(playlistId);
         Member currentMember = memberService.getCurrentMember();
-        if(!currentMember.equals(playlist.getCreator())){
+        if (!currentMember.equals(playlist.getCreator())){
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
         playlistRepository.delete(playlist);
@@ -159,51 +136,31 @@ public class PlaylistService {
 
     // 내 플레이리스트 조회
     @Transactional(readOnly = true)
-    public PlaylistListResponseDto getAllPlaylists(){
+    public PlaylistListResponseDto getMemberPlaylists(){
         Member currentMember = memberService.getCurrentMember();
-        return getAllPlaylists(currentMember, currentMember);
+        return getMemberPlaylists(currentMember, currentMember);
     }
 
     // 타 유저 플레이리스트 조회
     @Transactional(readOnly = true)
-    public PlaylistListResponseDto getAllPlaylists(Long memberId) {
+    public PlaylistListResponseDto getMemberPlaylists(Long memberId) {
         Member creator = memberService.getMemberById(memberId);
         Member currentMember = memberService.getCurrentMember();
-        return getAllPlaylists(creator, currentMember);
+        return getMemberPlaylists(creator, currentMember);
     }
 
     @Transactional(readOnly = true)
-    public PlaylistListResponseDto getAllPlaylists(Member creator, Member currentMember) {
-        Boolean isMine = creator.equals(currentMember)? true : false;
-        List<Playlist> playlists = playlistRepository.findAllByCreator(creator);
-        // 플레이리스트 ID 목록 생성
-        List<Long> playlistIds = playlists.stream()
-                .map(Playlist::getPlaylistId)
-                .collect(Collectors.toList());
-
-        // 내가 북마크한 플레이리스트 ID 조회
-        List<Long> bookmarkedPlaylistIds = bookmarkRepository.findBookmarkedPlaylistIdsByMemberAndPlaylistIds(currentMember, playlistIds);
-
+    public PlaylistListResponseDto getMemberPlaylists(Member creator, Member currentMember) {
+        List<Playlist> playlists;
+        if (creator.equals(currentMember)) {
+            playlists = playlistRepository.findAllByCreator(creator);
+        } else {
+            playlists = playlistRepository.findAllPublicByCreator(creator);
+        }
         List<PlaylistUnitDto> playlistList = playlists.stream()
-                .filter(playlist -> isMine || playlist.getVisibility().equals(Visibility.PUBLIC))
-                .map(playlist -> {
-                    // imgPathList
-                    List<String> imgPathList = getPlaylistThumbnailImgPathList(playlist);
-                    // bookmarkId
-                    Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
-                    return PlaylistUnitDto.from(playlist, imgPathList, bookmarkId);
-                }).collect(Collectors.toList());
-
-        return PlaylistListResponseDto.from(playlistList);
-    }
-
-    // imgPathList
-    @Transactional(readOnly = true)
-    public List<String> getPlaylistThumbnailImgPathList(Playlist playlist) {
-        return playlist.getPlaylistPins().stream()
-                .map(playlistPin -> playlistPin.getPin().getSong().getImgPath())
-                .limit(3)
+                .map(playlist -> convertToPlaylistUnitDto(playlist, currentMember))
                 .collect(Collectors.toList());
+        return PlaylistListResponseDto.from(playlistList);
     }
 
     // 플레이리스트 메인 페이지 조회
@@ -217,28 +174,20 @@ public class PlaylistService {
                 .filter(playlist -> playlist.getVisibility() == Visibility.PUBLIC || playlist.getCreator().equals(currentMember))
                 .sorted((p1, p2) -> Long.compare(p2.getPlaylistId(), p1.getPlaylistId()))
                 .limit(4)
-                .map(playlist -> {
-                    List<String> imgPathList = getPlaylistThumbnailImgPathList(playlist);
-                    Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
-                    return PlaylistUnitDto.from(playlist, imgPathList, bookmarkId);
-                })
-                .collect(Collectors.toList());
+                .map(playlist -> convertToPlaylistUnitDto(playlist, currentMember))
+                .toList();
 
         // followingPlaylists
         List<Follow> followings = followService.findAllFollowingsOfMember(currentMember);
         List<Member> followingMembers = followings.stream()
                 .map(Follow::getFollowing)
-                .collect(Collectors.toList());
+                .toList();
         List<PlaylistUnitDto> followingPlaylists = allPlaylists.stream()
                 .filter(playlist -> followingMembers.contains(playlist.getCreator()) && playlist.getVisibility() == Visibility.PUBLIC)
                 .sorted((p1, p2) -> Long.compare(p2.getPlaylistId(), p1.getPlaylistId()))
                 .limit(4)
-                .map(playlist -> {
-                    List<String> imgPathList = getPlaylistThumbnailImgPathList(playlist);
-                    Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
-                    return PlaylistUnitDto.from(playlist, imgPathList, bookmarkId);
-                })
-                .collect(Collectors.toList());
+                .map(playlist -> convertToPlaylistUnitDto(playlist, currentMember))
+                .toList();
 
         return PlaylistMainResponseDto.from(recentPlaylists, followingPlaylists);
     }
@@ -260,12 +209,21 @@ public class PlaylistService {
         Page<PlaylistUnitDto> playlistUnitPage = playlistPage.map(objects -> {
             Long playlistId = ((Number) objects[0]).longValue();
             Playlist playlist = findPlaylistById(playlistId);
-            List<String> imgPathList = getPlaylistThumbnailImgPathList(playlist);
-            Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
-            return PlaylistUnitDto.from(playlist, imgPathList, bookmarkId);
+            return convertToPlaylistUnitDto(playlist, currentMember);
         });
         // PlaylistSearchResponseDto를 반환
         return PlaylistSearchResponseDto.from(playlistUnitPage);
+    }
+
+    // Playlist를 PlaylistUnitDto로 변환
+    @Transactional(readOnly = true)
+    public PlaylistUnitDto convertToPlaylistUnitDto(Playlist playlist, Member currentMember) {
+        List<String> imgPathList = playlist.getPlaylistPins().stream()
+                .map(playlistPin -> playlistPin.getPin().getSong().getImgPath())
+                .limit(3)
+                .collect(Collectors.toList());
+        Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
+        return PlaylistUnitDto.from(playlist, imgPathList, bookmarkId);
     }
 
     @Transactional(readOnly = true)
@@ -274,25 +232,4 @@ public class PlaylistService {
                 .map(Bookmark::getBookmarkId)
                 .orElse(null);
     }
-
-    @Transactional(readOnly = true)
-    public Member getMemberForPlaylistDetails() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // 로그인하지 않은 경우
-        if (authentication == null || !authentication.isAuthenticated() ||
-                authentication instanceof AnonymousAuthenticationToken) {
-            return null;
-        }
-        Optional<Member> memberOpt = memberRepository.findByEmail(authentication.getName());
-        if (!memberOpt.isPresent()) {
-            return null;
-        }
-        Member member = memberOpt.get();
-        if (member.getStatus().equals(Status.DELETED)) {
-            throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
-        }
-
-        return member;
-    }
-
 }

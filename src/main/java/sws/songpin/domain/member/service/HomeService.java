@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.member.dto.response.HomeResponseDto;
 import sws.songpin.domain.member.entity.Member;
-import sws.songpin.domain.member.repository.MemberRepository;
 import sws.songpin.domain.pin.dto.response.PinBasicUnitDto;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.pin.repository.PinRepository;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HomeService {
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
     private final PinRepository pinRepository;
     private final PlaceRepository placeRepository;
 

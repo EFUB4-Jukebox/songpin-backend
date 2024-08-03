@@ -27,15 +27,15 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class BookmarkService {
+    private final BookmarkRepository bookmarkRepository;
     private final MemberService memberService;
     private final PlaylistService playlistService;
-    private final BookmarkRepository bookmarkRepository;
 
     // 북마크 생성
     public BookmarkAddResponseDto createBookmark(BookmarkAddRequestDto requestDto) {
         Member member = memberService.getCurrentMember();
         Playlist playlist = playlistService.findPlaylistById(requestDto.playlistId());
-        if (!member.equals(playlist.getCreator()) && playlist.getVisibility().equals(Visibility.PRIVATE)) {
+        if (!member.equals(playlist.getCreator()) && playlist.getVisibility() == Visibility.PRIVATE) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
         getBookmarkByPlaylistAndMember(playlist, member).ifPresent(bookmark -> {
@@ -64,11 +64,7 @@ public class BookmarkService {
         List<PlaylistUnitDto> bookmarkList = bookmarks.stream()
                 .map(bookmark -> bookmark.getPlaylist())
                 .filter(playlist -> playlist.getVisibility() == Visibility.PUBLIC || playlist.getCreator().equals(currentMember))
-                .map(playlist -> {
-                    List<String> imgPathList = playlistService.getPlaylistThumbnailImgPathList(playlist);
-                    Long bookmarkId = playlistService.getBookmarkIdForPlaylistAndMember(playlist, currentMember);
-                    return PlaylistUnitDto.from(playlist, imgPathList, bookmarkId);
-                })
+                .map(playlist -> playlistService.convertToPlaylistUnitDto(playlist, currentMember))
                 .collect(Collectors.toList());
         return BookmarkListResponseDto.from(bookmarkList);
     }
