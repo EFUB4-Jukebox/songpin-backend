@@ -14,6 +14,16 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 
 - 24.07.01 - 진행중
 
+## 🌟 팀원 소개
+
+| 이서현 | 정유정 | 황채린 | 문하영 |
+|:-------------------------:|:----------------------:|:-----------------------:|:---------------------:|
+| <img src="https://avatars.githubusercontent.com/u/32611398?v=4" width="125" height="125"/> | <img src="https://avatars.githubusercontent.com/u/141399892?v=4" width="125" height="125"/> | <img src="https://avatars.githubusercontent.com/u/87927105?v=4" width="125" height="125"/> | <img src="https://avatars.githubusercontent.com/u/124586544?v=4" width="125" height="125"/> |
+| [@seohyun-lee](https://github.com/seohyun-lee) | [@jud1thDev](https://github.com/jud1thDev) | [@crHwang0822](https://github.com/crHwang0822) | [@gkdudans](https://github.com/gkdudans) |
+| CI/CD 환경 구축 및 배포<br>Place, Follow, Alarm API 개발<br>통계 페이지, 지도 핀 정보 제공 | 스포티파이 API 연결<br>Pin, Song, Genre API 개발 | Member API 개발<br>Spring security, jwt, Redis | Playlist, Bookmark API 개발<br>Home 페이지 |
+
+
+
 ## 📝 규칙
 
 #### 커밋 컨벤션
