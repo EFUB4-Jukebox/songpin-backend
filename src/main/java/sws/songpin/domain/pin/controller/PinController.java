@@ -36,8 +36,7 @@ public class PinController {
     @GetMapping("/{pinId}")
     @Operation(summary = "핀 조회", description = "수정 전, 특정 핀의 기존 정보를 조회합니다.")
     public ResponseEntity<?> getPin(@PathVariable("pinId") final Long pinId){
-        Pin pin = pinService.getPinById(pinId);
-        PinExistingInfoResponseDto pinExistingInfoResponseDto = PinExistingInfoResponseDto.from(pin);
+        PinExistingInfoResponseDto pinExistingInfoResponseDto = pinService.getPinInfo(pinId);
         return ResponseEntity.ok(pinExistingInfoResponseDto);
     }
 
