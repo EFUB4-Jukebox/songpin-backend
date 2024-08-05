@@ -37,12 +37,124 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 **Development**
 
 <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white"> <img src="https://img.shields.io/badge/MYSQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white"> <img src="https://img.shields.io/badge/REDIS-FF4438?style=for-the-badge&logo=redis&logoColor=white">
- <img src="https://img.shields.io/badge/Spotify API-1DB954?style=for-the-badge&logo=spotify&logoColor=white">
+<img src="https://img.shields.io/badge/Spotify API-1DB954?style=for-the-badge&logo=spotify&logoColor=white">
+![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white)
 
 
 **Deploy**
 
-<img src="https://img.shields.io/badge/AWS EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white"> <img src="https://img.shields.io/badge/AWS RDS-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white"> <img src="https://img.shields.io/badge/github actions-2088FF?style=for-the-badge&logo=github actions&logoColor=white"> <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
+<img src="https://img.shields.io/badge/AWS EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white"> <img src="https://img.shields.io/badge/AWS RDS-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white"> ![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white) <img src="https://img.shields.io/badge/github actions-181717?style=for-the-badge&logo=github actions&logoColor=white"> <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"> <img src="https://img.shields.io/badge/docker compose-2496ED?style=for-the-badge&logo=docker&logoColor=white">
+
+<br>
+
+## ☁ ERD
+![SongPinERD_240723](https://github.com/user-attachments/assets/9ef0b1c9-1c1a-471d-840e-888efa3d35b4)
+
+<br>
+
+## 📁 프로젝트 구조
+```
+📂
+├─.github
+│  ├─ISSUE_TEMPLATE
+│  └─workflows
+└─src
+     └─main
+         ├─java
+         │  └─sws
+         │      └─songpin
+         │          ├─domain
+         │          │  ├─alarm
+         │          │  │  ├─controller
+         │          │  │  ├─dto
+         │          │  │  │  ├─response
+         │          │  │  │  └─ssedata
+         │          │  │  ├─entity
+         │          │  │  ├─repository
+         │          │  │  └─service
+         │          │  ├─bookmark
+         │          │  │  ├─controller
+         │          │  │  ├─dto
+         │          │  │  │  ├─request
+         │          │  │  │  └─response
+         │          │  │  ├─entity
+         │          │  │  ├─repository
+         │          │  │  └─service
+         │          │  ├─follow
+         │          │  │  ├─controller
+         │          │  │  ├─dto
+         │          │  │  │  ├─request
+         │          │  │  │  └─response
+         │          │  │  ├─entity
+         │          │  │  ├─repository
+         │          │  │  └─service
+         │          │  ├─genre
+         │          │  │  ├─entity
+         │          │  │  ├─repository
+         │          │  │  └─service
+         │          │  ├─member
+         │          │  │  ├─controller
+         │          │  │  ├─dto
+         │          │  │  │  ├─request
+         │          │  │  │  └─response
+         │          │  │  ├─entity
+         │          │  │  ├─repository
+         │          │  │  └─service
+         │          │  ├─model
+         │          │  ├─pin
+         │          │  │  ├─controller
+         │          │  │  ├─dto
+         │          │  │  │  ├─request
+         │          │  │  │  └─response
+         │          │  │  ├─entity
+         │          │  │  ├─repository
+         │          │  │  └─service
+         │          │  ├─place
+         │          │  │  ├─controller
+         │          │  │  ├─dto
+         │          │  │  │  ├─projection
+         │          │  │  │  ├─request
+         │          │  │  │  └─response
+         │          │  │  ├─entity
+         │          │  │  ├─repository
+         │          │  │  └─service
+         │          │  ├─playlist
+         │          │  │  ├─controller
+         │          │  │  ├─dto
+         │          │  │  │  ├─request
+         │          │  │  │  └─response
+         │          │  │  ├─entity
+         │          │  │  ├─repository
+         │          │  │  └─service
+         │          │  ├─playlistpin
+         │          │  │  ├─entity
+         │          │  │  ├─repository
+         │          │  │  └─service
+         │          │  ├─song
+         │          │  │  ├─controller
+         │          │  │  ├─dto
+         │          │  │  │  ├─request
+         │          │  │  │  └─response
+         │          │  │  ├─entity
+         │          │  │  ├─repository
+         │          │  │  ├─service
+         │          │  │  └─spotify
+         │          │  └─statistics
+         │          │      ├─controller
+         │          │      ├─dto
+         │          │      │  ├─projection
+         │          │      │  └─response
+         │          │      └─service
+         │          └─global
+         │              ├─auth
+         │              ├─config
+         │              └─exception
+         └─resources
+             ├─static
+             └─templates
+                 └─email
+```
+<br>
 
 ## 📝 규칙
 
