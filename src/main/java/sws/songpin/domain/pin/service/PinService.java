@@ -14,10 +14,7 @@ import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.pin.dto.request.PinAddRequestDto;
 import sws.songpin.domain.pin.dto.request.PinUpdateRequestDto;
-import sws.songpin.domain.pin.dto.response.PinBasicListResponseDto;
-import sws.songpin.domain.pin.dto.response.PinBasicUnitDto;
-import sws.songpin.domain.pin.dto.response.PinFeedListResponseDto;
-import sws.songpin.domain.pin.dto.response.PinFeedUnitDto;
+import sws.songpin.domain.pin.dto.response.*;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.place.entity.Place;
@@ -78,7 +75,7 @@ public class PinService {
         Genre genre = genreService.getGenreByGenreName(pinUpdateRequestDto.genreName());
         pin.updatePin(pinUpdateRequestDto.listenedDate(), pinUpdateRequestDto.memo(), pinUpdateRequestDto.visibility(), genre);
         pinRepository.save(pin);
-
+        updateSongAvgGenreName(pin.getSong());
         return pin.getSong().getSongId();
     }
 
@@ -242,6 +239,12 @@ public class PinService {
     public Pin getPinById(Long pinId) {
         return pinRepository.findById(pinId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PIN_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public PinExistingInfoResponseDto getPinInfo(Long pinId) {
+        Pin pin = getPinById(pinId);
+        return PinExistingInfoResponseDto.from(pin);
     }
 
 }

@@ -25,7 +25,7 @@ public interface PinRepository extends JpaRepository <Pin, Long> {
             "FROM Pin p " +
             "LEFT JOIN p.genre g " +
             "WHERE p.creator = :creator " +
-            "ORDER BY p.listenedDate DESC")
+            "ORDER BY p.listenedDate DESC, p.pinId DESC")
     Page<Object[]> findPinFeed(@Param("creator") Member creator, Pageable pageable);
 
     List<Pin> findAllByPlace(Place place);
