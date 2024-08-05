@@ -78,7 +78,7 @@ public class PinService {
         Genre genre = genreService.getGenreByGenreName(pinUpdateRequestDto.genreName());
         pin.updatePin(pinUpdateRequestDto.listenedDate(), pinUpdateRequestDto.memo(), pinUpdateRequestDto.visibility(), genre);
         pinRepository.save(pin);
-
+        updateSongAvgGenreName(pin.getSong());
         return pin.getSong().getSongId();
     }
 
