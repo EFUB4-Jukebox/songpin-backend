@@ -1,18 +1,20 @@
+<div align="center">
+
 # 🎵songpin-backend🎵
 EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 
-## 💻 프로젝트 소개
+**나의 음악지도, SongPin**
 
-장소에는 기억과 소리가 담깁니다.
-여러분이 언젠가 여행을 떠났을 때 들었던 음악을 기억하나요?
-여행지에서 많이 들은 음악은 곧, 그 장소의 분위기를 상징하고 기억할 수 있는 추억을 지닌 음악이 됩니다.
-여행이 끝나도 사람들은 그 음악을 들으면서 행복했던 여행의 순간들을 생생하게 회상합니다.
-여기에서 'SongPin'이라는 프로젝트 아이디어가 탄생했습니다.
-<br>
+<a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://github.com/EFUB4-Jukebox/songpin-backend"/></a>
+
+<a href="https://www.instagram.com/songpin_official?igsh=c3ZsNXZ5NnlhNzky">
+<img alt="Instagram" src="https://img.shields.io/badge/-Instagram-white?logo=Instagram&logoColor=d42121">
+</a>
+</div>
 
 ## ⏰ 개발 기간
 
-- 24.07.01 - 진행중
+- 24.07.01 - 24.08.09
 
 ## 🌟 팀원 소개
 
