@@ -8,8 +8,8 @@ import java.time.LocalDate;
 
 public record PinExistingInfoResponseDto(
         String songImgPath,
-        String songTitle,
-        String songArtist,
+        String title,
+        String artist,
         LocalDate listenedDate,
         String placeName,
         GenreName genreName,
