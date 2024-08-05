@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.pin.dto.request.PinAddRequestDto;
 import sws.songpin.domain.pin.dto.request.PinUpdateRequestDto;
+import sws.songpin.domain.pin.dto.response.PinExistingInfoResponseDto;
+import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.song.dto.response.SongDetailsResponseDto;
 
@@ -29,6 +31,14 @@ public class PinController {
         Long songId = pinService.createPin(pinAddRequestDto);
         URI location = URI.create("/songs/" + songId);
         return ResponseEntity.created(location).build();
+    }
+
+    @GetMapping("/{pinId}")
+    @Operation(summary = "핀 조회", description = "수정 전, 특정 핀의 기존 정보를 조회합니다.")
+    public ResponseEntity<?> getPin(@PathVariable("pinId") final Long pinId){
+        Pin pin = pinService.getPinById(pinId);
+        PinExistingInfoResponseDto pinExistingInfoResponseDto = PinExistingInfoResponseDto.from(pin);
+        return ResponseEntity.ok(pinExistingInfoResponseDto);
     }
 
     @PutMapping("/{pinId}")
