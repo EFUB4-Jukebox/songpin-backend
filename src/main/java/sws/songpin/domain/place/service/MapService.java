@@ -78,16 +78,16 @@ public class MapService {
         return genreNameFilters;
     }
 
-    // 지도에 장소 좌표를 최대 100개 띄우도록 함
-    private Pageable getCustomPageableForMap() {
-        return PageRequest.of(0, 100);
-    }
-
     //// 유저로 필터링
     // 유저가 핀을 등록한 장소 좌표들 가져오기
     public MapPlaceFetchResponseDto getMapPlacesOfMember(Long memberId) {
-        Pageable pageable = PageRequest.of(0, 300);
+        Pageable pageable = getCustomPageableForMap();
         Slice<MapPlaceProjectionDto> dtoSlice = mapPlaceRepository.findPlacesWithLatestPinsByCreator(memberId, pageable);
         return MapPlaceFetchResponseDto.from(dtoSlice);
+    }
+
+    // 지도에 장소 좌표를 최대 300개 띄우도록 함
+    private Pageable getCustomPageableForMap() {
+        return PageRequest.of(0, 300);
     }
 }
