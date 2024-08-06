@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 public record ProfileUpdateRequestDto (
         @NotBlank
         String profileImg,
-        @Pattern(regexp = "^[가-힣a-zA-Z0-9]+$", message = "INVALID_INPUT_FORMAT-닉네임은 한글, 영문 대소문자, 숫자만 사용 가능합니다.")
+        @Pattern(regexp = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9]+$", message = "INVALID_INPUT_FORMAT-닉네임은 한글, 영문 대소문자, 숫자만 사용 가능합니다.")
         @Size(max = 8, message = "INVALID_INPUT_LENGTH-닉네임은 8자 이내여야 합니다.")
         @NotEmpty(message = "INVALID_INPUT_VALUE-닉네임을 입력하세요.")
         String nickname,
