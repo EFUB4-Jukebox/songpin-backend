@@ -14,4 +14,11 @@ public record PlaceUnitDto(
                 placePinCount
         );
     }
+    public static PlaceUnitDto from(Object[] placeData) {
+        return new PlaceUnitDto(
+            ((Number) placeData[0]).longValue(),
+            (String) placeData[1],
+            ((Number) placeData[2]).intValue()
+        );
+    }
 }

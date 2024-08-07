@@ -1,6 +1,7 @@
 package sws.songpin.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.member.dto.response.HomeResponseDto;
@@ -12,6 +13,7 @@ import sws.songpin.domain.place.dto.response.PlaceUnitDto;
 import sws.songpin.domain.place.repository.PlaceRepository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,13 +33,9 @@ public class HomeService {
                 .map(pin -> PinBasicUnitDto.from(pin, pin.getCreator().equals(currentMember)))
                 .collect(Collectors.toList());
         // placeList
-        List<Object[]> placesResult = placeRepository.findTop3ByOrderByPlaceIdDesc();
+        List<Object[]> placesResult = placeRepository.findTop3ByOrderByPlaceIdDesc(PageRequest.of(0, 3)).getContent();
         List<PlaceUnitDto> placeUnitDtos = placesResult.stream()
-                .map(placeData -> new PlaceUnitDto(
-                        ((Number) placeData[0]).longValue(),
-                        (String) placeData[1],
-                        ((Number) placeData[2]).intValue()
-                ))
+                .map(PlaceUnitDto::from)
                 .collect(Collectors.toList());
         return HomeResponseDto.from(currentMember, pinBasicUnitDtos, placeUnitDtos);
     }
