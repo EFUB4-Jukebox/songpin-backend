@@ -2,14 +2,12 @@ package sws.songpin.domain.place.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import sws.songpin.domain.place.dto.response.PlaceUnitDto;
 import sws.songpin.domain.place.entity.Place;
 
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
 
 public interface PlaceRepository extends JpaRepository<Place, Long> {
@@ -55,22 +53,6 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
                     "WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces%",
             nativeQuery = true)
     Page<Object[]> findAllByPlaceNameContainingIgnoreSpacesOrderByAccuracy(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
-
-    
-    // Home에서 최근 Top3 장소 반환을 위한 메서드
-    
-    @Query("""
-            SELECT p.placeId, p.placeName, COUNT(pin.pinId) AS placePinCount
-            FROM Place p
-            JOIN p.pins pin
-            LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.listenedDate = (
-            SELECT MAX(innerPin.listenedDate)
-            FROM Pin innerPin
-            WHERE innerPin.place = p
-            )
-            GROUP BY p.placeId, p.placeName, latestPin.listenedDate
-            HAVING COUNT(pin) > 0
-            ORDER BY latestPin.listenedDate DESC
-    """)
-    Slice<Object[]> findTop3NewestPlacesForHome(Pageable pageable);
+    @Query(value = "SELECT * FROM place p ORDER BY p.place_id DESC LIMIT 3", nativeQuery = true)
+    List<Place> findTop3ByOrderByPlaceIdDesc();
 }
