@@ -19,7 +19,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
     // 좌표 범위에 포함되는 장소들 불러오기
     @Query("""
         SELECT new sws.songpin.domain.place.dto.projection.MapPlaceProjectionDto(
-            p.placeId, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
+            p.placeId, p.latitude, p.longitude, COUNT(DISTINCT pin.pinId), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
         JOIN p.pins pin ON pin.genre.genreName IN :genreNameList
@@ -44,7 +44,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
     // 좌표 범위 & 기간 범위에 모두 포함되는 장소들 불러오기
     @Query("""
         SELECT new sws.songpin.domain.place.dto.projection.MapPlaceProjectionDto(
-            p.placeId, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
+            p.placeId, p.latitude, p.longitude, COUNT(DISTINCT pin.pinId), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
         JOIN p.pins pin ON pin.genre.genreName IN :genreNameList AND pin.listenedDate BETWEEN :startDate AND :endDate
@@ -73,7 +73,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
     // 유저가 핀을 등록한 지도 장소들 불러오기
     @Query("""
         SELECT new sws.songpin.domain.place.dto.projection.MapPlaceProjectionDto(
-            p.placeId, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
+            p.placeId, p.latitude, p.longitude, COUNT(DISTINCT pin.pinId), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
         JOIN p.pins pin ON pin.creator.memberId = :memberId
@@ -91,7 +91,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
     // 모든 장르 통틀어 가장 핀이 많이 등록된 장소 가져오기
     @Query("""
         SELECT new sws.songpin.domain.statistics.dto.projection.StatsPlaceProjectionDto(
-            p.placeId, p.placeName, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
+            p.placeId, p.placeName, p.latitude, p.longitude, COUNT(DISTINCT pin.pinId), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
         JOIN p.pins pin
@@ -108,7 +108,7 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
     // 해당 장르에서 가장 핀이 많이 등록된 장소 가져오기
     @Query("""
         SELECT new sws.songpin.domain.statistics.dto.projection.StatsPlaceProjectionDto(
-            p.placeId, p.placeName, p.latitude, p.longitude, COUNT(pin), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
+            p.placeId, p.placeName, p.latitude, p.longitude, COUNT(DISTINCT pin.pinId), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
         )
         FROM Place p
         JOIN p.pins pin ON pin.genre.genreName = :genreName

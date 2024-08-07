@@ -6,10 +6,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import sws.songpin.domain.place.dto.response.PlaceUnitDto;
 import sws.songpin.domain.place.entity.Place;
 
-import java.util.Objects;
 import java.util.Optional;
 
 public interface PlaceRepository extends JpaRepository<Place, Long> {
@@ -60,7 +58,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     // Home에서 최근 Top3 장소 반환을 위한 메서드
     
     @Query("""
-            SELECT p.placeId, p.placeName, COUNT(pin.pinId) AS placePinCount
+            SELECT p.placeId, p.placeName, COUNT(DISTINCT pin.pinId) AS placePinCount
             FROM Place p
             JOIN p.pins pin
             LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.listenedDate = (
