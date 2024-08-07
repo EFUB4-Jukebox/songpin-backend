@@ -57,8 +57,8 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
                 )
                 FROM Place p
                 JOIN p.pins pin
-                        ON pin.genre.genreName IN :genreNameList
-                        AND pin.listenedDate BETWEEN :startDate AND :endDate
+                ON pin.genre.genreName IN :genreNameList
+                AND pin.listenedDate BETWEEN :startDate AND :endDate
                 LEFT JOIN Pin latestPin ON latestPin.place = p
                     AND latestPin.genre.genreName IN :genreNameList
                     AND latestPin.listenedDate = (
