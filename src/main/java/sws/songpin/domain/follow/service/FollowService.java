@@ -74,7 +74,7 @@ public class FollowService {
                 })
                 // 우선순위대로 정렬 (1차: null > true > false, 2차: followId 높은 것부터)
                 .sorted(Comparator.comparing(FollowDto::isFollowing, Comparator.nullsFirst(Comparator.reverseOrder()))
-                        .thenComparing(FollowDto::followId, Comparator.reverseOrder()))
+                        .thenComparing(FollowDto::followId, Comparator.nullsLast(Comparator.reverseOrder())))
                 .collect(Collectors.toList());
         return FollowListResponseDto.from(targetMember.equals(currentMember), targetMember.getHandle(), followDtoList);
     }
