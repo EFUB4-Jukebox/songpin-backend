@@ -19,7 +19,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             "FROM place p " +
             "LEFT JOIN pin pin ON p.place_id = pin.place_id " +
             "WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces% " +
-            "GROUP BY p.place_id " +
+            "GROUP BY p.place_id, p.place_name " +
             "ORDER BY pin_count DESC, p.place_name ASC",
             countQuery = "SELECT COUNT(DISTINCT p.place_id) " +
                     "FROM place p " +
@@ -32,7 +32,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             "FROM place p " +
             "LEFT JOIN pin pin ON p.place_id = pin.place_id " +
             "WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces% " +
-            "GROUP BY p.place_id " +
+            "GROUP BY p.place_id, p.place_name " +
             "ORDER BY MAX(pin.created_time) DESC",
             countQuery = "SELECT COUNT(DISTINCT p.place_id) " +
                     "FROM place p " +
@@ -45,7 +45,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             "FROM place p " +
             "LEFT JOIN pin pin ON p.place_id = pin.place_id " +
             "WHERE REPLACE(p.place_name, ' ', '') LIKE %:keywordNoSpaces% " +
-            "GROUP BY p.place_id " +
+            "GROUP BY p.place_id, p.place_name " +
             "ORDER BY p.place_name ASC",
             countQuery = "SELECT COUNT(DISTINCT p.place_id) " +
                     "FROM place p " +
@@ -55,20 +55,15 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     Page<Object[]> findAllByPlaceNameContainingIgnoreSpacesOrderByAccuracy(@Param("keywordNoSpaces") String keywordNoSpaces, Pageable pageable);
 
     
-    // Home에서 최근 Top3 장소 반환을 위한 메서드
-    
+    // Home에서 placeId 내림차순 Top3 장소 반환을 위한 메서드
+
     @Query("""
             SELECT p.placeId, p.placeName, COUNT(DISTINCT pin.pinId) AS placePinCount
             FROM Place p
             JOIN p.pins pin
-            LEFT JOIN Pin latestPin ON latestPin.place = p AND latestPin.listenedDate = (
-            SELECT MAX(innerPin.listenedDate)
-            FROM Pin innerPin
-            WHERE innerPin.place = p
-            )
-            GROUP BY p.placeId, p.placeName, latestPin.listenedDate
-            HAVING COUNT(pin) > 0
-            ORDER BY latestPin.listenedDate DESC
+            GROUP BY p.placeId, p.placeName
+            HAVING COUNT(pin.pinId) > 0
+            ORDER BY p.placeId DESC
     """)
-    Slice<Object[]> findTop3NewestPlacesForHome(Pageable pageable);
+    Slice<Object[]> findTop3ByOrderByPlaceIdDesc(Pageable pageable);
 }

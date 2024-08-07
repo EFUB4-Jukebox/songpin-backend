@@ -33,7 +33,7 @@ public class HomeService {
                 .map(pin -> PinBasicUnitDto.from(pin, pin.getCreator().equals(currentMember)))
                 .collect(Collectors.toList());
         // placeList
-        List<Object[]> placesResult = placeRepository.findTop3NewestPlacesForHome(PageRequest.of(0, 3)).getContent();
+        List<Object[]> placesResult = placeRepository.findTop3ByOrderByPlaceIdDesc(PageRequest.of(0, 3)).getContent();
         List<PlaceUnitDto> placeUnitDtos = placesResult.stream()
                 .map(PlaceUnitDto::from)
                 .collect(Collectors.toList());
