@@ -219,6 +219,7 @@ public class PlaylistService {
     @Transactional(readOnly = true)
     public PlaylistUnitDto convertToPlaylistUnitDto(Playlist playlist, Member currentMember) {
         List<String> imgPathList = playlist.getPlaylistPins().stream()
+                .sorted(Comparator.comparingInt(PlaylistPin::getPinIndex).reversed())
                 .map(playlistPin -> playlistPin.getPin().getSong().getImgPath())
                 .limit(3)
                 .collect(Collectors.toList());
