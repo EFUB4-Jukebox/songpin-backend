@@ -22,7 +22,7 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 |:-------------------------:|:----------------------:|:-----------------------:|:---------------------:|
 | <img src="https://avatars.githubusercontent.com/u/32611398?v=4" width="125" height="125"/> | <img src="https://avatars.githubusercontent.com/u/141399892?v=4" width="125" height="125"/> | <img src="https://avatars.githubusercontent.com/u/87927105?v=4" width="125" height="125"/> | <img src="https://avatars.githubusercontent.com/u/124586544?v=4" width="125" height="125"/> |
 | [@seohyun-lee](https://github.com/seohyun-lee) | [@jud1thDev](https://github.com/jud1thDev) | [@crHwang0822](https://github.com/crHwang0822) | [@gkdudans](https://github.com/gkdudans) |
-| CI/CD 환경 구축 및 배포<br>Place, Follow, Alarm API 개발<br>통계 페이지, 지도 핀 정보 제공 | 스포티파이 API 연결<br>Pin, Song, Genre API 개발 | Member API 개발<br>Spring security, jwt, Redis | Playlist, Bookmark API 개발<br>Home 페이지 |
+| CI/CD 환경 구축 및 배포<br>Place, Follow, Alarm API 개발<br>통계 페이지, 지도 핀 정보 제공 | 스포티파이 API 연결<br>Pin, Song, Genre API 개발 | [Member] 회원가입 API, 회원 탈퇴 API, 유저 조회/편집 API 등 <br>[Auth] 스프링 시큐리티, JWT, Redis 를 이용한 토큰 (재)발급/인증/인가 구현, 로그인/로그아웃 API, 비밀번호 재설정 메일 전송 API 등| Playlist, Bookmark API 개발<br>Home 페이지 |
 
 ## 🛠️ 기술 스택
 
