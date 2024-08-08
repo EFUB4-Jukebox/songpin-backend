@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import sws.songpin.domain.member.entity.Member;
-import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.playlist.entity.Playlist;
 
 import java.util.List;
@@ -62,4 +61,6 @@ public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
                     "AND (p.visibility = 'PUBLIC' OR p.creator_id = :currentMemberId)",
             nativeQuery = true)
     Page<Object[]> findAllByPlaylistNameContainingIgnoreSpacesOrderByAccuracy(@Param("keywordNoSpaces") String keywordNoSpaces, @Param("currentMemberId") Long currentMemberId, Pageable pageable);
+
+    void deleteAllByCreator(Member member);
 }

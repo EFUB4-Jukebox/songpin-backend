@@ -233,4 +233,8 @@ public class PlaylistService {
                 .map(Bookmark::getBookmarkId)
                 .orElse(null);
     }
+
+    public void deleteAllPlaylistsOfMember(Member member) {
+        playlistRepository.deleteAllByCreator(member);
+    }
 }
