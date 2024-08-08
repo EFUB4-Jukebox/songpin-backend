@@ -35,23 +35,22 @@ public class EmitterService {
 
         // 타임아웃 핸들러 등록
         emitter.onTimeout(() -> {
-            log.info("server sent event timed out : memberId={}", memberId);
+            // log.info("server sent event timed out : memberId={}", memberId);
             emitter.complete();
         });
 
         //에러 핸들러 등록
         emitter.onError(e -> {
-            log.info("server sent event error occurred : memberId={}, message={}", memberId, e.getMessage());
-            //onCompletion 핸들러 호출
+            // log.info("server sent event error occurred : memberId={}, message={}", memberId, e.getMessage());
             emitter.complete();
         });
 
         //SSE complete 핸들러 등록
         emitter.onCompletion(() -> {
             if (emitterMap.remove(memberId) != null) {
-                log.info("server sent event removed in emitter cache: memberId={}", memberId);
+                // log.info("server sent event removed in emitter cache: memberId={}", memberId);
             }
-            log.info("disconnected by completed server sent event: memberId={}", memberId);
+            // log.info("disconnected by completed server sent event: memberId={}", memberId);
         });
         emitterMap.put(memberId, emitter);
 
@@ -83,7 +82,7 @@ public class EmitterService {
                     .data(data)
                     .comment(comment)
                     .reconnectTime(RECONNECTION_TIMEOUT);
-            log.info("sended notification, memberId={}", memberId);
+            // log.info("sended notification, memberId={}", memberId);
             emitter.send(event);
         } catch (IOException e) {
             log.error("failure send media position data, memberId={}, {}", memberId, e.getMessage());
