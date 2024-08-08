@@ -13,6 +13,7 @@ import sws.songpin.domain.member.dto.response.MemberProfileResponseDto;
 import sws.songpin.domain.member.dto.response.MyProfileResponseDto;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.entity.ProfileImg;
+import sws.songpin.domain.playlist.service.PlaylistService;
 import sws.songpin.global.auth.RedisService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
@@ -29,6 +30,7 @@ public class ProfileService {
     private final RedisService redisService;
     private final AlarmService alarmService;
     private final BookmarkService bookmarkService;
+    private final PlaylistService playlistService;
 
     @Transactional(readOnly = true)
     public MemberProfileResponseDto getMemberProfile(Long memberId){
@@ -104,6 +106,9 @@ public class ProfileService {
 
         //bookmark 테이블 데이터 삭제
         bookmarkService.deleteAllBookmarksOfMember(member);
+
+        //playlist 테이블 데이터 삭제
+        playlistService.deleteAllPlaylistsOfMember(member);
 
         //alarm 테이블 데이터 삭제
         alarmService.deleteAllAlarmsOfMember(member);
