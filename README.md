@@ -3,20 +3,34 @@
 # 🎵songpin-backend🎵
 EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 
+<br>
+
+<img src="https://github.com/user-attachments/assets/5464897f-b6cd-426f-94bb-2cf227dbae3b" width="300">
+
 **나의 음악지도, SongPin**
 
 <a href="https://hits.seeyoufarm.com">
   <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FEFUB4-Jukebox%2Fsongpin-backend&count_bg=%235452FF&title_bg=%23B6FF5A&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false"/>
 </a>
 
+<br>
+
 <a href="https://www.instagram.com/songpin_official/">
-<img alt="Instagram" src="https://img.shields.io/badge/-Instagram-white?logo=Instagram&logoColor=d42121">
+  <img alt="Instagram" src="https://img.shields.io/badge/-Instagram-white?logo=Instagram&logoColor=d42121">
 </a>
+
 </div>
 
 ## ⏰ 개발 기간
 
 - 24.07.01 - 24.08.09
+
+## 📍 주요 기능
+<img src="https://github.com/user-attachments/assets/d6f2d66c-e5e9-46f1-ab7a-9859e6fdfee8" width="400">
+<img src="https://github.com/user-attachments/assets/50dd4d09-e30b-4edb-878e-506e01b5a7c3" width="400">
+<img src="https://github.com/user-attachments/assets/e7341ad2-1024-4a23-9eed-4c9b9f25b30e" width="400">
+<img src="https://github.com/user-attachments/assets/2976b3db-06c5-43f9-ab88-a4792972e1ee" width="400">
+
 
 ## 🌟 팀원 소개
 
@@ -24,7 +38,7 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 |:-------------------------:|:----------------------:|:-----------------------:|:---------------------:|
 | <img src="https://avatars.githubusercontent.com/u/32611398?v=4" width="125" height="125"/> | <img src="https://avatars.githubusercontent.com/u/141399892?v=4" width="125" height="125"/> | <img src="https://avatars.githubusercontent.com/u/87927105?v=4" width="125" height="125"/> | <img src="https://avatars.githubusercontent.com/u/124586544?v=4" width="125" height="125"/> |
 | [@seohyun-lee](https://github.com/seohyun-lee) | [@jud1thDev](https://github.com/jud1thDev) | [@crHwang0822](https://github.com/crHwang0822) | [@gkdudans](https://github.com/gkdudans) |
-| CI/CD 환경 구축 및 배포<br>Place, Follow, Alarm API 개발<br>통계 페이지, 지도 핀 정보 제공 | 스포티파이 API 연결<br>Pin, Song, Genre API 개발 | [Member] 회원가입 API, 회원 탈퇴 API, 유저 조회/편집 API 등 <br>[Auth] 스프링 시큐리티, JWT, Redis 를 이용한 토큰 (재)발급/인증/인가 구현, 로그인/로그아웃 API, 비밀번호 재설정 메일 전송 API 등| Playlist, Bookmark API 개발<br>Home 페이지 |
+| CI/CD 환경 구축 및 배포<br>Place, Follow, Alarm API 개발<br>통계 페이지, 지도 핀 정보 제공 | [Pin] 핀 생성, 조회, 수정, 삭제 기능 <br> [Spotify] 핀 생성 시 스포티파이API를 활용한 검색 기능 <br> [Song] 노래 상세정보 조회, 해당 노래에 대한 전체 핀 목록/내 핀 목록 조회, 노래 검색 기능 <br> [Feed] 타유저/마이핀피드 조회, 마이핀피드 검색, 마이핀피드 캘린더 기능 | [Member] 회원가입, 회원 탈퇴, 유저 조회/편집 기능 <br>[Auth] 스프링 시큐리티, JWT, Redis 를 이용한 토큰 (재)발급/인증/인가 구현, 로그인/로그아웃, 비밀번호 재설정 메일 전송 기능 | Playlist, Bookmark API 개발<br>Home 페이지 |
 
 ## 🛠️ 기술 스택
 
