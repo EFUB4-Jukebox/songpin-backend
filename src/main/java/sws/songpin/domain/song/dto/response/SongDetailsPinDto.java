@@ -1,6 +1,5 @@
 package sws.songpin.domain.song.dto.response;
 
-import sws.songpin.domain.member.entity.Status;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.model.Visibility;
 
@@ -10,7 +9,6 @@ public record SongDetailsPinDto(
         Long pinId,
         Long creatorId,
         String creatorNickname,
-        Status creatorStatus,
         LocalDate listenedDate,
         String memo,
         Visibility visibility,
@@ -24,7 +22,6 @@ public record SongDetailsPinDto(
                 pin.getPinId(),
                 pin.getCreator().getMemberId(),
                 pin.getCreator().getNickname(),
-                pin.getCreator().getStatus(),
                 pin.getListenedDate(),
                 memo,
                 pin.getVisibility(),
