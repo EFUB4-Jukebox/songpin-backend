@@ -26,20 +26,21 @@ span
 
 ## 📍 주요 기능
 
-<div style="display: flex; flex-wrap: wrap;">
-    <div style="width: 50%; padding: 5px;">
-        <img src="src/main/resources/static/프로젝트 소개2.png" width="100%" style="box-sizing: border-box;">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+    <div style="width: 50%; padding: 5px; box-sizing: border-box; display: flex; justify-content: center;">
+        <img src="src/main/resources/static/프로젝트 소개2.png" width="300">
     </div>
-    <div style="width: 50%; padding: 5px;">
-        <img src="src/main/resources/static/프로젝트 소개3.png" width="100%" style="box-sizing: border-box;">
+    <div style="width: 50%; padding: 5px; box-sizing: border-box; display: flex; justify-content: center;">
+        <img src="src/main/resources/static/프로젝트 소개3.png" width="300">
     </div>
-    <div style="width: 50%; padding: 5px;">
-        <img src="src/main/resources/static/프로젝트 소개4.png" width="100%" style="box-sizing: border-box;">
+    <div style="width: 50%; padding: 5px; box-sizing: border-box; display: flex; justify-content: center;">
+        <img src="src/main/resources/static/프로젝트 소개4.png" width="300">
     </div>
-    <div style="width: 50%; padding: 5px;">
-        <img src="src/main/resources/static/프로젝트 소개5.png" width="100%" style="box-sizing: border-box;">
+    <div style="width: 50%; padding: 5px; box-sizing: border-box; display: flex; justify-content: center;">
+        <img src="src/main/resources/static/프로젝트 소개5.png" width="300">
     </div>
 </div>
+
 
 
 
