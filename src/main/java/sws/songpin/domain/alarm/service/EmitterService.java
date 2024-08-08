@@ -32,39 +32,34 @@ public class EmitterService {
 
     private SseEmitter createAndRegisterEmitter(String memberId, Boolean isNewAlarm) {
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
-        if (emitter != null) {
-            try {
-                // 타임아웃 핸들러 등록
-                emitter.onTimeout(() -> {
-                    // log.info("server sent event timed out : memberId={}", memberId);
-                    emitter.complete();
-                });
 
-                //에러 핸들러 등록
-                emitter.onError(e -> {
-                    // log.info("server sent event error occurred : memberId={}, message={}", memberId, e.getMessage());
-                    emitter.complete();
-                });
+        // 타임아웃 핸들러 등록
+        emitter.onTimeout(() -> {
+            // log.info("server sent event timed out : memberId={}", memberId);
+            emitter.complete();
+        });
 
-                //SSE complete 핸들러 등록
-                emitter.onCompletion(() -> {
-                    if (emitterMap.remove(memberId) != null) {
-                        // log.info("server sent event removed in emitter cache: memberId={}", memberId);
-                    }
-                    // log.info("disconnected by completed server sent event: memberId={}", memberId);
-                });
-                emitterMap.put(memberId, emitter);
+        //에러 핸들러 등록
+        emitter.onError(e -> {
+            // log.info("server sent event error occurred : memberId={}, message={}", memberId, e.getMessage());
+            emitter.complete();
+        });
 
-                //초기 연결시에 응답 데이터 전송
-                SseEmitter.SseEventBuilder event = sendSubcribeEvent(isNewAlarm);
-                emitter.send(event);
-                return emitter;
-            } catch (IOException e) {
-                log.error("failure send media position data, memberId={}, {}", memberId, e.getMessage());
+        //SSE complete 핸들러 등록
+        emitter.onCompletion(() -> {
+            if (emitterMap.remove(memberId) != null) {
+                // log.info("server sent event removed in emitter cache: memberId={}", memberId);
             }
-        }
-        {
-            log.error("Emitter is null due to expiration or error. memberId={}, {}", memberId);
+            // log.info("disconnected by completed server sent event: memberId={}", memberId);
+        });
+        emitterMap.put(memberId, emitter);
+
+        //초기 연결시에 응답 데이터 전송
+        try {
+            SseEmitter.SseEventBuilder event = sendSubcribeEvent(isNewAlarm);
+            emitter.send(event);
+        } catch (IOException e) {
+            log.error("failure send media position data, memberId={}, {}", memberId, e.getMessage());
         }
         return emitter;
     }
