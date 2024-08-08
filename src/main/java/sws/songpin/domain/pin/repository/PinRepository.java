@@ -16,6 +16,7 @@ import java.util.Optional;
 public interface PinRepository extends JpaRepository <Pin, Long> {
     List<Pin> findBySong(Song song);
     int countBySong(Song song);
+    int countByPlace(Place place);
     @Query("SELECT p FROM Pin p WHERE p.song = :song ORDER BY p.listenedDate DESC, p.pinId DESC")
     Page<Pin> findAllBySong(@Param("song") Song song, Pageable pageable);
     @Query("SELECT p FROM Pin p WHERE p.song = :song AND p.creator = :creator ORDER BY p.listenedDate DESC, p.pinId DESC")
