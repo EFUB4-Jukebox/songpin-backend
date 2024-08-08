@@ -13,10 +13,6 @@ import java.util.Optional;
 public interface PlaceRepository extends JpaRepository<Place, Long> {
     Optional<Place> findByProviderAddressId(Long providerAddressId);
 
-    // 핀 삭제 시
-    @Query("SELECT COUNT(p) FROM Pin p WHERE p.place = :place")
-    long countPinsByPlace(@Param("place") Place place);
-
     //// 장소 검색 (페이징 방식)
 
     @Query(value = "SELECT p.place_id, p.place_name, COUNT(pin.pin_id) AS pin_count " +
