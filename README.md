@@ -26,23 +26,20 @@ span
 
 ## 📍 주요 기능
 
-<div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
-    <div style="width: 50%; padding: 5px; box-sizing: border-box; display: flex; justify-content: center;">
+<div style="display: flex; flex-wrap: wrap;">
+    <div style="flex: 1 0 50%; display: flex; justify-content: center; padding: 5px; box-sizing: border-box;">
         <img src="src/main/resources/static/프로젝트 소개2.png" width="300">
     </div>
-    <div style="width: 50%; padding: 5px; box-sizing: border-box; display: flex; justify-content: center;">
+    <div style="flex: 1 0 50%; display: flex; justify-content: center; padding: 5px; box-sizing: border-box;">
         <img src="src/main/resources/static/프로젝트 소개3.png" width="300">
     </div>
-    <div style="width: 50%; padding: 5px; box-sizing: border-box; display: flex; justify-content: center;">
+    <div style="flex: 1 0 50%; display: flex; justify-content: center; padding: 5px; box-sizing: border-box;">
         <img src="src/main/resources/static/프로젝트 소개4.png" width="300">
     </div>
-    <div style="width: 50%; padding: 5px; box-sizing: border-box; display: flex; justify-content: center;">
+    <div style="flex: 1 0 50%; display: flex; justify-content: center; padding: 5px; box-sizing: border-box;">
         <img src="src/main/resources/static/프로젝트 소개5.png" width="300">
     </div>
 </div>
-
-
-
 
 ## 🌟 팀원 소개
 
