@@ -20,9 +20,10 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 <img alt="Instagram" src="https://img.shields.io/badge/-Instagram-white?logo=Instagram&logoColor=d42121">
 </a>
 
-<br>
-
 </div>
+
+<br>
+<br>
 
 ## 💻 프로젝트 소개
 
