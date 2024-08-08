@@ -14,7 +14,6 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     Optional<Place> findByProviderAddressId(Long providerAddressId);
 
     //// 장소 검색 (페이징 방식)
-
     @Query(value = "SELECT p.place_id, p.place_name, COUNT(pin.pin_id) AS pin_count " +
             "FROM place p " +
             "LEFT JOIN pin pin ON p.place_id = pin.place_id " +

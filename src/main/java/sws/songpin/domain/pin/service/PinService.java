@@ -18,6 +18,7 @@ import sws.songpin.domain.pin.dto.response.*;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.pin.repository.PinRepository;
 import sws.songpin.domain.place.entity.Place;
+import sws.songpin.domain.place.repository.PlaceRepository;
 import sws.songpin.domain.place.service.PlaceService;
 import sws.songpin.domain.playlist.entity.Playlist;
 import sws.songpin.domain.playlistpin.entity.PlaylistPin;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
 public class PinService {
     private final PinRepository pinRepository;
     private final SongRepository songRepository;
+    private final PlaceRepository placeRepository;
     private final PlaylistPinRepository playlistPinRepository;
     private final MemberService memberService;
     private final SongService songService;
@@ -88,8 +90,12 @@ public class PinService {
             playlist.removePlaylistPin(playlistPin);
         }
         playlistPinRepository.deleteAll(playlistPins);
+        Place place = pin.getPlace();
         pinRepository.delete(pin);
         updateSongAvgGenreName(pin.getSong());
+        if (place != null && pinRepository.countByPlace(place) == 0) {
+            placeRepository.delete(place);
+        }
     }
 
     public void updateSongAvgGenreName(Song song) {
