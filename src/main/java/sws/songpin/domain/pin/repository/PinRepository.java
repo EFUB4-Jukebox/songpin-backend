@@ -15,12 +15,14 @@ import java.util.Optional;
 
 public interface PinRepository extends JpaRepository <Pin, Long> {
     List<Pin> findBySong(Song song);
-    Page<Pin> findAllBySong(Song song, Pageable pageable);
-
     int countBySong(Song song);
+    @Query("SELECT p FROM Pin p WHERE p.song = :song ORDER BY p.listenedDate DESC, p.pinId DESC")
+    Page<Pin> findAllBySong(@Param("song") Song song, Pageable pageable);
+    @Query("SELECT p FROM Pin p WHERE p.song = :song AND p.creator = :creator ORDER BY p.listenedDate DESC, p.pinId DESC")
+    Page<Pin> findAllBySongAndCreator(@Param("song") Song song, @Param("creator") Member creator, Pageable pageable);
+
     // 노래 상세보기 페이지에서 "들은날짜" = 등록한 핀 중 가장 최신의 listenedDate
     Optional<Pin> findTopBySongAndCreatorOrderByListenedDateDesc(Song song, Member member);
-    Page<Pin> findAllBySongAndCreator(Song song, Member creator, Pageable pageable);
     @Query("SELECT p.pinId, p.song.songId, p.song.title, p.song.artist, p.song.imgPath, p.listenedDate, p.place.placeName, p.place.latitude, p.place.longitude, g.genreName, p.memo, p.visibility " +
             "FROM Pin p " +
             "LEFT JOIN p.genre g " +
