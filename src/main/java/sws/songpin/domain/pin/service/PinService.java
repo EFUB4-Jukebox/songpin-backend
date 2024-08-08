@@ -127,10 +127,10 @@ public class PinService {
         Page<Pin> pinPage;
 
         if (onlyMyPins) {
-            // 내 핀만 보기 - 현재 사용자의 모든 핀 가져오기(visibility 상관없음)
+            // 내 핀만 보기 - 현재 사용자의 모든 핀 가져오기
             pinPage = pinRepository.findAllBySongAndCreator(song, currentMember, pageable);
         } else {
-            // 전체 핀 보기 - 내 핀 가져오기(visibility 상관없음) + 타유저의 공개 핀 가져오기
+            // 전체 핀 보기 - 내 핀 가져오기
             pinPage = pinRepository.findAllBySong(song, pageable);
         }
         Page<SongDetailsPinDto> songDetailsPinPage = pinPage.map(pin -> {
