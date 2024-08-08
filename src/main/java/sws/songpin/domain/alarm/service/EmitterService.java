@@ -23,7 +23,7 @@ public class EmitterService {
     private final EmitterRepository emitterRepository;
     private final AlarmRepository alarmRepository;
 
-    private static final Long DEFAULT_TIMEOUT = 5L * 1000;  // 5초
+    private static final Long DEFAULT_TIMEOUT = 1L * 1000;  // 5초
 
     public SseEmitter subscribe() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
