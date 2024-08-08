@@ -26,10 +26,22 @@ span
 
 ## 📍 주요 기능
 
-<img src="src/main/resources/static/프로젝트 소개2.png" width="400">
-<img src="src/main/resources/static/프로젝트 소개3.png" width="400">
-<img src="src/main/resources/static/프로젝트 소개4.png" width="400">
-<img src="src/main/resources/static/프로젝트 소개5.png" width="400">
+<div style="display: flex; flex-wrap: wrap;">
+    <div style="width: 50%; padding: 5px;">
+        <img src="src/main/resources/static/프로젝트 소개2.png" width="100%" style="box-sizing: border-box;">
+    </div>
+    <div style="width: 50%; padding: 5px;">
+        <img src="src/main/resources/static/프로젝트 소개3.png" width="100%" style="box-sizing: border-box;">
+    </div>
+    <div style="width: 50%; padding: 5px;">
+        <img src="src/main/resources/static/프로젝트 소개4.png" width="100%" style="box-sizing: border-box;">
+    </div>
+    <div style="width: 50%; padding: 5px;">
+        <img src="src/main/resources/static/프로젝트 소개5.png" width="100%" style="box-sizing: border-box;">
+    </div>
+</div>
+
+
 
 ## 🌟 팀원 소개
 
