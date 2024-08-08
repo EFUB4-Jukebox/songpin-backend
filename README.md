@@ -1,11 +1,12 @@
 <div align="center">
 
 # 🎵songpin-backend🎵
+
 EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 
 <br>
 
-<img src="https://github.com/user-attachments/assets/5464897f-b6cd-426f-94bb-2cf227dbae3b" width="300">
+<img src="src/main/resources/static/검정로고.png" width="300">
 
 **나의 음악지도, SongPin**
 
@@ -15,9 +16,7 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 
 <br>
 
-<a href="https://www.instagram.com/songpin_official/">
-  <img alt="Instagram" src="https://img.shields.io/badge/-Instagram-white?logo=Instagram&logoColor=d42121">
-</a>
+span
 
 </div>
 
@@ -26,19 +25,20 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 - 24.07.01 - 24.08.09
 
 ## 📍 주요 기능
-<img src="https://github.com/user-attachments/assets/d6f2d66c-e5e9-46f1-ab7a-9859e6fdfee8" width="400">
-<img src="https://github.com/user-attachments/assets/50dd4d09-e30b-4edb-878e-506e01b5a7c3" width="400">
-<img src="https://github.com/user-attachments/assets/e7341ad2-1024-4a23-9eed-4c9b9f25b30e" width="400">
-<img src="https://github.com/user-attachments/assets/2976b3db-06c5-43f9-ab88-a4792972e1ee" width="400">
 
+<img src="src/main/resources/static/프로젝트 소개2.png" width="400">
+<img src="src/main/resources/static/프로젝트 소개3.png" width="400">
+<img src="src/main/resources/static/프로젝트 소개4.png" width="400">
+<img src="src/main/resources/static/프로젝트 소개5.png" width="400">
 
 ## 🌟 팀원 소개
 
-| 이서현 | 정유정 | 황채린 | 문하영 |
-|:-------------------------:|:----------------------:|:-----------------------:|:---------------------:|
-| <img src="https://avatars.githubusercontent.com/u/32611398?v=4" width="125" height="125"/> | <img src="https://avatars.githubusercontent.com/u/141399892?v=4" width="125" height="125"/> | <img src="https://avatars.githubusercontent.com/u/87927105?v=4" width="125" height="125"/> | <img src="https://avatars.githubusercontent.com/u/124586544?v=4" width="125" height="125"/> |
-| [@seohyun-lee](https://github.com/seohyun-lee) | [@jud1thDev](https://github.com/jud1thDev) | [@crHwang0822](https://github.com/crHwang0822) | [@gkdudans](https://github.com/gkdudans) |
-| CI/CD 환경 구축 및 배포<br>Place, Follow, Alarm API 개발<br>통계 페이지, 지도 핀 정보 제공 | [Pin] 핀 생성, 조회, 수정, 삭제 기능 <br> [Spotify] 핀 생성 시 스포티파이API를 활용한 검색 기능 <br> [Song] 노래 상세정보 조회, 해당 노래에 대한 전체 핀 목록/내 핀 목록 조회, 노래 검색 기능 <br> [Feed] 타유저/마이핀피드 조회, 마이핀피드 검색, 마이핀피드 캘린더 기능 | [Member] 회원가입, 회원 탈퇴, 유저 조회/편집 기능 <br>[Auth] 스프링 시큐리티, JWT, Redis 를 이용한 토큰 (재)발급/인증/인가 구현, 로그인/로그아웃, 비밀번호 재설정 메일 전송 기능 | Playlist, Bookmark API 개발<br>Home 페이지 |
+
+|                                           이서현                                           |                                                                                                                                  정유정                                                                                                                                  |                                                                                     황채린                                                                                     |                                           문하영                                           |
+| :----------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
+| <img src="https://avatars.githubusercontent.com/u/32611398?v=4" width="125" height="125"/> |                                                                                       <img src="https://avatars.githubusercontent.com/u/141399892?v=4" width="125" height="125"/>                                                                                       |                                           <img src="https://avatars.githubusercontent.com/u/87927105?v=4" width="125" height="125"/>                                           | <img src="https://avatars.githubusercontent.com/u/124586544?v=4" width="125" height="125"/> |
+|                       [@seohyun-lee](https://github.com/seohyun-lee)                       |                                                                                                                [@jud1thDev](https://github.com/jud1thDev)                                                                                                                |                                                                 [@crHwang0822](https://github.com/crHwang0822)                                                                 |                          [@gkdudans](https://github.com/gkdudans)                          |
+| CI/CD 환경 구축 및 배포<br>Place, Follow, Alarm API 개발<br>통계 페이지, 지도 핀 정보 제공 | [Pin] 핀 생성, 조회, 수정, 삭제 기능<br> [Spotify] 핀 생성 시 스포티파이API를 활용한 검색 기능 <br> [Song] 노래 상세정보 조회, 해당 노래에 대한 전체 핀 목록/내 핀 목록 조회, 노래 검색 기능 <br> [Feed] 타유저/마이핀피드 조회, 마이핀피드 검색, 마이핀피드 캘린더 기능 | [Member] 회원가입, 회원 탈퇴, 유저 조회/편집 기능<br>[Auth] 스프링 시큐리티, JWT, Redis 를 이용한 토큰 (재)발급/인증/인가 구현, 로그인/로그아웃, 비밀번호 재설정 메일 전송 기능 |                         Playlist, Bookmark API 개발<br>Home 페이지                         |
 
 ## 🛠️ 기술 스택
 
@@ -56,7 +56,6 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 <img src="https://img.shields.io/badge/Spotify API-1DB954?style=for-the-badge&logo=spotify&logoColor=white">
 ![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white)
 
-
 **Deploy**
 
 <img src="https://img.shields.io/badge/AWS EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white"> <img src="https://img.shields.io/badge/AWS RDS-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white"> ![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white) <img src="https://img.shields.io/badge/github actions-181717?style=for-the-badge&logo=github actions&logoColor=white"> <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"> <img src="https://img.shields.io/badge/docker compose-2496ED?style=for-the-badge&logo=docker&logoColor=white">
@@ -64,11 +63,13 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 <br>
 
 ## ☁ ERD
+
 ![SongPinERD_240723](https://github.com/user-attachments/assets/9ef0b1c9-1c1a-471d-840e-888efa3d35b4)
 
 <br>
 
 ## 📁 프로젝트 구조
+
 ```
 📂
 ├─.github
@@ -170,56 +171,61 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
              └─templates
                  └─email
 ```
+
 <br>
 
 ## 📝 규칙
 
 #### 커밋 컨벤션
-  - "태그: 한글 커밋 메시지" 형식으로 작성
-  - 컨벤션 예시
-    - feat: 새로운 기능 추가, 기존의 기능을 요구 사항에 맞추어 수정
-    - fix: 버그 수정
-    - docs: 문서 수정
-    - style: 코드 포맷팅, 오타 수정, 주석 수정 및 삭제 등
-    - refactor: 코드 리팩터링
-    - chore: 빌드 및 패키지 수정 및 삭제
-    - merge: 브랜치를 머지
-    - ci: CI 관련 설정 수정
-    - test: 테스트 코드 추가/수정
-    - release: 버전 릴리즈
+
+- "태그: 한글 커밋 메시지" 형식으로 작성
+- 컨벤션 예시
+  - feat: 새로운 기능 추가, 기존의 기능을 요구 사항에 맞추어 수정
+  - fix: 버그 수정
+  - docs: 문서 수정
+  - style: 코드 포맷팅, 오타 수정, 주석 수정 및 삭제 등
+  - refactor: 코드 리팩터링
+  - chore: 빌드 및 패키지 수정 및 삭제
+  - merge: 브랜치를 머지
+  - ci: CI 관련 설정 수정
+  - test: 테스트 코드 추가/수정
+  - release: 버전 릴리즈
 
 <br>
 
 #### PR 템플릿
-  ```
-  # 구현 기능
-    - 구현한 기능을 요약하여 정리합니다.
 
-  # 구현 상태 (선택)
-    - img, gif, video...
-    - 혹은 내용 정리
+```
+# 구현 기능
+  - 구현한 기능을 요약하여 정리합니다.
 
-  # Resolve
-    - 이슈 태그(ex: #7)
-  ```
+# 구현 상태 (선택)
+  - img, gif, video...
+  - 혹은 내용 정리
 
-  - PR 체크 리스트
-    -  PR 제목 형식 : `[Type] PR 제목`
-        - ex. `[Chore] 프로젝트 구조 설정`
-        - 타입은 대문자로
-    -  label 설정
-    -  Code Review 요청 / 작업자 Assign
-    -  PR 확인한 사람은 확인 코멘트 달기. 작성자 외 2명 확인 후 마지막 사람이 merge
-      
+# Resolve
+  - 이슈 태그(ex: #7)
+```
+
+- PR 체크 리스트
+  - PR 제목 형식 : `[Type] PR 제목`
+    - ex. `[Chore] 프로젝트 구조 설정`
+    - 타입은 대문자로
+  - label 설정
+  - Code Review 요청 / 작업자 Assign
+  - PR 확인한 사람은 확인 코멘트 달기. 작성자 외 2명 확인 후 마지막 사람이 merge
+
 <br>
 
 #### issue 규칙
-  - 각 기능에 맞는 이슈 템플릿 작성 (작업 및 변경사항 확인용)
-  - to-do에 구현해야할 기능을 작성하고, 구현이 끝나면 체크표시
+
+- 각 기능에 맞는 이슈 템플릿 작성 (작업 및 변경사항 확인용)
+- to-do에 구현해야할 기능을 작성하고, 구현이 끝나면 체크표시
 
 <br>
 
 #### branch 규칙
+
 - 브랜치 네이밍 규칙: `feat/{도메인혹은큰기능}` ex) `feat/place`
 - `feat -> develop -> deploy -> main` 순으로 merge
 - `feat` : 각 기능을 개발하는 브랜치
