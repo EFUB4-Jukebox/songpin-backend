@@ -76,7 +76,6 @@ public class Member extends BaseTimeEntity {
 
     public void deactivate(String handle){
         this.status = Status.DELETED;
-        this.nickname = "(알 수 없음)";
         this.handle = handle;
     }
 
