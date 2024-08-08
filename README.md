@@ -5,7 +5,9 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 
 **나의 음악지도, SongPin**
 
-<a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://github.com/EFUB4-Jukebox/songpin-backend"/></a>
+<a href="https://hits.seeyoufarm.com">
+  <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FEFUB4-Jukebox%2Fsongpin-backend&count_bg=%235452FF&title_bg=%23B6FF5A&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false"/>
+</a>
 
 <a href="https://www.instagram.com/songpin_official/">
 <img alt="Instagram" src="https://img.shields.io/badge/-Instagram-white?logo=Instagram&logoColor=d42121">
