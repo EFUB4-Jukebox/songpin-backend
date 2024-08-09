@@ -19,6 +19,9 @@ import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.playlist.service.PlaylistService;
 import sws.songpin.global.auth.CookieUtil;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 @Tag(name = "MyPage", description = "MyPage 관련 API입니다.")
 @RestController
 @RequiredArgsConstructor
@@ -70,8 +73,9 @@ public class MyPageController {
     @Operation(summary = "마이페이지에서 핀 검색", description = "마이페이지에서의 핀 검색 결과를 페이징으로 불러옵니다.")
     @GetMapping("/pins")
     public ResponseEntity<?> songSearch(@RequestParam("keyword") final String keyword,
-                                        @PageableDefault(size = 20) final Pageable pageable){
-        return ResponseEntity.ok().body(pinService.searchMyPins(keyword, pageable));
+                                        @PageableDefault(size = 20) final Pageable pageable) throws UnsupportedEncodingException {
+        String decodedKeyword = URLDecoder.decode(keyword, "UTF-8");
+        return ResponseEntity.ok().body(pinService.searchMyPins(decodedKeyword, pageable));
     }
 
     @Operation(summary = "회원 탈퇴", description = "회원 상태를 '탈퇴'로 변경하고 닉네임을 '(알 수 없음)'으로 변경합니다. \t\n해당 회원의 handle을 랜덤 uuid 값으로 변경합니다. \t\nRedis와 쿠키에 저장되었던 회원의 Refresh Token을 삭제합니다. \t\n해당 회원이 등록했던 핀 등의 데이터는 남겨둡니다. \t\n해당 회원의 팔로우, 팔로잉 데이터는 삭제합니다.")

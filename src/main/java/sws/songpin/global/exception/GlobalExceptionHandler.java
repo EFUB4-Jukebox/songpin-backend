@@ -1,6 +1,7 @@
 package sws.songpin.global.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
@@ -59,5 +61,17 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDto, HttpStatusCode.valueOf(errorCode.getStatus()));
     }
-
+    
+    // 인코딩 에러
+    @ExceptionHandler({UnsupportedEncodingException.class})
+    protected ResponseEntity<ErrorDto> handleUnsupportedEncodingException(UnsupportedEncodingException e, HttpServletRequest request) {
+        ErrorDto errorDto = new ErrorDto(
+                LocalDateTime.now().toString(),
+                HttpStatus.BAD_REQUEST.value(),
+                "UNSUPPORTED_ENCODING",
+                "The requested encoding is not supported.",
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
+    }
 }
