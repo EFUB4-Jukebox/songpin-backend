@@ -47,4 +47,11 @@ public class MapController {
         MapPlaceFetchResponseDto responseDto = mapService.getMapPlacesOfMember(memberId);
         return ResponseEntity.ok(responseDto);
     }
+
+    @Operation(summary = "플레이리스트의 핀들 장소 좌표들 가져오기", description = "플레이리스트의 핀들 장소 좌표들을 가져옵니다.")
+    @GetMapping("/playlists/{playlistId}")
+    public ResponseEntity<?> getMapPlacesOfPlaylist(@PathVariable final Long playlistId) {
+        MapPlaceFetchResponseDto responseDto = mapService.getMapPlacesOfPlaylist(playlistId);
+        return ResponseEntity.ok(responseDto);
+    }
 }
