@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.model.SortBy;
 import sws.songpin.domain.place.service.PlaceService;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 @Tag(name = "Place", description = "Place 관련 API입니다.")
 @RestController
 @RequestMapping("/places")
@@ -27,7 +30,8 @@ public class PlaceController {
     @GetMapping
     public ResponseEntity<?> placeSearch(@RequestParam final String keyword,
                                          @RequestParam(defaultValue = "ACCURACY") final String sortBy,
-                                         @PageableDefault(size = 20) final Pageable pageable) {
-        return ResponseEntity.ok().body(placeService.searchPlaces(keyword, SortBy.from(sortBy), pageable));
+                                         @PageableDefault(size = 20) final Pageable pageable) throws UnsupportedEncodingException {
+        String decodedKeyword = URLDecoder.decode(keyword, "UTF-8");
+        return ResponseEntity.ok().body(placeService.searchPlaces(decodedKeyword, SortBy.from(sortBy), pageable));
     }
 }

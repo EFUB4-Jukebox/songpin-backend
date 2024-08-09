@@ -17,6 +17,9 @@ import sws.songpin.domain.pin.service.PinService;
 import sws.songpin.domain.playlist.service.PlaylistService;
 import sws.songpin.domain.member.service.ProfileService;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 @Tag(name = "Member", description = "Member 관련 API입니다.")
 @RestController
 @RequiredArgsConstructor
@@ -31,8 +34,9 @@ public class MemberController {
     @Operation(summary = "유저 검색", description = "유저를 검색합니다.")
     @GetMapping
     public ResponseEntity<?> searchMembers(@RequestParam("keyword") final String keyword,
-                                           @PageableDefault(size = 20) final Pageable pageable) {
-        return ResponseEntity.ok().body(memberService.searchMembers(keyword, pageable));
+                                           @PageableDefault(size = 20) final Pageable pageable) throws UnsupportedEncodingException {
+        String decodedKeyword = URLDecoder.decode(keyword, "UTF-8");
+        return ResponseEntity.ok().body(memberService.searchMembers(decodedKeyword, pageable));
     }
     @Operation(summary = "타 유저 정보 조회", description = "memberId으로 해당 유저의 프로필 이미지, 닉네임, 아이디 정보 조회")
     @GetMapping("/{memberId}")
