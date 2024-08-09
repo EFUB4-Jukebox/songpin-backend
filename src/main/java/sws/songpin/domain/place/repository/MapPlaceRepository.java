@@ -113,9 +113,37 @@ public interface MapPlaceRepository extends JpaRepository<Place, Long> {
                         AND innerPin.creator.memberId = :memberId
                     )
                 GROUP BY p.placeId, p.latitude, p.longitude, latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
-                ORDER BY latestPin.listenedDate DESC, p.placeId DESC
+                ORDER BY latestPin.listenedDate DESC, pin.pinId DESC
             """)
     Slice<MapPlaceProjectionDto> findPlacesWithLatestPinsByCreator(Long memberId, Pageable pageable);
+
+    //// Playlist 페이지
+    // 플레이리스트의 핀들 장소 좌표들 가져오기
+    @Query("""
+                SELECT new sws.songpin.domain.place.dto.projection.MapPlaceProjectionDto(
+                    p.placeId, p.latitude, p.longitude, COUNT(DISTINCT pp.playlistPinId), latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
+                )
+                FROM Place p
+                JOIN p.pins pin
+                JOIN PlaylistPin pp ON pp.pin = pin
+                AND pp.playlist.playlistId = :playlistId
+                LEFT JOIN Pin latestPin ON latestPin.place = p
+                    AND latestPin.pinId = (
+                        SELECT ppInner.pin.pinId
+                        FROM PlaylistPin ppInner
+                        WHERE ppInner.playlist.playlistId = :playlistId
+                        AND ppInner.pin.place = p
+                        AND ppInner.pinIndex = (
+                            SELECT MAX(ppInnerMost.pinIndex)
+                            FROM PlaylistPin ppInnerMost
+                            WHERE ppInnerMost.playlist.playlistId = :playlistId
+                            AND ppInnerMost.pin.place = p
+                        )
+                    )
+                GROUP BY p.placeId, p.latitude, p.longitude, latestPin.listenedDate, latestPin.song.songId, latestPin.genre.genreName
+                ORDER BY MAX(pp.pinIndex) DESC, pp.playlistPinId DESC
+            """)
+    Slice<MapPlaceProjectionDto> findPlacesWithHighPinIndexPlaylistPinsByPlaylist(Long playlistId, Pageable pageable);
 
     //// 통계 페이지
     // 모든 장르 통틀어 가장 핀이 많이 등록된 장소 가져오기
