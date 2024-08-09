@@ -49,7 +49,7 @@ public class SecurityConfig {
     private static final String[] AUTH_WHITELIST = {
             "/signup", "/login", "/login/pw", "/token",
             "/mail/pw",
-            "/stats/**", "/map", "/map/period/**"
+            "/stats/**", "/map", "/map/period/**", "/map/playlists/**"
     };
 
     @Bean
