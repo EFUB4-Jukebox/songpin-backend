@@ -11,9 +11,11 @@ import sws.songpin.domain.playlist.entity.Playlist;
 import java.util.List;
 
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
-    List<Playlist> findAllByCreator(Member member);
 
-    @Query("SELECT p FROM Playlist p WHERE p.creator = :creator AND p.visibility = 'PUBLIC'")
+    @Query("SELECT p FROM Playlist p WHERE p.creator = :creator ORDER BY p.modifiedTime DESC, p.playlistId DESC")
+    List<Playlist> findAllByCreator(@Param("creator") Member creator);
+
+    @Query("SELECT p FROM Playlist p WHERE p.creator = :creator AND p.visibility = 'PUBLIC' ORDER BY p.modifiedTime DESC, p.playlistId DESC")
     List<Playlist> findAllPublicByCreator(@Param("creator") Member creator);
 
 
