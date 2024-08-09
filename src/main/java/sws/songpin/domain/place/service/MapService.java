@@ -86,6 +86,15 @@ public class MapService {
         return MapPlaceFetchResponseDto.from(dtoSlice);
     }
 
+    //// 플레이리스트 필터링
+    // 플레이리스트의 핀들 장소 좌표들 가져오기
+    public MapPlaceFetchResponseDto getMapPlacesOfPlaylist(Long playlistId) {
+        Pageable pageable = getCustomPageableForMap();
+        Slice<MapPlaceProjectionDto> dtoSlice = mapPlaceRepository.findPlacesWithHighPinIndexPlaylistPinsByPlaylist(playlistId, pageable);
+        return MapPlaceFetchResponseDto.from(dtoSlice);
+    }
+
+
     // 지도에 장소 좌표를 최대 300개 띄우도록 함
     private Pageable getCustomPageableForMap() {
         return PageRequest.of(0, 300);
