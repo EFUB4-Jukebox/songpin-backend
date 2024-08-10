@@ -6,7 +6,7 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 
 <br>
 
-<img src="src/main/resources/static/검정로고.png" width="300">
+<img src="src/main/resources/static/logo_songpin.png" width="300">
 
 **나의 음악지도, SongPin**
 
