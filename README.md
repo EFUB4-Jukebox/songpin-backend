@@ -49,7 +49,7 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 
 ## 🛠️ 아키텍쳐
 
-![SongPin_architecture](https://github.com/user-attachments/assets/48957a83-fb6a-4dea-bcf5-04edd0f3465e)
+![SongPin_architecture](https://github.com/user-attachments/assets/4e06e4b5-ab72-4ebe-8423-67fa9ba34bee)
 
 ## 🛠️ 기술 스택
 
