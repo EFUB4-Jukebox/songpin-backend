@@ -52,7 +52,7 @@ public class MemberController {
 
     @Operation(summary = "타 유저의 핀 피드 조회", description = "타 유저의 핀 피드를 조회합니다.")
     @GetMapping("/{memberId}/feed")
-    public ResponseEntity<?> getMemberFeedPins(@PathVariable("memberId") Long memberId, @PageableDefault(size = 20) Pageable pageable) {
+    public ResponseEntity<?> getMemberFeedPins(@PathVariable("memberId") final Long memberId, @PageableDefault(size = 20) Pageable pageable) {
         return ResponseEntity.ok(pinService.getMemberPinFeed(memberId, pageable));
     }
 
