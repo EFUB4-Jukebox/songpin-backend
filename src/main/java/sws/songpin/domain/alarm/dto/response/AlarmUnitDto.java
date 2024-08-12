@@ -10,10 +10,10 @@ public record AlarmUnitDto(
         LocalDateTime createdTime,
         Long senderId
 ) {
-    public static AlarmUnitDto from(Alarm alarm) {
+    public static AlarmUnitDto from(Alarm alarm, String message) {
         return new AlarmUnitDto(
                 alarm.getIsRead(),
-                alarm.getMessage(),
+                message,
                 alarm.getCreatedTime(),
                 alarm.getSender().getMemberId()
         );
