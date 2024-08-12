@@ -2,8 +2,6 @@ package sws.songpin.domain.alarm.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -11,7 +9,7 @@ import sws.songpin.domain.alarm.dto.ssedata.AlarmDefaultDataDto;
 import sws.songpin.domain.alarm.repository.AlarmRepository;
 import sws.songpin.domain.alarm.repository.EmitterRepository;
 import sws.songpin.domain.member.entity.Member;
-import sws.songpin.global.auth.CustomUserDetails;
+import sws.songpin.domain.member.service.MemberService;
 
 import java.io.IOException;
 
@@ -22,14 +20,13 @@ import java.io.IOException;
 public class EmitterService {
     private final EmitterRepository emitterRepository;
     private final AlarmRepository alarmRepository;
+    private final MemberService memberService;
 
     private static final Long DEFAULT_TIMEOUT = 1L * 60 * 1000;  // 1분
 
-    public SseEmitter subscribe() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Member member = ((CustomUserDetails) authentication.getPrincipal()).getMember();
-        SseEmitter emitter = registerEmitter(member);
-        sendToClientIfNewAlarmExists(member);
+    public SseEmitter subscribe(Long memberId) {
+        SseEmitter emitter = registerEmitter(memberId);
+        sendToClientIfNewAlarmExists(memberId);
         return emitter;
     }
 
@@ -37,8 +34,7 @@ public class EmitterService {
         sendToClient(memberId, data, comment);
     }
 
-    private SseEmitter registerEmitter(Member member) {
-        Long memberId = member.getMemberId();
+    private SseEmitter registerEmitter(Long memberId) {
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
         emitterRepository.save(memberId, emitter);
 
@@ -48,7 +44,8 @@ public class EmitterService {
         return emitter;
     }
 
-    private void sendToClientIfNewAlarmExists(Member member) {
+    private void sendToClientIfNewAlarmExists(Long memberId) {
+        Member member = memberService.getActiveMemberById(memberId);
         Boolean isMissedAlarms = alarmRepository.existsByReceiverAndIsReadFalse(member);
         if (isMissedAlarms.equals(true)) {
             sendToClient(member.getMemberId(), AlarmDefaultDataDto.from(true), "new sse alarm exists");
