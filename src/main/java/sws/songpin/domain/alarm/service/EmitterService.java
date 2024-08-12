@@ -30,8 +30,14 @@ public class EmitterService {
         return emitter;
     }
 
-    public void notify(Long memberId, Object data, String comment) {
-        sendToClient(memberId, data, comment);
+    private void sendToClientIfNewAlarmExists(Long memberId) {
+        Member member = memberService.getActiveMemberById(memberId);
+        Boolean isMissedAlarms = alarmRepository.existsByReceiverAndIsReadFalse(member);
+        if (isMissedAlarms.equals(true)) {
+            sendToClient(member.getMemberId(), AlarmDefaultDataDto.from(true), "new sse alarm exists");
+        } else {
+            sendToClient(member.getMemberId(), AlarmDefaultDataDto.from(false), "new sse alarm doesn't exists");
+        }
     }
 
     private SseEmitter registerEmitter(Long memberId) {
@@ -44,14 +50,8 @@ public class EmitterService {
         return emitter;
     }
 
-    private void sendToClientIfNewAlarmExists(Long memberId) {
-        Member member = memberService.getActiveMemberById(memberId);
-        Boolean isMissedAlarms = alarmRepository.existsByReceiverAndIsReadFalse(member);
-        if (isMissedAlarms.equals(true)) {
-            sendToClient(member.getMemberId(), AlarmDefaultDataDto.from(true), "new sse alarm exists");
-        } else {
-            sendToClient(member.getMemberId(), AlarmDefaultDataDto.from(false), "new sse alarm doesn't exists");
-        }
+    public void notify(Long memberId, Object data, String comment) {
+        sendToClient(memberId, data, comment);
     }
 
     private <T> void sendToClient(Long memberId, Object data, String comment) {
