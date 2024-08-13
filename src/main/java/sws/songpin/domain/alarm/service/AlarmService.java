@@ -34,24 +34,18 @@ public class AlarmService {
         List<AlarmUnitDto> alarmUnitDtos = getAndReadAlarms(pageable);
         return AlarmListResponseDto.fromAlarmUnitDto(alarmUnitDtos);
     }
-
-    // 일반 알림 생성 (message, sender는 필수 요소 x)
-    public void createAlarm(AlarmType alarmType, String message, Member sender, Member receiver, Object data) {
+    // 팔로우 알림 생성
+    public void createFollowAlarm(Member follower, Member following) {
+        String message = MessageFormat.format(AlarmType.FOLLOW.getMessagePattern(), follower.getNickname(), follower.getHandle());
         Alarm alarm = Alarm.builder()
-                .alarmType(alarmType)
-                .message(message) // nullable
-                .sender(sender) // nullable
-                .receiver(receiver)
+                .alarmType(AlarmType.FOLLOW)
+                .message(message)
+                .sender(follower)
+                .receiver(following)
                 .isRead(false)
                 .build();
         alarmRepository.save(alarm);
-        emitterService.notify(sender.getMemberId(), data, "new alarm");
-    }
-
-    // 팔로우 알림 생성
-    public void createFollowAlarm(Member follower, Member following) {
-        String alarmMessage = MessageFormat.format(AlarmType.FOLLOW.getMessagePattern(), follower.getNickname(), follower.getHandle());
-        createAlarm(AlarmType.FOLLOW, alarmMessage, follower, following, AlarmDefaultDataDto.from(true));
+        emitterService.notify(following.getMemberId(), AlarmDefaultDataDto.from(true), "new alarm");
     }
 
     public void deleteAllAlarmsOfMember(Member member){
@@ -65,7 +59,8 @@ public class AlarmService {
         Slice<Alarm> alarmSlice = alarmRepository.findByReceiverOrderByCreatedTimeDesc(currentMember, pageable);
         if (alarmSlice != null && alarmSlice.hasContent()) {
             for (Alarm alarm : alarmSlice) {
-                alarmList.add(AlarmUnitDto.from(alarm));
+                String message = MessageFormat.format(AlarmType.FOLLOW.getMessagePattern(), alarm.getSender().getNickname(), alarm.getSender().getHandle());
+                alarmList.add(AlarmUnitDto.from(alarm, message));
                 alarm.readAlarm();
             }
             alarmRepository.saveAll(alarmSlice);

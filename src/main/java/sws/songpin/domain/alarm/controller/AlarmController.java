@@ -19,9 +19,9 @@ public class AlarmController {
     private final AlarmService alarmService;
 
     @Operation(summary = "알림 구독", description = "알림을 구독합니다.")
-    @PostMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<SseEmitter> subscribe() {
-        return ResponseEntity.ok(emitterService.subscribe());
+    @GetMapping(value = "/subscribe/{memberId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE) // Content-Type 지정
+    public ResponseEntity<SseEmitter> subscribe(@PathVariable("memberId") final Long memberId) {
+        return ResponseEntity.ok(emitterService.subscribe(memberId));
     }
 
     @Operation(summary = "알림 목록 조회 및 읽음 처리", description = "알림 목록을 조회하고 읽음 처리합니다.")
