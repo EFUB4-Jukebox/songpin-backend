@@ -5,7 +5,7 @@ import sws.songpin.domain.bookmark.entity.Bookmark;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.playlist.entity.Playlist;
 
-public record BookmarkAddRequestDto(
+public record BookmarkRequestDto(
     @NotNull Long playlistId
 ){
 
