@@ -42,15 +42,16 @@ public class FollowService {
         if (followOptional.isPresent()) { // 팔로우가 이미 존재하면 삭제
             followRepository.delete(followOptional.get());
             return false;
+        } else { // 팔로우 추가
+            followRepository.save(FollowRequestDto.toEntity(follower, following));
+            alarmService.createFollowAlarm(follower, following);
+            return true;
         }
-
-        followRepository.save(FollowRequestDto.toEntity(follower, following)); // 팔로우 추가
-        alarmService.createFollowAlarm(follower, following);
-        return true;
     }
 
-    public Boolean getFollowStatusByFollowerAndFollowing(Member follower, Member following){
-        if (follower.equals(memberService.getCurrentMember())){
+    public Boolean checkIfFollowing(Member following){
+        Member follower = memberService.getCurrentMember();
+        if (follower.equals(following)){
             return null;
         }
         Optional<Follow> followOptional = followRepository.findByFollowerAndFollowing(follower, following);

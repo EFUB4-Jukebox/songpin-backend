@@ -49,7 +49,7 @@ public class ProfileService {
         long followingCount = followService.getFollowingCount(member);
 
         //팔로우 여부
-        Boolean isFollowing = followService.getFollowStatusByFollowerAndFollowing(currentMember, member);
+        Boolean isFollowing = followService.checkIfFollowing(member);
 
         return MemberProfileResponseDto.from(member, followerCount, followingCount, isFollowing);
     }
