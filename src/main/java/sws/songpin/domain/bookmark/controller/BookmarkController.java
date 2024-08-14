@@ -18,19 +18,6 @@ import sws.songpin.domain.bookmark.service.BookmarkService;
 public class BookmarkController {
     private final BookmarkService bookmarkService;
 
-//    @Operation(summary = "북마크 생성", description = "플레이리스트에 북마크 생성")
-//    @PostMapping
-//    public ResponseEntity<?> createBookmark(@RequestBody @Valid BookmarkRequestDto requestDto){
-//        return ResponseEntity.status(HttpStatus.CREATED).body(bookmarkService.createBookmark(requestDto));
-//    }
-//
-//    @Operation(summary = "북마크 삭제", description = "플레이리스트의 북마크 제거")
-//    @DeleteMapping("/{bookmarkId}")
-//    public ResponseEntity<?> deleteBookmark(@PathVariable("bookmarkId") final Long bookmarkId){
-//        bookmarkService.deleteBookmark(bookmarkId);
-//        return ResponseEntity.ok().build();
-//    }
-
     @Operation(summary = "북마크 상태 변경", description = "북마크가 없으면 생성하고, 있으면 삭제")
     @PutMapping
     public ResponseEntity<?> changeBookmark(@RequestBody @Valid BookmarkRequestDto requestDto){

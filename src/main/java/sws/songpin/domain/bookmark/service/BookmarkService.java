@@ -31,28 +31,6 @@ public class BookmarkService {
     private final MemberService memberService;
     private final PlaylistService playlistService;
 
-//    // 북마크 생성
-//    public BookmarkAddResponseDto createBookmark(BookmarkAddRequestDto requestDto) {
-//        Member member = memberService.getCurrentMember();
-//        Playlist playlist = playlistService.findPlaylistById(requestDto.playlistId());
-//        if (!member.equals(playlist.getCreator()) && playlist.getVisibility() == Visibility.PRIVATE) {
-//            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
-//        }
-//        Bookmark bookmark = requestDto.toEntity(member, playlist);
-//        Bookmark savedBookmark = bookmarkRepository.save(bookmark);
-//        return BookmarkAddResponseDto.from(savedBookmark);
-//    }
-//
-//    // 북마크 삭제
-//    public void deleteBookmark(Long bookmarkId) {
-//        Bookmark bookmark = findBookmarkById(bookmarkId);
-//        Member currentMember = memberService.getCurrentMember();
-//        if (!bookmark.getMember().equals(currentMember)) {
-//            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
-//        }
-//        bookmarkRepository.delete(bookmark);
-//    }
-
     // 북마크 상태 변경
     public BookmarkChangeResponseDto changeBookmark(BookmarkRequestDto requestDto) {
         Member member = memberService.getCurrentMember();
@@ -88,12 +66,6 @@ public class BookmarkService {
     @Transactional(readOnly = true)
     public Optional<Bookmark> getBookmarkByPlaylistAndMember(Playlist playlist, Member member) {
         return bookmarkRepository.findByPlaylistAndMember(playlist, member);
-    }
-
-    @Transactional(readOnly = true)
-    public Bookmark findBookmarkById(Long bookmarkId) {
-        return bookmarkRepository.findById(bookmarkId)
-                .orElseThrow(() -> new CustomException(ErrorCode.BOOKMARK_NOT_FOUND));
     }
 
     public void deleteAllBookmarksOfMember(Member member){
