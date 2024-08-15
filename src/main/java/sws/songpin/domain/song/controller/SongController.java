@@ -13,10 +13,6 @@ import sws.songpin.domain.song.dto.response.SongDetailsPinListResponseDto;
 import sws.songpin.domain.song.dto.response.SongDetailsResponseDto;
 import sws.songpin.domain.song.service.SongService;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.List;
-
 @Tag(name = "Song", description = "Song 관련 API입니다.")
 @RestController
 @RequestMapping("/songs")
@@ -50,8 +46,7 @@ public class SongController {
     @Operation(summary = "노래 검색", description = "노래 검색 결과를 선택한 정렬 기준에 따라 페이징으로 불러옵니다.")
     public ResponseEntity<?> songSearch(@RequestParam("keyword") final String keyword,
                                         @RequestParam(value = "sortBy", defaultValue = "ACCURACY") final String sortBy,
-                                        @PageableDefault(size = 20) final Pageable pageable) throws UnsupportedEncodingException {
-        String decodedKeyword = URLDecoder.decode(keyword, "UTF-8");
-        return ResponseEntity.ok().body(songService.searchSongs(decodedKeyword, SortBy.from(sortBy), pageable));
+                                        @PageableDefault(size = 20) final Pageable pageable) {
+        return ResponseEntity.ok().body(songService.searchSongs(keyword, SortBy.from(sortBy), pageable));
     }
 }
