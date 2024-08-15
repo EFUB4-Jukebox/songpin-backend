@@ -15,7 +15,7 @@ public record PlaylistUnitDto(
         LocalDateTime updatedDate,
         Visibility visibility,
         List<String> imgPathList,
-        boolean isBookmarked
+        Boolean isBookmarked
 ) {
     public static PlaylistUnitDto from (Playlist playlist, List<String> imgPathList, boolean isBookmarked) {
         return new PlaylistUnitDto(

@@ -15,10 +15,10 @@ public record PlaylistDetailsResponseDto(
         LocalDate updatedDate,
         Visibility visibility,
         List<String> imgPathList,
-        boolean isBookmarked,
+        Boolean isBookmarked,
         List<PlaylistPinUnitDto> pinList) {
 
-    public static PlaylistDetailsResponseDto from(Playlist playlist, List<String> imgPathList, List<PlaylistPinUnitDto> pinList, boolean isMine, boolean isBookmarked) {
+    public static PlaylistDetailsResponseDto from(Playlist playlist, List<String> imgPathList, List<PlaylistPinUnitDto> pinList, Boolean isMine, Boolean isBookmarked) {
         return new PlaylistDetailsResponseDto(
                 isMine,
                 playlist.getPlaylistName(),
