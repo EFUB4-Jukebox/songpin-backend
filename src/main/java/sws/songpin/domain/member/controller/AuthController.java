@@ -47,13 +47,6 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponseDto(tokenDto.accessToken()));
     }
 
-    @Operation(summary = "로그아웃", description = "Redis와 쿠키에 저장되었던 회원의 Refresh Token을 삭제합니다.")
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response){
-
-        return ResponseEntity.ok().build();
-    }
-
     @Operation(summary = "토큰 재발급", description = "Access Token 만료 시 Refresh Token 을 이용하여 Access Token 및 Refresh Token 재발급")
     @PostMapping("/token")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response){
