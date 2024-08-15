@@ -4,22 +4,23 @@
 
 EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 
-<br>
-
-<img src="src/main/resources/static/검정로고.png" width="300">
-
-**나의 음악지도, SongPin**
-
 <a href="https://hits.seeyoufarm.com">
   <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FEFUB4-Jukebox%2Fsongpin-backend&count_bg=%235452FF&title_bg=%23B6FF5A&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false"/>
 </a>
 
 <br>
+<br>
+<img src="src/main/resources/static/logo_songpin.png" width="300">
+
+**나의 음악지도, SongPin**
 
 <a href="https://www.instagram.com/songpin_official/">
-<img alt="Instagram" src="https://img.shields.io/badge/-Instagram-white?logo=Instagram&logoColor=d42121">
+  <img alt="Instagram" src="https://img.shields.io/badge/-Instagram-white?logo=Instagram&logoColor=d42121">
 </a>
-
+<br>
+<a href="https://songpin.vercel.app/">
+  <img alt="SongPin WebSite" src="https://img.shields.io/badge/SongPin%20WebSite-%23B6FF5A">
+</a>
 </div>
 
 <br>
@@ -27,28 +28,28 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 
 ## 💻 프로젝트 소개
 
-장소에는 기억과 소리가 담깁니다. 여러분이 언젠가 여행을 떠났을 때 들었던 음악을 기억하나요?
+**음악이 함께했던 일상들과 기억 속 인상적인 순간들을 모아, 나의 음악 지도를 만들어 보세요.**
+> 장소에는 기억과 소리가 담깁니다. 여러분이 언젠가 여행을 떠났을 때 들었던 음악을 기억하나요?
 여행지에서 많이 들은 음악은 곧, 그 장소의 분위기를 상징하고 기억할 수 있는 추억을 지닌 음악이 됩니다.
 여행이 끝나도 사람들은 그 음악을 들으면서 행복했던 여행의 순간들을 생생하게 회상합니다. 이러한 아이디어에서 'SongPin' 프로젝트가 탄생했습니다.
 
 ## ⏰ 개발 기간
 
-- 24.07.01 - 24.08.09
+- 24.07.01 - 24.08.10
 
 ## 📍 주요 기능
-<img src="src/main/resources/static/프로젝트 소개2.png" width="500">
-<img src="src/main/resources/static/프로젝트 소개3.png" width="500">
-<img src="src/main/resources/static/프로젝트 소개4.png" width="500">
-<img src="src/main/resources/static/프로젝트 소개5.png" width="500">
+<div align="center">
+<img src="src/main/resources/static/프로젝트 소개2.png" width="400">
+<img src="src/main/resources/static/프로젝트 소개3.png" width="400">
+<img src="src/main/resources/static/프로젝트 소개4.png" width="400">
+<img src="src/main/resources/static/프로젝트 소개5.png" width="400">
+</div>
 
-## 🌟 팀원 소개
+<br>
 
+## 🛠️ 아키텍쳐
 
-|                                           이서현                                           |                                                                                                                                  정유정                                                                                                                                  |                                                                                     황채린                                                                                     |                                           문하영                                           |
-| :----------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
-| <img src="https://avatars.githubusercontent.com/u/32611398?v=4" width="125" height="125"/> |                                                                                       <img src="https://avatars.githubusercontent.com/u/141399892?v=4" width="125" height="125"/>                                                                                       |                                           <img src="https://avatars.githubusercontent.com/u/87927105?v=4" width="125" height="125"/>                                           | <img src="https://avatars.githubusercontent.com/u/124586544?v=4" width="125" height="125"/> |
-|                       [@seohyun-lee](https://github.com/seohyun-lee)                       |                                                                                                                [@jud1thDev](https://github.com/jud1thDev)                                                                                                                |                                                                 [@crHwang0822](https://github.com/crHwang0822)                                                                 |                          [@gkdudans](https://github.com/gkdudans)                          |
-| CI/CD 환경 구축 및 배포<br>Place, Follow, Alarm API 개발<br>통계 페이지, 지도 핀 정보 제공 | [Pin] 핀 생성, 조회, 수정, 삭제 기능<br> [Spotify] 핀 생성 시 스포티파이API를 활용한 검색 기능 <br> [Song] 노래 상세정보 조회, 해당 노래에 대한 전체 핀 목록/내 핀 목록 조회, 노래 검색 기능 <br> [Feed] 타유저/마이핀피드 조회, 마이핀피드 검색, 마이핀피드 캘린더 기능 | [Member] 회원가입, 회원 탈퇴, 유저 조회/편집 기능<br>[Auth] 스프링 시큐리티, JWT, Redis 를 이용한 토큰 (재)발급/인증/인가 구현, 로그인/로그아웃, 비밀번호 재설정 메일 전송 기능 |                         [Playlist] Playlist 생성, 핀 담기, 메인, 검색, 상세정보, 편집, 삭제, 내 플레이리스트 목록/타 유저 플레이리스트 목록 조회 기능<br>[Bookmark] Bookmark 생성, 취소, 내 북마크 목록 조회 기능<br>Home - 최근 핀 & 장소 기능                         |
+![SongPin_architecture](https://github.com/user-attachments/assets/4e06e4b5-ab72-4ebe-8423-67fa9ba34bee)
 
 ## 🛠️ 기술 스택
 
@@ -58,23 +59,30 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 
 **Language**
 
-<img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white">
+<img src="https://img.shields.io/badge/java%20-007396?style=for-the-badge&logo=java&logoColor=white">
 
 **Development**
 
-<img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white"> <img src="https://img.shields.io/badge/MYSQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white"> <img src="https://img.shields.io/badge/REDIS-FF4438?style=for-the-badge&logo=redis&logoColor=white">
-<img src="https://img.shields.io/badge/Spotify API-1DB954?style=for-the-badge&logo=spotify&logoColor=white">
-![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white)
+<img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white"> <img src="https://img.shields.io/badge/MYSQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white"> <img src="https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens"> <img src="https://img.shields.io/badge/REDIS-FF4438?style=for-the-badge&logo=redis&logoColor=white"> <img src="https://img.shields.io/badge/Spotify%20Web%20API-1ED760?style=for-the-badge&logo=spotify&logoColor=white">
+<img src="https://img.shields.io/badge/Thymeleaf-%23005C0F.svg?style=for-the-badge&logo=Thymeleaf&logoColor=white"> <img src="https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white">
 
 **Deploy**
 
 <img src="https://img.shields.io/badge/AWS EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white"> <img src="https://img.shields.io/badge/AWS RDS-527FFF?style=for-the-badge&logo=amazonrds&logoColor=white"> ![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white) <img src="https://img.shields.io/badge/github actions-181717?style=for-the-badge&logo=github actions&logoColor=white"> <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"> <img src="https://img.shields.io/badge/docker compose-2496ED?style=for-the-badge&logo=docker&logoColor=white">
 
-<br>
+## 🛠️ ERD
 
-## ☁ ERD
+<img width="1759" alt="SongPin_ERD" src="https://github.com/user-attachments/assets/8e31d856-f8e5-4ad1-aa6d-adf2d999fe76">
 
-![SongPinERD_240723](https://github.com/user-attachments/assets/9ef0b1c9-1c1a-471d-840e-888efa3d35b4)
+<br><br>
+
+## 🌟 팀원 소개
+
+| 이서현 | 정유정 | 황채린 | 문하영 |
+| :---: | :---: | :---: | :---: |
+| <img src="https://avatars.githubusercontent.com/u/32611398?v=4" width="125" height="125"/> | <img src="https://avatars.githubusercontent.com/u/141399892?v=4" width="125" height="125"/> | <img src="https://avatars.githubusercontent.com/u/87927105?v=4" width="125" height="125"/> | <img src="https://avatars.githubusercontent.com/u/124586544?v=4" width="125" height="125"/> |
+| [@seohyun-lee](https://github.com/seohyun-lee) | [@jud1thDev](https://github.com/jud1thDev) | [@crHwang0822](https://github.com/crHwang0822) | [@gkdudans](https://github.com/gkdudans) |
+| [배포] 서버 배포 및 CI/CD 구축<br>[Place] 장소 검색, 장소 상세정보 조회 기능<br>[Map] 지도 마커 표시 목적 장소 좌표들 가져오기 기능 (기간&장르 필터링, 유저별, 플레이리스트별)<br>[Follow] 유저 검색, 유저의 팔로잉/팔로워 목록 조회, 타 유저를 팔로우, 팔로잉 취소/팔로워 삭제 기능<br>[Alarm] 알림 목록 조회, 구독 기능<br>[Statistics] 서비스의 종합 통계, 장르별 통계 조회 기능 | [Pin] 핀 생성, 조회, 수정, 삭제 기능<br> [Spotify] 핀 생성 시 Spotify API를 활용한 노래 검색 기능 <br> [Song] 노래 상세정보 조회, 해당 노래에 대한 전체 핀 목록/내 핀 목록 조회, 노래 검색 기능 <br> [Feed] 타 유저/내 핀 피드 조회, 내 핀 피드 검색, 내 핀피드 캘린더 기능 | [Member] 회원가입, 회원 탈퇴, 프로필 조회, 프로필 편집, Redis를 활용한 비밀번호 재설정 메일 전송 및 비밀번호 변경 기능<br>[Auth] 스프링 시큐리티, JWT, Redis를 활용한 토큰 (재)발급/인증/인가 구현, 로그인/로그아웃 기능 | [Playlist, PlaylistPin] 플레이리스트 생성, 핀 담기, 메인, 검색, 상세정보 조회, 편집, 삭제, 내 플레이리스트 목록/타 유저 플레이리스트 목록 조회 기능<br>[Bookmark] 북마크 생성, 취소, 내 북마크 목록 조회 기능<br>[Home] 최근 생성된 핀 & 장소 조회 기능 |
 
 <br>
 
@@ -183,6 +191,8 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 ```
 
 <br>
+
+---
 
 ## 📝 규칙
 

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import sws.songpin.domain.follow.entity.Follow;
 import sws.songpin.domain.member.entity.Member;
 
-public record FollowAddRequestDto(
+public record FollowRequestDto(
         @NotNull Long targetMemberId
 ){
     public static Follow toEntity(Member follower, Member following) {
