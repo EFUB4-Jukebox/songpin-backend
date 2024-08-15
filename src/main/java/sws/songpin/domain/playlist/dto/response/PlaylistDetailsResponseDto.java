@@ -15,10 +15,10 @@ public record PlaylistDetailsResponseDto(
         LocalDate updatedDate,
         Visibility visibility,
         List<String> imgPathList,
-        Long bookmarkId,
+        boolean isBookmarked,
         List<PlaylistPinUnitDto> pinList) {
 
-    public static PlaylistDetailsResponseDto from(Playlist playlist, List<String> imgPathList, List<PlaylistPinUnitDto> pinList, Boolean isMine, Long bookmarkId) {
+    public static PlaylistDetailsResponseDto from(Playlist playlist, List<String> imgPathList, List<PlaylistPinUnitDto> pinList, boolean isMine, boolean isBookmarked) {
         return new PlaylistDetailsResponseDto(
                 isMine,
                 playlist.getPlaylistName(),
@@ -28,7 +28,7 @@ public record PlaylistDetailsResponseDto(
                 playlist.getModifiedTime().toLocalDate(),
                 playlist.getVisibility(),
                 imgPathList,
-                bookmarkId,
+                isBookmarked,
                 pinList
         );
     }

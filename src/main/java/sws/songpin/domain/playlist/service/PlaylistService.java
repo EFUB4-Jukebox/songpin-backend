@@ -77,8 +77,8 @@ public class PlaylistService {
                     }
                 });
         // bookmarkId
-        Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
-        return PlaylistDetailsResponseDto.from(playlist, imgPathList, pinList, isMine, bookmarkId);
+        boolean isBookmarked = isPlaylistBookmarkedByMember(playlist, currentMember);
+        return PlaylistDetailsResponseDto.from(playlist, imgPathList, pinList, isMine, isBookmarked);
     }
 
     // 플레이리스트 편집
@@ -223,8 +223,8 @@ public class PlaylistService {
                 .map(playlistPin -> playlistPin.getPin().getSong().getImgPath())
                 .limit(3)
                 .collect(Collectors.toList());
-        Long bookmarkId = getBookmarkIdForPlaylistAndMember(playlist, currentMember);
-        return PlaylistUnitDto.from(playlist, imgPathList, bookmarkId);
+        boolean isBookmarked = isPlaylistBookmarkedByMember(playlist, currentMember);
+        return PlaylistUnitDto.from(playlist, imgPathList, isBookmarked);
     }
 
     @Transactional(readOnly = true)
@@ -232,6 +232,11 @@ public class PlaylistService {
         return bookmarkRepository.findByPlaylistAndMember(playlist, member)
                 .map(Bookmark::getBookmarkId)
                 .orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isPlaylistBookmarkedByMember(Playlist playlist, Member member) {
+        return bookmarkRepository.findByPlaylistAndMember(playlist, member).isPresent();
     }
 
     public void deleteAllPlaylistsOfMember(Member member) {
