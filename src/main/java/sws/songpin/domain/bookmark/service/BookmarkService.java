@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.bookmark.dto.request.BookmarkRequestDto;
-import sws.songpin.domain.bookmark.dto.response.BookmarkChangeResponseDto;
 import sws.songpin.domain.bookmark.entity.Bookmark;
 import sws.songpin.domain.bookmark.repository.BookmarkRepository;
 import sws.songpin.domain.member.entity.Member;

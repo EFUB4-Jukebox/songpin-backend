@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sws.songpin.domain.bookmark.dto.request.BookmarkRequestDto;
-import sws.songpin.domain.bookmark.dto.response.BookmarkChangeResponseDto;
 import sws.songpin.domain.bookmark.service.BookmarkService;
 
 @Tag(name = "Bookmark", description = "Bookmark 관련 API입니다.")

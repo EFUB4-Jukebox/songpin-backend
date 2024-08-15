@@ -76,7 +76,7 @@ public class PlaylistService {
                         imgPathList.add(playlistPin.getPin().getSong().getImgPath());
                     }
                 });
-        // bookmarkId
+        // isBookmarked
         boolean isBookmarked = isPlaylistBookmarkedByMember(playlist, currentMember);
         return PlaylistDetailsResponseDto.from(playlist, imgPathList, pinList, isMine, isBookmarked);
     }
@@ -225,13 +225,6 @@ public class PlaylistService {
                 .collect(Collectors.toList());
         boolean isBookmarked = isPlaylistBookmarkedByMember(playlist, currentMember);
         return PlaylistUnitDto.from(playlist, imgPathList, isBookmarked);
-    }
-
-    @Transactional(readOnly = true)
-    public Long getBookmarkIdForPlaylistAndMember(Playlist playlist, Member member) {
-        return bookmarkRepository.findByPlaylistAndMember(playlist, member)
-                .map(Bookmark::getBookmarkId)
-                .orElse(null);
     }
 
     @Transactional(readOnly = true)
