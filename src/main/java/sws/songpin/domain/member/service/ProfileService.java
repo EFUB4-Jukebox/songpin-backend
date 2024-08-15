@@ -38,7 +38,7 @@ public class ProfileService {
         Member currentMember = memberService.getCurrentMember();
 
         //조회하려는 회원이 본인인 경우 예외 처리
-        if(member.equals(currentMember)){
+        if (member.equals(currentMember)){
             throw new CustomException(ErrorCode.MEMBER_BAD_REQUEST);
         }
 
@@ -48,14 +48,10 @@ public class ProfileService {
         //팔로잉 수
         long followingCount = followService.getFollowingCount(member);
 
-        //팔로우 여부 (팔로우ID)
-        Long followId = null;
-        if(followService.checkFollowExists(currentMember,member)){
-            followId = followService.getFollowId(currentMember,member);
-        }
+        //팔로우 여부
+        Boolean isFollowing = followService.checkIfFollowing(member);
 
-        return MemberProfileResponseDto.from(member, followerCount, followingCount, followId);
-
+        return MemberProfileResponseDto.from(member, followerCount, followingCount, isFollowing);
     }
 
     @Transactional(readOnly = true)
@@ -72,26 +68,30 @@ public class ProfileService {
     }
 
     public void updateProfile(ProfileUpdateRequestDto requestDto){
-
         Member member = memberService.getCurrentMember();
-
         //핸들 중복 검사
-        if(memberService.checkMemberExistsByHandle(requestDto.handle()) && !(member.getHandle().equals(requestDto.handle()))){
+        if (memberService.checkMemberExistsByHandle(requestDto.handle()) && !(member.getHandle().equals(requestDto.handle()))){
             throw new CustomException(ErrorCode.HANDLE_ALREADY_EXISTS);
         }
-
         member.modifyProfile(ProfileImg.from(requestDto.profileImg()), requestDto.nickname(), requestDto.handle());
-
         memberService.saveMember(member);
+    }
 
+    public void updatePassword(PasswordUpdateRequestDto requestDto){
+        Member member = memberService.getCurrentMember();
+        //비밀번호 일치 검사
+        if (!requestDto.password().equals(requestDto.confirmPassword())) {
+            throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
+        }
+        member.modifyPassword(authService.encodePassword(requestDto.password()));
+        memberService.saveMember(member);
     }
 
     public void deactivateProfile(ProfileDeactivateRequestDto requestDto){
-
         Member member = memberService.getCurrentMember();
 
         //패스워드 검사
-        if(!(authService.checkPassword(member, requestDto.password()))){
+        if (!(authService.checkPassword(member, requestDto.password()))){
             throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
         }
 
@@ -115,19 +115,6 @@ public class ProfileService {
 
         //Redis에서 Refresh Token 삭제
         redisService.deleteValues(member.getEmail());
-    }
-
-    public void updatePassword(PasswordUpdateRequestDto requestDto){
-        Member member = memberService.getCurrentMember();
-
-        //비밀번호 일치 검사
-        if (!requestDto.password().equals(requestDto.confirmPassword())) {
-            throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
-        }
-
-        member.modifyPassword(authService.encodePassword(requestDto.password()));
-
-        memberService.saveMember(member);
     }
 
 }
