@@ -21,13 +21,13 @@ public class BookmarkController {
     @Operation(summary = "북마크 상태 변경", description = "북마크가 없으면 생성하고, 있으면 삭제")
     @PutMapping
     public ResponseEntity<?> changeBookmark(@RequestBody @Valid BookmarkRequestDto requestDto){
-        BookmarkChangeResponseDto responseDto = bookmarkService.changeBookmark(requestDto);
-        if (responseDto.isBookmarked()) {
-            // 북마크 삭제
-            return ResponseEntity.status(HttpStatus.OK).body(responseDto);
-        } else {
+        boolean isCreated = bookmarkService.changeBookmark(requestDto);
+        if(isCreated){
             // 북마크 생성
-            return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } else{
+            // 북마크 삭제
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
     }
 }

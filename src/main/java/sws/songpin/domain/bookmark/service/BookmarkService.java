@@ -32,7 +32,7 @@ public class BookmarkService {
     private final PlaylistService playlistService;
 
     // 북마크 상태 변경
-    public BookmarkChangeResponseDto changeBookmark(BookmarkRequestDto requestDto) {
+    public boolean changeBookmark(BookmarkRequestDto requestDto) {
         Member member = memberService.getCurrentMember();
         Playlist playlist = playlistService.findPlaylistById(requestDto.playlistId());
         if (!member.equals(playlist.getCreator()) && playlist.getVisibility() == Visibility.PRIVATE) {
@@ -40,13 +40,16 @@ public class BookmarkService {
         }
         Optional<Bookmark> bookmark = getBookmarkByPlaylistAndMember(playlist, member);
         if(bookmark.isPresent()){
-            bookmarkRepository.delete(bookmark.get());
-            return BookmarkChangeResponseDto.from(true, null);
+            bookmark.ifPresent(bookmarkRepository::delete);
+            return false;
         }
         else{
-            Bookmark newbookmark = requestDto.toEntity(member, playlist);
-            Bookmark savedBookmark = bookmarkRepository.save(newbookmark);
-            return BookmarkChangeResponseDto.from(false, savedBookmark);
+            Bookmark newBookmark = Bookmark.builder()
+                    .member(member)
+                    .playlist(playlist)
+                    .build();
+            bookmarkRepository.save(newBookmark);
+            return true;
         }
     }
 
