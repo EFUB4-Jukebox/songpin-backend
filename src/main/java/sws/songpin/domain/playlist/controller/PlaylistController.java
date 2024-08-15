@@ -16,9 +16,6 @@ import sws.songpin.domain.playlist.dto.request.PlaylistPinAddRequestDto;
 import sws.songpin.domain.playlist.service.PlaylistService;
 import sws.songpin.domain.playlistpin.service.PlaylistPinService;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-
 @Tag(name = "Playlist", description = "Playlist 관련 API입니다.")
 @RestController
 @RequiredArgsConstructor
@@ -71,10 +68,7 @@ public class PlaylistController {
     @GetMapping
     public ResponseEntity<?> playlistSearch(@RequestParam final String keyword,
                                          @RequestParam(defaultValue = "ACCURACY") final String sortBy,
-                                         @PageableDefault(size = 20) final Pageable pageable) throws UnsupportedEncodingException {
-        String decodedKeyword = URLDecoder.decode(keyword, "UTF-8");
-        return ResponseEntity.ok().body(playlistService.searchPlaylists(decodedKeyword, SortBy.from(sortBy), pageable));
+                                         @PageableDefault(size = 20) final Pageable pageable) {
+        return ResponseEntity.ok().body(playlistService.searchPlaylists(keyword, SortBy.from(sortBy), pageable));
     }
-
-
 }

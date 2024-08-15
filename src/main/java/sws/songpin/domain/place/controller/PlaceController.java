@@ -30,8 +30,7 @@ public class PlaceController {
     @GetMapping
     public ResponseEntity<?> placeSearch(@RequestParam final String keyword,
                                          @RequestParam(defaultValue = "ACCURACY") final String sortBy,
-                                         @PageableDefault(size = 20) final Pageable pageable) throws UnsupportedEncodingException {
-        String decodedKeyword = URLDecoder.decode(keyword, "UTF-8");
-        return ResponseEntity.ok().body(placeService.searchPlaces(decodedKeyword, SortBy.from(sortBy), pageable));
+                                         @PageableDefault(size = 20) final Pageable pageable) {
+        return ResponseEntity.ok().body(placeService.searchPlaces(keyword, SortBy.from(sortBy), pageable));
     }
 }
