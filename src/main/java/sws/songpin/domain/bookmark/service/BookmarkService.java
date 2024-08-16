@@ -4,8 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sws.songpin.domain.bookmark.dto.request.BookmarkAddRequestDto;
-import sws.songpin.domain.bookmark.dto.response.BookmarkAddResponseDto;
+import sws.songpin.domain.bookmark.dto.request.BookmarkRequestDto;
 import sws.songpin.domain.bookmark.entity.Bookmark;
 import sws.songpin.domain.bookmark.repository.BookmarkRepository;
 import sws.songpin.domain.member.entity.Member;
@@ -31,29 +30,26 @@ public class BookmarkService {
     private final MemberService memberService;
     private final PlaylistService playlistService;
 
-    // 북마크 생성
-    public BookmarkAddResponseDto createBookmark(BookmarkAddRequestDto requestDto) {
+    // 북마크 상태 변경
+    public boolean changeBookmark(BookmarkRequestDto requestDto) {
         Member member = memberService.getCurrentMember();
         Playlist playlist = playlistService.findPlaylistById(requestDto.playlistId());
         if (!member.equals(playlist.getCreator()) && playlist.getVisibility() == Visibility.PRIVATE) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
-        getBookmarkByPlaylistAndMember(playlist, member).ifPresent(bookmark -> {
-            throw new CustomException(ErrorCode.BOOKMARK_ALREADY_EXISTS);
-        });
-        Bookmark bookmark = requestDto.toEntity(member, playlist);
-        Bookmark savedBookmark = bookmarkRepository.save(bookmark);
-        return BookmarkAddResponseDto.from(savedBookmark);
-    }
-
-    // 북마크 삭제
-    public void deleteBookmark(Long bookmarkId) {
-        Bookmark bookmark = findBookmarkById(bookmarkId);
-        Member currentMember = memberService.getCurrentMember();
-        if (!bookmark.getMember().equals(currentMember)) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
+        Optional<Bookmark> bookmark = getBookmarkByPlaylistAndMember(playlist, member);
+        if(bookmark.isPresent()){
+            bookmark.ifPresent(bookmarkRepository::delete);
+            return false;
         }
-        bookmarkRepository.delete(bookmark);
+        else{
+            Bookmark newBookmark = Bookmark.builder()
+                    .member(member)
+                    .playlist(playlist)
+                    .build();
+            bookmarkRepository.save(newBookmark);
+            return true;
+        }
     }
 
     // 내 모든 북마크된 플레이리스트 조회
@@ -72,12 +68,6 @@ public class BookmarkService {
     @Transactional(readOnly = true)
     public Optional<Bookmark> getBookmarkByPlaylistAndMember(Playlist playlist, Member member) {
         return bookmarkRepository.findByPlaylistAndMember(playlist, member);
-    }
-
-    @Transactional(readOnly = true)
-    public Bookmark findBookmarkById(Long bookmarkId) {
-        return bookmarkRepository.findById(bookmarkId)
-                .orElseThrow(() -> new CustomException(ErrorCode.BOOKMARK_NOT_FOUND));
     }
 
     public void deleteAllBookmarksOfMember(Member member){

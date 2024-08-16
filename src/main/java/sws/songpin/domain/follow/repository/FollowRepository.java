@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FollowRepository extends JpaRepository<Follow,Long> {
-    Boolean existsByFollowerAndFollowing(Member follower, Member following);
     List<Follow> findAllByFollowing(Member following);
     List<Follow> findAllByFollower(Member follower);
     Long countByFollowing(Member following);
