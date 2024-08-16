@@ -5,7 +5,7 @@ import sws.songpin.domain.follow.entity.Follow;
 import sws.songpin.domain.member.entity.Member;
 
 public record FollowRequestDto(
-        @NotNull Long memberId
+        @NotNull String handle
 ){
     public static Follow toEntity(Member follower, Member following) {
         return Follow.builder()
