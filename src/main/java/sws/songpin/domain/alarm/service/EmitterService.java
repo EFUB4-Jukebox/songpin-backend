@@ -24,14 +24,14 @@ public class EmitterService {
 
     private static final Long DEFAULT_TIMEOUT = 1L * 60 * 1000;  // 1분
 
-    public SseEmitter subscribe(Long memberId) {
-        SseEmitter emitter = registerEmitter(memberId);
-        sendToClientIfNewAlarmExists(memberId);
+    public SseEmitter subscribe() {
+        Member member = memberService.getCurrentMember();
+        SseEmitter emitter = registerEmitter(member.getMemberId());
+        sendToClientIfNewAlarmExists(member);
         return emitter;
     }
 
-    private void sendToClientIfNewAlarmExists(Long memberId) {
-        Member member = memberService.getActiveMemberById(memberId);
+    private void sendToClientIfNewAlarmExists(Member member) {
         Boolean isMissedAlarms = alarmRepository.existsByReceiverAndIsReadFalse(member);
         if (isMissedAlarms.equals(true)) {
             sendToClient(member.getMemberId(), AlarmDefaultDataDto.from(true), "new sse alarm exists");
