@@ -30,7 +30,7 @@ public class FollowService {
 
     public boolean createOrDeleteFollow(FollowRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
-        Member targetMember = memberService.getActiveMemberByHandle(requestDto.handle());
+        Member targetMember = memberService.getActiveMemberById(requestDto.memberId());
 
         if (currentMember.equals(targetMember)) { // follower가 following과 동일하면 팔로우 불가
             throw new CustomException(ErrorCode.FOLLOW_BAD_REQUEST);
@@ -49,7 +49,7 @@ public class FollowService {
 
     public void deleteFollower(FollowRequestDto requestDto){
         Member currentMember = memberService.getCurrentMember();
-        Member targetMember = memberService.getActiveMemberByHandle(requestDto.handle());
+        Member targetMember = memberService.getActiveMemberById(requestDto.memberId());
 
         if (currentMember.equals(targetMember)) {
             throw new CustomException(ErrorCode.FOLLOW_BAD_REQUEST);
