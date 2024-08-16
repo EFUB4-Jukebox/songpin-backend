@@ -4,6 +4,7 @@ import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.entity.ProfileImg;
 
 public record MemberUnitDto(
+        Long memberId,
         String nickname,
         String handle,
         ProfileImg profileImg,
@@ -11,6 +12,7 @@ public record MemberUnitDto(
 ) {
     public static MemberUnitDto from (Member member, Boolean isMe) {
         return new MemberUnitDto(
+                member.getMemberId(),
                 member.getNickname(),
                 member.getHandle(),
                 member.getProfileImg(),
