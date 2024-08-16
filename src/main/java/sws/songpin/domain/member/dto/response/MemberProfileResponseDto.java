@@ -9,9 +9,10 @@ public record MemberProfileResponseDto(
         String handle,
         long followerCount,
         long followingCount,
-        Boolean isFollowing
+        Boolean isFollowing,
+        Boolean isFollower
 ) {
-    public static MemberProfileResponseDto from(Member member, long followerCount, long followingCount, Boolean isFollowing){
-        return new MemberProfileResponseDto(member.getProfileImg(), member.getNickname(), member.getHandle(), followerCount, followingCount, isFollowing);
+    public static MemberProfileResponseDto from(Member member, long followerCount, long followingCount, Boolean isFollowing, Boolean isFollower){
+        return new MemberProfileResponseDto(member.getProfileImg(), member.getNickname(), member.getHandle(), followerCount, followingCount, isFollowing, isFollower);
     }
 }
