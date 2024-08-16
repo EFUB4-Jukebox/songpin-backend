@@ -8,6 +8,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.genre.entity.GenreName;
+import sws.songpin.domain.member.entity.Member;
+import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.place.dto.request.MapBoundCoordsDto;
 import sws.songpin.domain.place.dto.request.MapFetchEntirePeriodRequestDto;
 import sws.songpin.domain.place.dto.request.MapFetchCustomPeriodRequestDto;
@@ -28,6 +30,7 @@ import java.util.List;
 public class MapService {
 
     private final MapPlaceRepository mapPlaceRepository;
+    private final MemberService memberService;
 
     // 장소 좌표들 가져오기-전체 기간 & 장르 필터링
     public MapPlaceFetchResponseDto getMapPlacesWithinBoundsByEntirePeriod(MapFetchEntirePeriodRequestDto requestDto) {
@@ -80,7 +83,8 @@ public class MapService {
 
     //// 유저로 필터링
     // 유저가 핀을 등록한 장소 좌표들 가져오기
-    public MapPlaceFetchResponseDto getMapPlacesOfMember(Long memberId) {
+    public MapPlaceFetchResponseDto getMapPlacesOfMember(String handle) {
+        Long memberId = memberService.getActiveMemberByHandle(handle).getMemberId();
         Pageable pageable = getCustomPageableForMap();
         Slice<MapPlaceProjectionDto> dtoSlice = mapPlaceRepository.findPlacesWithLatestPinsByCreator(memberId, pageable);
         return MapPlaceFetchResponseDto.from(dtoSlice);

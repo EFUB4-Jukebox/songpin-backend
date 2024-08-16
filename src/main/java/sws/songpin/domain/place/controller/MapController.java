@@ -41,10 +41,10 @@ public class MapController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @Operation(summary = "유저가 핀을 등록한 장소 좌표들 가져오기", description = "유저가 핀을 등록한 장소 좌표들을 가져옵니다. (공개여부 무관)")
-    @GetMapping("/members/{memberId}")
-    public ResponseEntity<?> getMapPlacesOfMember(@PathVariable final Long memberId) {
-        MapPlaceFetchResponseDto responseDto = mapService.getMapPlacesOfMember(memberId);
+    @Operation(summary = "유저가 핀을 등록한 장소 좌표들 가져오기", description = "유저가 핀을 등록한 장소 좌표들을 가져옵니다.")
+    @GetMapping("/members/{handle}")
+    public ResponseEntity<?> getMapPlacesOfMember(@PathVariable final String handle) {
+        MapPlaceFetchResponseDto responseDto = mapService.getMapPlacesOfMember(handle);
         return ResponseEntity.ok(responseDto);
     }
 
