@@ -60,14 +60,9 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Member getMemberById(Long memberId){
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-    }
-
-    @Transactional(readOnly = true)
     public Member getActiveMemberById(Long memberId){
-        Member member = getMemberById(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         if (member.getStatus().equals(Status.DELETED)) {
             throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
         }
@@ -75,14 +70,19 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Member getMemberByEmail(String email){
-        return memberRepository.findByEmail(email)
-                .orElseThrow(()-> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    public Member getActiveMemberByHandle(String handle){
+        Member member = memberRepository.findByHandle(handle)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        if (member.getStatus().equals(Status.DELETED)) {
+            throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
+        }
+        return member;
     }
 
     @Transactional(readOnly = true)
     public Member getActiveMemberByEmail(String email) {
-        Member member = getMemberByEmail(email);
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         if (member.getStatus().equals(Status.DELETED)) {
             throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
         }

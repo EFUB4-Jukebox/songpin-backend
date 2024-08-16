@@ -33,8 +33,8 @@ public class ProfileService {
     private final PlaylistService playlistService;
 
     @Transactional(readOnly = true)
-    public MemberProfileResponseDto getMemberProfile(Long memberId){
-        Member member = memberService.getActiveMemberById(memberId);
+    public MemberProfileResponseDto getMemberProfile(String handle){
+        Member member = memberService.getActiveMemberByHandle(handle);
         Member currentMember = memberService.getCurrentMember();
 
         //조회하려는 회원이 본인인 경우 예외 처리
@@ -100,6 +100,7 @@ public class ProfileService {
 
         //handle 랜덤값 생성
         String handle = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 12);
+
         //Status, Nickname, Handle 변경
         member.deactivate(handle);
         memberService.saveMember(member);

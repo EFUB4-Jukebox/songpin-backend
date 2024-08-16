@@ -8,14 +8,14 @@ public record AlarmUnitDto(
         Boolean isRead,
         String message,
         LocalDateTime createdTime,
-        Long senderId
+        String handle
 ) {
     public static AlarmUnitDto from(Alarm alarm, String message) {
         return new AlarmUnitDto(
                 alarm.getIsRead(),
                 message,
                 alarm.getCreatedTime(),
-                alarm.getSender().getMemberId()
+                alarm.getSender().getHandle()
         );
     }
 }

@@ -143,9 +143,9 @@ public class PinService {
 
     // 타 유저 핀피드 조회
     @Transactional(readOnly = true)
-    public PinFeedListResponseDto getMemberPinFeed(Long memberId, Pageable pageable) {
-        Member targetMember = memberService.getMemberById(memberId);
-        Page<Object[]> pinFeedPage = pinRepository.findPinFeed(targetMember, pageable);
+    public PinFeedListResponseDto getMemberPinFeed(String handle, Pageable pageable) {
+        Member member = memberService.getActiveMemberByHandle(handle);
+        Page<Object[]> pinFeedPage = pinRepository.findPinFeed(member, pageable);
         return getPinFeedResponse(pinFeedPage, false);
     }
 

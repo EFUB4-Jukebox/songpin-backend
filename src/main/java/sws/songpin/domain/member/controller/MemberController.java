@@ -35,32 +35,32 @@ public class MemberController {
         return ResponseEntity.ok().body(memberService.searchMembers(keyword, pageable));
     }
     @Operation(summary = "타 유저 정보 조회", description = "memberId으로 해당 유저의 프로필 이미지, 닉네임, 아이디 정보 조회")
-    @GetMapping("/{memberId}")
-    public ResponseEntity<?> memberDetails(@PathVariable("memberId") final Long memberId){
-        return ResponseEntity.ok(profileService.getMemberProfile(memberId));
+    @GetMapping("/{handle}")
+    public ResponseEntity<?> memberDetails(@PathVariable final String handle){
+        return ResponseEntity.ok(profileService.getMemberProfile(handle));
     }
 
     @Operation(summary = "타 유저 플레이리스트 목록 조회", description = "타 유저 페이지에서 플레이리스트 목록 조회")
-    @GetMapping("/{memberId}/playlists")
-    public ResponseEntity<?> getAllPlaylists(@PathVariable("memberId") final Long memberId){
-        return ResponseEntity.ok(playlistService.getMemberPlaylists(memberId));
+    @GetMapping("/{handle}/playlists")
+    public ResponseEntity<?> getAllPlaylists(@PathVariable final String handle){
+        return ResponseEntity.ok(playlistService.getMemberPlaylists(handle));
     }
 
     @Operation(summary = "타 유저의 핀 피드 조회", description = "타 유저의 핀 피드를 조회합니다.")
-    @GetMapping("/{memberId}/feed")
-    public ResponseEntity<?> getMemberFeedPins(@PathVariable("memberId") Long memberId, @PageableDefault(size = 20) Pageable pageable) {
-        return ResponseEntity.ok(pinService.getMemberPinFeed(memberId, pageable));
+    @GetMapping("/{handle}/feed")
+    public ResponseEntity<?> getMemberFeedPins(@PathVariable final String handle, @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(pinService.getMemberPinFeed(handle, pageable));
     }
 
     @Operation(summary = "유저의 팔로잉 목록 조회", description = "유저의 팔로잉 목록을 불러옵니다.")
-    @GetMapping("/{memberId}/followings")
-    public ResponseEntity<?> followingList(@PathVariable final Long memberId) {
-        return ResponseEntity.ok(followService.getFollowList(memberId, true));
+    @GetMapping("/{handle}/followings")
+    public ResponseEntity<?> followingList(@PathVariable final String handle) {
+        return ResponseEntity.ok(followService.getFollowList(handle, true));
     }
 
     @Operation(summary = "유저의 팔로워 목록 조회", description = "유저의 팔로워 목록을 불러옵니다.")
-    @GetMapping("/{memberId}/followers")
-    public ResponseEntity<?> followerList(@PathVariable final Long memberId) {
-        return ResponseEntity.ok(followService.getFollowList(memberId, false));
+    @GetMapping("/{handle}/followers")
+    public ResponseEntity<?> followerList(@PathVariable final String handle) {
+        return ResponseEntity.ok(followService.getFollowList(handle, false));
     }
 }

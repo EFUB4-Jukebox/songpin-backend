@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 public record SongDetailsPinDto(
         Long pinId,
-        Long creatorId,
+        String creatorHandle,
         String creatorNickname,
         Status creatorStatus,
         LocalDate listenedDate,
@@ -22,7 +22,7 @@ public record SongDetailsPinDto(
     public static SongDetailsPinDto from(Pin pin, String memo, Boolean isMine) {
         return new SongDetailsPinDto(
                 pin.getPinId(),
-                pin.getCreator().getMemberId(),
+                pin.getCreator().getHandle(),
                 pin.getCreator().getNickname(),
                 pin.getCreator().getStatus(),
                 pin.getListenedDate(),
