@@ -48,10 +48,13 @@ public class ProfileService {
         //팔로잉 수
         long followingCount = followService.getFollowingCount(member);
 
-        //팔로우 여부
+        //내가 팔로잉중인지 여부
         Boolean isFollowing = followService.checkIfFollowing(member);
 
-        return MemberProfileResponseDto.from(member, followerCount, followingCount, isFollowing);
+        //해당 유저가 나의 팔로워인지 여부
+        Boolean isFollower = followService.checkIfFollower(member);
+
+        return MemberProfileResponseDto.from(member, followerCount, followingCount, isFollowing, isFollower);
     }
 
     @Transactional(readOnly = true)
