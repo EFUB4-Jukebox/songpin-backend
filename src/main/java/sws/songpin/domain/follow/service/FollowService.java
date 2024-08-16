@@ -37,7 +37,7 @@ public class FollowService {
         }
 
         Optional<Follow> followOptional = followRepository.findByFollowerAndFollowing(currentMember, targetMember);
-        if (checkIfFollowExists(targetMember, currentMember)) { // 팔로우가 존재하면 삭제
+        if (followOptional.isPresent()) { // 팔로우가 존재하면 삭제
             followRepository.delete(followOptional.get());
             return false;
         } else { // 팔로우 추가
