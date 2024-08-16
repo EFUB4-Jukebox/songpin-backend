@@ -37,7 +37,7 @@ public class FollowService {
         }
 
         Optional<Follow> followOptional = followRepository.findByFollowerAndFollowing(currentMember, targetMember);
-        if (followOptional.isPresent()) { // 팔로우가 존재하면 삭제
+        if (checkIfFollowExists(targetMember, currentMember)) { // 팔로우가 존재하면 삭제
             followRepository.delete(followOptional.get());
             return false;
         } else { // 팔로우 추가
@@ -63,9 +63,18 @@ public class FollowService {
         }
     }
 
-    public Boolean checkIfFollowing(Member following){
-        Member follower = memberService.getCurrentMember();
-        if (follower.equals(following)){
+    public Boolean checkIfFollowing(Member targetMember){
+        Member currentMember = memberService.getCurrentMember();
+        return checkIfFollowExists(currentMember, targetMember);
+    }
+
+    public Boolean checkIfFollower(Member targetMember) {
+        Member currentMember = memberService.getCurrentMember();
+        return checkIfFollowExists(targetMember, currentMember);
+    }
+
+    public Boolean checkIfFollowExists(Member follower, Member following) {
+        if (follower.equals(following)) {
             return null;
         }
         Optional<Follow> followOptional = followRepository.findByFollowerAndFollowing(follower, following);
