@@ -29,23 +29,37 @@ public class FollowService {
     private final AlarmService alarmService;
 
     public boolean createOrDeleteFollow(FollowRequestDto requestDto) {
-        Member follower = memberService.getCurrentMember();
-        Member following = memberService.getActiveMemberById(requestDto.targetMemberId());
+        Member currentMember = memberService.getCurrentMember();
+        Member targetMember = memberService.getActiveMemberById(requestDto.memberId());
 
-        if (!follower.equals(memberService.getCurrentMember())){ // follower가 자신이어야 함
-            throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
-        } else if (follower.equals(following)) { // follower가 following과 동일하면 팔로우 불가
+        if (currentMember.equals(targetMember)) { // follower가 following과 동일하면 팔로우 불가
             throw new CustomException(ErrorCode.FOLLOW_BAD_REQUEST);
         }
 
-        Optional<Follow> followOptional = followRepository.findByFollowerAndFollowing(follower, following);
-        if (followOptional.isPresent()) { // 팔로우가 이미 존재하면 삭제
+        Optional<Follow> followOptional = followRepository.findByFollowerAndFollowing(currentMember, targetMember);
+        if (followOptional.isPresent()) { // 팔로우가 존재하면 삭제
             followRepository.delete(followOptional.get());
             return false;
         } else { // 팔로우 추가
-            followRepository.save(FollowRequestDto.toEntity(follower, following));
-            alarmService.createFollowAlarm(follower, following);
+            followRepository.save(FollowRequestDto.toEntity(currentMember, targetMember));
+            alarmService.createFollowAlarm(currentMember, targetMember);
             return true;
+        }
+    }
+
+    public void deleteFollower(FollowRequestDto requestDto){
+        Member currentMember = memberService.getCurrentMember();
+        Member targetMember = memberService.getActiveMemberById(requestDto.memberId());
+
+        if (currentMember.equals(targetMember)) {
+            throw new CustomException(ErrorCode.FOLLOW_BAD_REQUEST);
+        }
+
+        Optional<Follow> followOptional = followRepository.findByFollowerAndFollowing(targetMember, currentMember);
+        if (followOptional.isPresent()) { // 팔로우가 존재하면 삭제
+            followRepository.delete(followOptional.get());
+        } else {
+            throw new CustomException(ErrorCode.FOLLOW_NOT_FOUND);
         }
     }
 
@@ -109,12 +123,6 @@ public class FollowService {
     @Transactional(readOnly = true)
     public long getFollowingCount(Member member){
         return followRepository.countByFollower(member);
-    }
-
-    @Transactional(readOnly = true)
-    public Long getFollowId(Member follower, Member following){
-        return followRepository.findByFollowerAndFollowing(follower,following)
-                .orElseThrow(()-> new CustomException(ErrorCode.FOLLOW_NOT_FOUND)).getFollowId();
     }
 
     //회원의 팔로워 및 팔로잉 모두 삭제
