@@ -60,9 +60,12 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Member getMemberById(Long memberId){
+    public Member getActiveMemberById(Long memberId){
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        if (member.getStatus().equals(Status.DELETED)) {
+            throw new CustomException(ErrorCode.MEMBER_STATUS_DELETED);
+        }
         return member;
     }
 
