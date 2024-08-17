@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.alarm.service.AlarmService;
 import sws.songpin.domain.follow.dto.request.FollowRequestDto;
-import sws.songpin.domain.follow.dto.response.FollowDto;
+import sws.songpin.domain.follow.dto.response.FollowUnitDto;
 import sws.songpin.domain.follow.dto.response.FollowListResponseDto;
 import sws.songpin.domain.follow.entity.Follow;
 import sws.songpin.domain.follow.repository.FollowRepository;
@@ -37,7 +37,7 @@ public class FollowService {
         }
 
         Optional<Follow> followOptional = followRepository.findByFollowerAndFollowing(currentMember, targetMember);
-        if (checkIfFollowExists(targetMember, currentMember)) { // 팔로우가 존재하면 삭제
+        if (followOptional.isPresent()) { // 팔로우가 존재하면 삭제
             followRepository.delete(followOptional.get());
             return false;
         } else { // 팔로우 추가
@@ -86,21 +86,21 @@ public class FollowService {
     }
 
     // 특정 사용자의 팔로잉/팔로워 목록 조회
-    public FollowListResponseDto getFollowList(Long memberId, boolean isFollowingList) {
-        Member targetMember = memberService.getActiveMemberById(memberId);
+    public FollowListResponseDto getFollowList(String handle, boolean isFollowingList) {
+        Member targetMember = memberService.getActiveMemberByHandle(handle);
         Member currentMember = memberService.getCurrentMember();
         Map<Member, Long> currentMemberFollowingCache = getMemberFollowingCache(currentMember);
         List<Follow> followList = isFollowingList ? findAllFollowingsOfMember(targetMember) : findAllFollowersOfMember(targetMember);
 
-        List<FollowDto> followDtoList = followList.stream()
+        List<FollowUnitDto> followDtoList = followList.stream()
                 .map(follow -> {
                     Member member = isFollowingList ? follow.getFollowing() : follow.getFollower();
                     // isFollowing: 로그인한 사용자의 member 팔로잉 여부 (null: 자신)
                     Boolean isFollowing = member.equals(currentMember) ? null : currentMemberFollowingCache.get(member) != null;
-                    return FollowDto.from(member, isFollowing);
+                    return FollowUnitDto.from(member, isFollowing);
                 })
                 // 우선순위대로 정렬 (null > true > false)
-                .sorted(Comparator.comparing(FollowDto::isFollowing, Comparator.nullsFirst(Comparator.reverseOrder())))
+                .sorted(Comparator.comparing(FollowUnitDto::isFollowing, Comparator.nullsFirst(Comparator.reverseOrder())))
                 .collect(Collectors.toList());
         return FollowListResponseDto.from(targetMember.equals(currentMember), targetMember.getHandle(), followDtoList);
     }

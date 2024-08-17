@@ -3,7 +3,7 @@ name: CI/CD using GitHub Actions & Docker
 # main, deploy 브랜치에 push하면 워크플로우 실행
 on:
   push:
-    branches: [ "main", "deploy" ]  
+    branches: [ "main", "deploy", "test-deploy"]
 
 jobs:
   deploy:
