@@ -59,7 +59,9 @@ public class SecurityConfig {
                 "http://localhost:3000",
                 "https://localhost:3000",
                 "https://api.songpin.n-e.kr",
-                "https://songpin.vercel.app"));
+                "https://songpin.vercel.app",
+                "https://songpin.kr",
+                "https://www.songpin.kr"));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
         configuration.addAllowedHeader("*");
