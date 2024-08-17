@@ -15,6 +15,6 @@ public interface MemberRepository extends JpaRepository<Member,Long> {
     boolean existsByHandle(String handle);
 
     // 유저 검색
-    @Query("SELECT m FROM Member m WHERE (m.handle LIKE %:keyword% OR m.nickname LIKE %:keyword%) AND m.status <> 'DELETED'")
+    @Query("SELECT m FROM Member m WHERE (m.handle LIKE %:keyword% ESCAPE '\\' OR m.nickname LIKE %:keyword% ESCAPE '\\') AND m.status <> 'DELETED'")
     Page<Member> findAllByHandleContainingOrNicknameContaining(@Param("keyword") String keyword, Pageable pageable);
 }
