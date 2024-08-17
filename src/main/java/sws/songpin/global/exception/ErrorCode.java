@@ -40,7 +40,7 @@ public enum ErrorCode {
     EXPIRED_REFRESH_TOKEN(401, "만료된 리프레시 토큰입니다."),
     // 탈퇴한 회원
     MEMBER_STATUS_DELETED(401, "탈퇴한 회원입니다."),
-    // 어세스 토큰이 만료되지 않은 상황에서 재발급받으려는 경우
+    // 액세스 토큰이 만료되지 않은 상황에서 재발급받으려는 경우
     ACCESS_TOKEN_NOT_EXPIRED(401,"액세스 토큰이 아직 만료되지 않았습니다."),
     // 쿠키에 리프레시 토큰이 들어있지 않은 경우
     NO_COOKIE(401, "쿠키에 값이 존재하지 않습니다."),

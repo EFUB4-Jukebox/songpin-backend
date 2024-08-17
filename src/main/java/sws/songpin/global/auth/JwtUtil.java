@@ -21,8 +21,8 @@ public class JwtUtil {
     private final Key refreshKey;
     private final RedisService redisService;
     private final CustomUserDetailsService userDetailsService;
-    private static final Duration ACCESS_TOKEN_EXPIRE_TIME = Duration.ofMinutes(1); //1분
-    private static final Duration REFRESH_TOKEN_EXPIRE_TIME = Duration.ofMinutes(5); //5분
+    private static final Duration ACCESS_TOKEN_EXPIRE_TIME = Duration.ofDays(1); //1일
+    private static final Duration REFRESH_TOKEN_EXPIRE_TIME = Duration.ofDays(7); //7일
 
     public JwtUtil(@Value("${jwt.secret.access}") String accessSecret, @Value("${jwt.secret.refresh}") String refreshSecret, CustomUserDetailsService userDetailsService, RedisService redisService){
         byte[] keyBytes = Decoders.BASE64.decode(accessSecret);
