@@ -12,8 +12,6 @@ import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.model.SortBy;
 import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.pin.repository.PinRepository;
-import sws.songpin.domain.place.dto.response.PlaceSearchResponseDto;
-import sws.songpin.domain.place.dto.response.PlaceUnitDto;
 import sws.songpin.domain.song.dto.request.SongAddRequestDto;
 import sws.songpin.domain.song.dto.response.*;
 import sws.songpin.domain.song.entity.Song;
