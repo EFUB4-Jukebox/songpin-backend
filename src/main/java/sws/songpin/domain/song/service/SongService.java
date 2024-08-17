@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static sws.songpin.global.common.EscapeSpecialCharactersService.escapeSpecialCharacters;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -37,6 +39,7 @@ public class SongService {
     private final PinRepository pinRepository;
     private final MemberService memberService;
 
+    // Spotify
     @Transactional(readOnly = true)
     public List<SpotifySearchDto> searchTracks(String keyword, int offset) {
         List<Track> tracks = spotifyUtil.searchTracks(keyword, offset);
@@ -65,9 +68,11 @@ public class SongService {
     // 노래 검색
     @Transactional(readOnly = true)
     public SongSearchResponseDto searchSongs(String keyword, SortBy sortBy, Pageable pageable) {
-        String keywordNoSpaces = keyword.replace(" ", "");
-        Page<Object[]> songPage;
+        // 키워드의 이스케이프 처리 및 띄어쓰기 제거
+        String escapedWord = escapeSpecialCharacters(keyword);
+        String keywordNoSpaces = escapedWord.replace(" ", "");
 
+        Page<Object[]> songPage;
         switch (sortBy) {
             case NEWEST -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByNewest(keywordNoSpaces, pageable);
             case COUNT -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByCount(keywordNoSpaces, pageable);

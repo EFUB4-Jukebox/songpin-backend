@@ -18,6 +18,8 @@ import sws.songpin.global.exception.ErrorCode;
 
 import java.util.Optional;
 
+import static sws.songpin.global.common.EscapeSpecialCharactersService.escapeSpecialCharacters;
+
 @Slf4j
 @Service
 @Transactional
@@ -28,7 +30,9 @@ public class MemberService {
     // 유저 검색
     @Transactional(readOnly = true)
     public MemberSearchResponseDto searchMembers(String keyword, Pageable pageable) {
-        Page<Member> memberPage = memberRepository.findAllByHandleContainingOrNicknameContaining(keyword, pageable);
+        // 키워드의 이스케이프 처리
+        String escapedWord = escapeSpecialCharacters(keyword);
+        Page<Member> memberPage = memberRepository.findAllByHandleContainingOrNicknameContaining(escapedWord, pageable);
         Long currentMemberId = getCurrentMember().getMemberId();
 
         // Page<Member>를 Page<MemberUnitDto>로 변환
