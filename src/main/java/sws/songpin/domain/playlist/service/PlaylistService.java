@@ -143,8 +143,8 @@ public class PlaylistService {
 
     // 타 유저 플레이리스트 조회
     @Transactional(readOnly = true)
-    public PlaylistListResponseDto getMemberPlaylists(Long memberId) {
-        Member creator = memberService.getMemberById(memberId);
+    public PlaylistListResponseDto getMemberPlaylists(String handle) {
+        Member creator = memberService.getActiveMemberByHandle(handle);
         Member currentMember = memberService.getCurrentMember();
         return getMemberPlaylists(creator, currentMember);
     }

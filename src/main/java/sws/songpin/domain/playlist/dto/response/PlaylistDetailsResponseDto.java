@@ -9,7 +9,7 @@ import java.util.List;
 public record PlaylistDetailsResponseDto(
         Boolean isMine,
         String playlistName,
-        Long creatorId,
+        String creatorHandle,
         String creatorNickname,
         int pinCount,
         LocalDate updatedDate,
@@ -22,7 +22,7 @@ public record PlaylistDetailsResponseDto(
         return new PlaylistDetailsResponseDto(
                 isMine,
                 playlist.getPlaylistName(),
-                playlist.getCreator().getMemberId(),
+                playlist.getCreator().getHandle(),
                 playlist.getCreator().getNickname(),
                 pinList.size(),
                 playlist.getModifiedTime().toLocalDate(),
