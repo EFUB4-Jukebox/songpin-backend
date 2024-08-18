@@ -93,6 +93,6 @@ public class SpotifyUtil {
         for (var artist : track.getArtists()) {
             artistNames.add(artist.getName());
         }
-        return String.join(" ", artistNames);
+        return String.join(", ", artistNames);
     }
 }
