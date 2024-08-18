@@ -8,7 +8,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.genre.entity.GenreName;
-import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.place.dto.request.MapBoundCoordsDto;
 import sws.songpin.domain.place.dto.request.MapFetchEntirePeriodRequestDto;
@@ -23,6 +22,7 @@ import sws.songpin.global.exception.ErrorCode;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true) // Transaction 모두 읽기 전용
