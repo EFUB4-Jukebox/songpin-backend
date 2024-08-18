@@ -145,14 +145,14 @@ public class PlaylistService {
     @Transactional(readOnly = true)
     public PlaylistListResponseDto getMemberPlaylists(String handle) {
         Member creator = memberService.getActiveMemberByHandle(handle);
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMemberOrNull();
         return getMemberPlaylists(creator, currentMember);
     }
 
     @Transactional(readOnly = true)
     public PlaylistListResponseDto getMemberPlaylists(Member creator, Member currentMember) {
         List<Playlist> playlists;
-        if (creator.equals(currentMember)) {
+        if (currentMember != null && creator.equals(currentMember)) {
             playlists = playlistRepository.findAllByCreator(creator);
         } else {
             playlists = playlistRepository.findAllPublicByCreator(creator);
