@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static sws.songpin.global.common.EscapeSpecialCharactersService.escapeSpecialCharacters;
+
 @Slf4j
 @Service
 @Transactional
@@ -56,8 +58,10 @@ public class PlaceService {
 
     // 장소 검색 (네이티브 쿼리 이용)
     public PlaceSearchResponseDto searchPlaces(String keyword, SortBy sortBy, Pageable pageable) {
-        // 키워드의 띄어쓰기를 제거하여 띄어쓰기 없앤 장소이름을 검색
-        String keywordNoSpaces = keyword.replace(" ", "");
+        // 키워드의 이스케이프 처리 및 띄어쓰기 제거
+        String escapedWord = escapeSpecialCharacters(keyword);
+        String keywordNoSpaces = escapedWord.replace(" ", "");
+
         Page<Object[]> placePage;
         switch (sortBy) {
             case COUNT -> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByCount(keywordNoSpaces, pageable);

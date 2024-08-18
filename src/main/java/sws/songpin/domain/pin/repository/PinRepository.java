@@ -17,8 +17,10 @@ public interface PinRepository extends JpaRepository <Pin, Long> {
     List<Pin> findBySong(Song song);
     int countBySong(Song song);
     int countByPlace(Place place);
+
     @Query("SELECT p FROM Pin p WHERE p.song = :song ORDER BY p.listenedDate DESC, p.pinId DESC")
     Page<Pin> findAllBySong(@Param("song") Song song, Pageable pageable);
+
     @Query("SELECT p FROM Pin p WHERE p.song = :song AND p.creator = :creator ORDER BY p.listenedDate DESC, p.pinId DESC")
     Page<Pin> findAllBySongAndCreator(@Param("song") Song song, @Param("creator") Member creator, Pageable pageable);
 
@@ -31,12 +33,12 @@ public interface PinRepository extends JpaRepository <Pin, Long> {
             "ORDER BY p.listenedDate DESC, p.pinId DESC")
     Page<Object[]> findPinFeed(@Param("creator") Member creator, Pageable pageable);
 
-    List<Pin> findAllByPlace(Place place);
     @Query("SELECT p FROM Pin p WHERE p.creator = :creator AND YEAR(p.listenedDate) = :year AND MONTH(p.listenedDate) = :month")
     List<Pin> findAllByCreatorAndDate(@Param("creator") Member creator, @Param("year") int year, @Param("month") int month);
 
     @Query("SELECT COUNT(p) FROM Pin p WHERE YEAR(p.listenedDate) = :currentYear")
     long countByListenedDateYear(@Param("currentYear") int currentYear);
+
     @Query("SELECT p.genre.genreName, COUNT(p) FROM Pin p GROUP BY p.genre ORDER BY COUNT(p) DESC")
     List<Object[]> findMostPopularGenreName();
 

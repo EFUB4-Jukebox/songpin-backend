@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static sws.songpin.global.common.EscapeSpecialCharactersService.escapeSpecialCharacters;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -212,9 +214,11 @@ public class PinService {
     // 마이페이지에서 내 핀 검색
     @Transactional(readOnly = true)
     public MyPinSearchResponseDto searchMyPins(String keyword, Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
-        Long currentMemberId = currentMember.getMemberId();
-        String keywordNoSpaces = keyword.replace(" ", "");
+        // 키워드의 이스케이프 처리 및 띄어쓰기 제거
+        String escapedWord = escapeSpecialCharacters(keyword);
+        String keywordNoSpaces = escapedWord.replace(" ", "");
+
+        Long currentMemberId = memberService.getCurrentMember().getMemberId();
         Page<Object[]> myPinPage = pinRepository.findAllBySongNameOrArtistOrPlaceNameContainingIgnoreSpaces(currentMemberId, keywordNoSpaces, pageable);
 
         Page<PinBasicUnitDto> myPinUnitPage = myPinPage.map(objects -> {

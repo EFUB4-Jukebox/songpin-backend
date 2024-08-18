@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sws.songpin.domain.bookmark.entity.Bookmark;
 import sws.songpin.domain.bookmark.repository.BookmarkRepository;
 import sws.songpin.domain.follow.service.FollowService;
 import sws.songpin.domain.member.entity.Member;
@@ -28,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static sws.songpin.global.common.EscapeSpecialCharactersService.escapeSpecialCharacters;
 
 @Slf4j
 @Service
@@ -195,7 +196,10 @@ public class PlaylistService {
     // 플레이리스트 검색
     @Transactional(readOnly = true)
     public Object searchPlaylists(String keyword, SortBy sortBy, Pageable pageable) {
-        String keywordNoSpaces = keyword.replace(" ", "");
+        // 키워드의 이스케이프 처리 및 띄어쓰기 제거
+        String escapedWord = escapeSpecialCharacters(keyword);
+        String keywordNoSpaces = escapedWord.replace(" ", "");
+
         Page<Object[]> playlistPage;
         Member currentMember = memberService.getCurrentMember();
         Long currentMemberId = currentMember.getMemberId();
