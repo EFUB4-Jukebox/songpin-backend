@@ -106,6 +106,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/places/{placeId}").permitAll()
                         .requestMatchers(HttpMethod.GET,"/playlists/main").authenticated()
                         .requestMatchers(HttpMethod.GET,"/playlists/{playlistId}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/members/{handle}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/members/{handle}/playlists").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/members/{handle}/feed").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(e -> e.authenticationEntryPoint(jwtAuthenticationEntryPoint))
         ;

@@ -35,7 +35,7 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public MemberProfileResponseDto getMemberProfile(String handle){
         Member member = memberService.getActiveMemberByHandle(handle);
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMemberOrNull();
 
         //조회하려는 회원이 본인인 경우 예외 처리
         if (member.equals(currentMember)){
@@ -49,10 +49,10 @@ public class ProfileService {
         long followingCount = followService.getFollowingCount(member);
 
         //내가 팔로잉중인지 여부
-        Boolean isFollowing = followService.checkIfFollowing(member);
+        Boolean isFollowing = (currentMember != null) ? followService.checkIfFollowing(member) : false;
 
         //해당 유저가 나의 팔로워인지 여부
-        Boolean isFollower = followService.checkIfFollower(member);
+        Boolean isFollower = (currentMember != null) ? followService.checkIfFollower(member) : false;
 
         return MemberProfileResponseDto.from(member, followerCount, followingCount, isFollowing, isFollower);
     }
