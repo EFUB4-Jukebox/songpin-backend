@@ -42,10 +42,10 @@ public class EmailService {
 
     public void sendPasswordEmail(EmailRequestDto requestDto){
 
-        String email = requestDto.email();
+        String toMail = requestDto.email();
 
         //요청받은 이메일로 가입한 회원이 탈퇴하거나 없는 경우 예외 처리
-        memberService.getActiveMemberByEmail(email);
+        memberService.getActiveMemberByEmail(toMail);
 
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
 
@@ -60,24 +60,12 @@ public class EmailService {
         String content = templateEngine.process("passwordResetMail.html", context);
 
         //Redis 에 (UUID,Email) 쌍 저장
-        if(!redisService.setValuesWithTimeoutIfAbsent("password_uuid:"+uuid, email, Duration.ofMinutes(10))){
+        if(!redisService.setValuesWithTimeoutIfAbsent("password_uuid:"+uuid, toMail, Duration.ofMinutes(10))){
             throw new CustomException(ErrorCode.ERROR);
         }
 
         //메일 전송
-        try{
-            MimeMessage mailMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mailMessage, true, "UTF-8");
-            helper.setFrom(fromMail); //이메일 발신 주소
-            helper.setTo(email);  //이메일 송신 주소
-            helper.setSubject(title);  //이메일 제목
-            helper.setText(content, true);
-            helper.addInline("logo", new ClassPathResource(logoPath));
-
-            javaMailSender.send(mailMessage);
-        } catch (MessagingException e){
-            throw new CustomException(ErrorCode.EMAIL_ERROR);
-        }
+        sendEmail(toMail,title,content);
 
     }
 
@@ -87,6 +75,8 @@ public class EmailService {
         String reportedHandle = memberService.getActiveMemberById(reportedId).getHandle();
         String reportType = requestDto.reportType().toString();
         String reason = requestDto.reason();
+
+        String title = "[유저 신고] " + reporterId + " → " + reportedId; //이메일 제목
 
         HashMap<String,Object> map = new HashMap<>();
         map.put("reporterId", reporterId);
@@ -99,14 +89,16 @@ public class EmailService {
         context.setVariables(map); //템플릿에 전달할 데이터
         String content = templateEngine.process("reportMail.html", context);
 
-        String title = "[유저 신고] " + reporterId + " → " + reportedId; //이메일 제목
-
         //메일 전송
+        sendEmail(fromMail,title,content);
+    }
+
+    private void sendEmail(String toMail, String title, String content){
         try{
             MimeMessage mailMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mailMessage, true, "UTF-8");
             helper.setFrom(fromMail); //이메일 발신 주소
-            helper.setTo(fromMail);  //이메일 송신 주소
+            helper.setTo(toMail);  //이메일 송신 주소
             helper.setSubject(title);  //이메일 제목
             helper.setText(content, true);
             helper.addInline("logo", new ClassPathResource(logoPath));
