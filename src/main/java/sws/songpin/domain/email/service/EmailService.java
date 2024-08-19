@@ -70,7 +70,7 @@ public class EmailService {
     }
 
     public void sendReportEmail(ReportRequestDto requestDto){
-        Long reporterId = requestDto.reporterId();
+        Long reporterId = memberService.getCurrentMember().getMemberId();
         Long reportedId = requestDto.reportedId();
         String reportedHandle = memberService.getActiveMemberById(reportedId).getHandle();
         String reportType = requestDto.reportType().toString();
