@@ -1,4 +1,4 @@
-package sws.songpin.domain.member.controller;
+package sws.songpin.domain.email.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import sws.songpin.domain.member.dto.request.EmailRequestDto;
-import sws.songpin.domain.member.service.EmailService;
+import sws.songpin.domain.email.dto.EmailRequestDto;
+import sws.songpin.domain.email.service.EmailService;
 
 @Tag(name = "Email", description = "Email 관련 API입니다.")
 @RestController

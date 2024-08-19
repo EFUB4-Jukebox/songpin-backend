@@ -1,4 +1,4 @@
-package sws.songpin.domain.member.dto.request;
+package sws.songpin.domain.email.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;

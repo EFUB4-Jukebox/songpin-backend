@@ -1,4 +1,4 @@
-package sws.songpin.domain.member.service;
+package sws.songpin.domain.email.service;
 
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
@@ -10,14 +10,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-import sws.songpin.domain.member.dto.request.EmailRequestDto;
+import sws.songpin.domain.email.dto.EmailRequestDto;
 import jakarta.mail.internet.MimeMessage;
+import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.global.auth.RedisService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
 
-import javax.xml.catalog.Catalog;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.UUID;
