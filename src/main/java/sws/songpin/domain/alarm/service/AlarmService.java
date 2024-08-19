@@ -73,8 +73,8 @@ public class AlarmService {
         if (alarmSlice != null && alarmSlice.hasContent()) {
             for (Alarm alarm : alarmSlice) {
                 String message = switch (alarm.getAlarmType()){
-                    case AlarmType.FOLLOW -> MessageFormat.format(AlarmType.FOLLOW.getMessagePattern(), alarm.getSender().getNickname(), alarm.getSender().getHandle());
-                    case AlarmType.REPORT -> MessageFormat.format(AlarmType.REPORT.getMessagePattern(), alarm.getSender().getNickname(), alarm.getSender().getHandle());
+                    case FOLLOW -> MessageFormat.format(AlarmType.FOLLOW.getMessagePattern(), alarm.getSender().getNickname(), alarm.getSender().getHandle());
+                    case REPORT -> MessageFormat.format(AlarmType.REPORT.getMessagePattern(), alarm.getSender().getNickname(), alarm.getSender().getHandle());
                     case DEFAULT -> MessageFormat.format(AlarmType.DEFAULT.getMessagePattern(), alarm.getSender().getNickname(), alarm.getSender().getHandle());
                 };
                 alarmList.add(AlarmUnitDto.from(alarm, message));
