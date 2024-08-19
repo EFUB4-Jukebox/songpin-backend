@@ -76,6 +76,11 @@ public class EmailService {
         String reportType = requestDto.reportType().toString();
         String reason = requestDto.reason();
 
+        //신고자 ID 와 신고 대상 ID 가 동일한 경우
+        if(reporterId.equals(reportedId)){
+            throw new CustomException(ErrorCode.REPORT_BAD_REQUEST);
+        }
+
         String title = "[유저 신고] " + reporterId + " → " + reportedId; //이메일 제목
 
         HashMap<String,Object> map = new HashMap<>();
