@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
+import sws.songpin.domain.alarm.service.AlarmService;
 import sws.songpin.domain.email.dto.EmailRequestDto;
 import jakarta.mail.internet.MimeMessage;
 import sws.songpin.domain.email.dto.ReportRequestDto;
+import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.model.ReportType;
 import sws.songpin.global.auth.RedisService;
@@ -40,6 +42,7 @@ public class EmailService {
     private final JavaMailSender javaMailSender;
     private final MemberService memberService;
     private final RedisService redisService;
+    private final AlarmService alarmService;
     private final SpringTemplateEngine templateEngine;
 
     public void sendPasswordEmail(EmailRequestDto requestDto){
@@ -72,9 +75,14 @@ public class EmailService {
     }
 
     public void sendReportEmail(ReportRequestDto requestDto){
-        Long reporterId = memberService.getCurrentMember().getMemberId();
-        Long reportedId = requestDto.reportedId();
-        String reportedHandle = memberService.getActiveMemberById(reportedId).getHandle();
+
+        Member reporter = memberService.getCurrentMember();
+        Member reported = memberService.getActiveMemberById(requestDto.reportedId());
+
+
+        Long reporterId = reporter.getMemberId();
+        Long reportedId = reported.getMemberId();
+        String reportedHandle = reported.getHandle();
         ReportType reportType = requestDto.reportType();
         String reason = requestDto.reason();
 
@@ -99,6 +107,9 @@ public class EmailService {
 
         //메일 전송
         sendEmail(fromMail,title,content);
+
+        //신고자에게 알림 전송
+        alarmService.createReportAlarm(reporter, reported);
     }
 
     private void sendEmail(String toMail, String title, String content){
