@@ -21,7 +21,7 @@ jobs:
           cd ./src/main/resources
           touch ./application.yml
           echo "${{ secrets.APPLICATION_PROD }}" > ./application.yml
-      
+
       - name: Gradle Caching
         uses: actions/cache@v3
         with:
@@ -31,12 +31,12 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-            
+
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
           ./gradlew build -x test
-      
+
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
@@ -61,6 +61,6 @@ jobs:
           script: |
             echo "${{ secrets.DOCKER_COMPOSE_PROD }}" | sudo tee ./docker-compose.yml
             sudo docker ps -q | xargs -r sudo docker stop && sudo docker ps -aq | xargs -r sudo docker rm
-            sudo docker-compose -f ./docker-compose.yml down --rmi all
+            sudo docker compose --file ./docker-compose.yml down --rmi all
             sudo docker pull ${{ secrets.DOCKER_REPO }}:latest
-            sudo docker-compose -f ./docker-compose.yml up -d
+            sudo docker compose --file ./docker-compose.yml up -d
