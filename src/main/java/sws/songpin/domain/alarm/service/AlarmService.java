@@ -47,6 +47,19 @@ public class AlarmService {
         alarmRepository.save(alarm);
         emitterService.notify(following.getMemberId(), AlarmDefaultDataDto.from(true), "new alarm");
     }
+    // 신고 접수 알림 생성
+    public void createReportAlarm(Member reporter, Member reported) {
+        String message = MessageFormat.format(AlarmType.REPORT.getMessagePattern(), reported.getNickname(), reported.getHandle());
+        Alarm alarm = Alarm.builder()
+                .alarmType(AlarmType.REPORT)
+                .message(message)
+                .sender(reported)
+                .receiver(reporter)
+                .isRead(false)
+                .build();
+        alarmRepository.save(alarm);
+        emitterService.notify(reporter.getMemberId(), AlarmDefaultDataDto.from(true), "new alarm");
+    }
 
     public void deleteAllAlarmsOfMember(Member member){
         alarmRepository.deleteAllBySender(member);
@@ -59,7 +72,11 @@ public class AlarmService {
         Slice<Alarm> alarmSlice = alarmRepository.findByReceiverOrderByCreatedTimeDesc(currentMember, pageable);
         if (alarmSlice != null && alarmSlice.hasContent()) {
             for (Alarm alarm : alarmSlice) {
-                String message = MessageFormat.format(AlarmType.FOLLOW.getMessagePattern(), alarm.getSender().getNickname(), alarm.getSender().getHandle());
+                String message = switch (alarm.getAlarmType()){
+                    case FOLLOW -> MessageFormat.format(AlarmType.FOLLOW.getMessagePattern(), alarm.getSender().getNickname(), alarm.getSender().getHandle());
+                    case REPORT -> MessageFormat.format(AlarmType.REPORT.getMessagePattern(), alarm.getSender().getNickname(), alarm.getSender().getHandle());
+                    case DEFAULT -> MessageFormat.format(AlarmType.DEFAULT.getMessagePattern(), alarm.getSender().getNickname(), alarm.getSender().getHandle());
+                };
                 alarmList.add(AlarmUnitDto.from(alarm, message));
                 alarm.readAlarm();
             }
