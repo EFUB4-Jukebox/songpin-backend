@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko" style="box-sizing: border-box;">
+<head style="box-sizing: border-box;">
+    <meta charset="UTF-8" style="box-sizing: border-box;">
+    <title style="box-sizing: border-box;">Songpin Mail</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" style="box-sizing: border-box;">
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: #f4f4f4;">
+
+<div style="width: 700px; margin: 0 auto; padding: 20px;">
+    <table style="width: 100%; border-collapse: collapse; background-color: #ffffff; box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1); border-radius: 8px; overflow: hidden;">
+        <tr>
+            <td colspan="5" style="text-align: center; padding: 20px; background-color: #4CAF50;">
+                <img src="cid:logo" alt="logo" style="max-width: 150px; height: auto;">
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 40px; text-align: center;">
+                <h2 style="font-size: 18px; color: #333333; margin-bottom: 10px;">유저 신고 보고서</h2>
+                <p style="font-size: 14px; color: #555555; margin-bottom: 30px;">아래는 유저 신고의 세부 정보입니다:</p>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 300px; padding: 15px; background-color: #f9f9f9; border-bottom: 1px solid #eeeeee;">
+                            <strong>신고자 ID:</strong>
+                        </td>
+                        <td style="padding: 15px; background-color: #f9f9f9; border-bottom: 1px solid #eeeeee;" th:text="${reporterId}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 300px; padding: 15px; background-color: #ffffff; border-bottom: 1px solid #eeeeee;">
+                            <strong>신고된 ID:</strong>
+                        </td>
+                        <td style="padding: 15px; background-color: #ffffff; border-bottom: 1px solid #eeeeee;" th:text="${reportedId}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 300px; padding: 15px; background-color: #f9f9f9; border-bottom: 1px solid #eeeeee;">
+                            <strong>신고 시간:</strong>
+                        </td>
+                        <td style="padding: 15px; background-color: #f9f9f9; border-bottom: 1px solid #eeeeee;" th:text="${reportTime}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 300px; padding: 15px; background-color: #ffffff; border-bottom: 1px solid #eeeeee;">
+                            <strong>신고 유형:</strong>
+                        </td>
+                        <td style="padding: 15px; background-color: #ffffff; border-bottom: 1px solid #eeeeee;" th:text="${reportType}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 300px; padding: 15px; background-color: #f9f9f9; border-bottom: 1px solid #eeeeee;">
+                            <strong>신고 사유:</strong>
+                        </td>
+                        <td style="padding: 25px 15px; background-color: #f9f9f9; border-bottom: 1px solid #eeeeee; height: auto; word-wrap: break-word; max-width: 500px;" th:text="${reason}">
+                        </td>
+                    </tr>
+                </table>
+                <div style="margin-top: 30px;">
+                    <a th:href="${reportedUrl}" style="padding: 12px 25px; background-color: #4CAF50; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">신고된 사용자 프로필로 이동</a>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
