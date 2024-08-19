@@ -53,7 +53,7 @@ public class AlarmService {
         Alarm alarm = Alarm.builder()
                 .alarmType(AlarmType.REPORT)
                 .message(message)
-                .sender(null)
+                .sender(reported)   // 이후 운영자 계정이 생기면 이 부분 수정
                 .receiver(reporter)
                 .isRead(false)
                 .build();
@@ -72,7 +72,7 @@ public class AlarmService {
         Slice<Alarm> alarmSlice = alarmRepository.findByReceiverOrderByCreatedTimeDesc(currentMember, pageable);
         if (alarmSlice != null && alarmSlice.hasContent()) {
             for (Alarm alarm : alarmSlice) {
-                String message = MessageFormat.format(AlarmType.FOLLOW.getMessagePattern(), alarm.getSender().getNickname(), alarm.getSender().getHandle());
+                String message = alarm.getMessage();
                 alarmList.add(AlarmUnitDto.from(alarm, message));
                 alarm.readAlarm();
             }
