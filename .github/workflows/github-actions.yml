@@ -61,6 +61,6 @@ jobs:
           script: |
             echo "${{ secrets.DOCKER_COMPOSE_PROD }}" | sudo tee ./docker-compose.yml
             sudo docker ps -q | xargs -r sudo docker stop && sudo docker ps -aq | xargs -r sudo docker rm
-            sudo docker compose -f ./docker-compose.yml down --rmi all
+            sudo docker-compose -f ./docker-compose.yml down --rmi all
             sudo docker pull ${{ secrets.DOCKER_REPO }}:latest
-            sudo docker compose -f ./docker-compose.yml up -d
+            sudo docker-compose -f ./docker-compose.yml up -d
