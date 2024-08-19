@@ -12,6 +12,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import sws.songpin.domain.email.dto.EmailRequestDto;
 import jakarta.mail.internet.MimeMessage;
+import sws.songpin.domain.email.dto.ReportRequestDto;
 import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.global.auth.RedisService;
 import sws.songpin.global.exception.CustomException;
@@ -46,10 +47,7 @@ public class EmailService {
         //요청받은 이메일로 가입한 회원이 탈퇴하거나 없는 경우 예외 처리
         memberService.getActiveMemberByEmail(email);
 
-
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-
-
 
         String title = "[송핀] 비밀번호 재설정 링크 전송"; //이메일 제목
         String link = passwordUrl + "/" + uuid;
@@ -81,7 +79,42 @@ public class EmailService {
             throw new CustomException(ErrorCode.EMAIL_ERROR);
         }
 
+    }
 
+    public void sendReportEmail(ReportRequestDto requestDto){
+        Long reporterId = requestDto.reporterId();
+        Long reportedId = requestDto.reportedId();
+        String reportedHandle = memberService.getActiveMemberById(reportedId).getHandle();
+        String reportType = requestDto.reportType().toString();
+        String reason = requestDto.reason();
+
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("reporterId", reporterId);
+        map.put("reportedId", reportedId);
+        map.put("reportedUrl", "https://www.songpin.kr/users/"+reportedHandle);
+        map.put("reportType", reportType);
+        map.put("reason", reason);
+
+        Context context = new Context();
+        context.setVariables(map); //템플릿에 전달할 데이터
+        String content = templateEngine.process("reportMail.html", context);
+
+        String title = "[유저 신고] " + reporterId + " → " + reportedId; //이메일 제목
+
+        //메일 전송
+        try{
+            MimeMessage mailMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mailMessage, true, "UTF-8");
+            helper.setFrom(fromMail); //이메일 발신 주소
+            helper.setTo(fromMail);  //이메일 송신 주소
+            helper.setSubject(title);  //이메일 제목
+            helper.setText(content, true);
+            helper.addInline("logo", new ClassPathResource(logoPath));
+
+            javaMailSender.send(mailMessage);
+        } catch (MessagingException e){
+            throw new CustomException(ErrorCode.EMAIL_ERROR);
+        }
     }
 
 }
