@@ -53,6 +53,11 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Column(name = "role", length = 20)
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pin> pins;
 
@@ -65,6 +70,7 @@ public class Member extends BaseTimeEntity {
         this.handle= handle;
         this.profileImg = ProfileImg.POP;
         this.status = Status.ACTIVE;
+        this.role = Role.ROLE_USER;
         this.pins = new ArrayList<>();
     }
 
