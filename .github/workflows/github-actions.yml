@@ -1,9 +1,9 @@
 name: CI/CD using GitHub Actions & Docker
 
-# main 브랜치에 push하면 워크플로우 실행
+# main 또는 deploy 브랜치에 push하면 워크플로우 실행
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "deploy" ]
 
 jobs:
   deploy:
@@ -21,7 +21,7 @@ jobs:
           cd ./src/main/resources
           touch ./application.yml
           echo "${{ secrets.APPLICATION_PROD }}" > ./application.yml
-      
+
       - name: Gradle Caching
         uses: actions/cache@v3
         with:
@@ -31,12 +31,12 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-            
+
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
           ./gradlew build -x test
-      
+
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
@@ -60,7 +60,7 @@ jobs:
           envs: GITHUB_SHA
           script: |
             echo "${{ secrets.DOCKER_COMPOSE_PROD }}" | sudo tee ./docker-compose.yml
-            sudo docker rm -f $(sudo docker ps -aq)
-            sudo docker-compose -f ./docker-compose.yml down --rmi all
+            sudo docker ps -q | xargs -r sudo docker stop && sudo docker ps -aq | xargs -r sudo docker rm
+            sudo docker compose --file ./docker-compose.yml down --rmi all
             sudo docker pull ${{ secrets.DOCKER_REPO }}:latest
-            sudo docker-compose -f ./docker-compose.yml up -d
+            sudo docker compose --file ./docker-compose.yml up -d
