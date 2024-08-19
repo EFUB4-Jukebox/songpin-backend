@@ -60,7 +60,7 @@ jobs:
           envs: GITHUB_SHA
           script: |
             echo "${{ secrets.DOCKER_COMPOSE_PROD }}" | sudo tee ./docker-compose.yml
-            sudo docker rm -f $(sudo docker ps -aq)
+            sudo docker ps -q | xargs -r sudo docker stop && sudo docker ps -aq | xargs -r sudo docker rm
             sudo docker-compose -f ./docker-compose.yml down --rmi all
             sudo docker pull ${{ secrets.DOCKER_REPO }}:latest
             sudo docker-compose -f ./docker-compose.yml up -d
