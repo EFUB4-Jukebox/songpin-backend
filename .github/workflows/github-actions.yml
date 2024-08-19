@@ -1,9 +1,9 @@
 name: CI/CD using GitHub Actions & Docker
 
-# main, deploy 브랜치에 push하면 워크플로우 실행
+# main 브랜치에 push하면 워크플로우 실행
 on:
   push:
-    branches: [ "main", "deploy"]
+    branches: [ "main" ]
 
 jobs:
   deploy:
@@ -20,7 +20,7 @@ jobs:
         run: |
           cd ./src/main/resources
           touch ./application.yml
-          echo "${{ secrets.APPLICATION }}" > ./application.yml
+          echo "${{ secrets.APPLICATION_PROD }}" > ./application.yml
       
       - name: Gradle Caching
         uses: actions/cache@v3
@@ -49,17 +49,17 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_REPO }}:latest
+          tags: ${{ secrets.DOCKER_REPO_PROD }}:latest
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
+          host: ${{ secrets.HOST_PROD }}
+          username: ${{ secrets.USERNAME_PROD }}
+          key: ${{ secrets.KEY_PROD }}
           envs: GITHUB_SHA
           script: |
-            echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee ./docker-compose.yml
+            echo "${{ secrets.DOCKER_COMPOSE_PROD }}" | sudo tee ./docker-compose.yml
             sudo docker rm -f $(sudo docker ps -aq)
             sudo docker-compose -f ./docker-compose.yml down --rmi all
             sudo docker pull ${{ secrets.DOCKER_REPO }}:latest
