@@ -35,16 +35,23 @@
                     </tr>
                     <tr>
                         <td style="width: 300px; padding: 15px; background-color: #f9f9f9; border-bottom: 1px solid #eeeeee;">
-                            <strong>신고 유형:</strong>
+                            <strong>신고 시간:</strong>
                         </td>
-                        <td style="padding: 15px; background-color: #f9f9f9; border-bottom: 1px solid #eeeeee;" th:text="${reportType}">
+                        <td style="padding: 15px; background-color: #f9f9f9; border-bottom: 1px solid #eeeeee;" th:text="${reportTime}">
                         </td>
                     </tr>
                     <tr>
                         <td style="width: 300px; padding: 15px; background-color: #ffffff; border-bottom: 1px solid #eeeeee;">
+                            <strong>신고 유형:</strong>
+                        </td>
+                        <td style="padding: 15px; background-color: #ffffff; border-bottom: 1px solid #eeeeee;" th:text="${reportType}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 300px; padding: 15px; background-color: #f9f9f9; border-bottom: 1px solid #eeeeee;">
                             <strong>신고 사유:</strong>
                         </td>
-                        <td style="padding: 25px 15px; background-color: #ffffff; border-bottom: 1px solid #eeeeee; height: auto; word-wrap: break-word; max-width: 500px;" th:text="${reason}">
+                        <td style="padding: 25px 15px; background-color: #f9f9f9; border-bottom: 1px solid #eeeeee; height: auto; word-wrap: break-word; max-width: 500px;" th:text="${reason}">
                         </td>
                     </tr>
                 </table>

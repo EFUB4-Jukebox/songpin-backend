@@ -14,12 +14,14 @@ import sws.songpin.domain.email.dto.EmailRequestDto;
 import jakarta.mail.internet.MimeMessage;
 import sws.songpin.domain.email.dto.ReportRequestDto;
 import sws.songpin.domain.member.service.MemberService;
+import sws.songpin.domain.model.ReportType;
 import sws.songpin.global.auth.RedisService;
 import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -73,7 +75,7 @@ public class EmailService {
         Long reporterId = memberService.getCurrentMember().getMemberId();
         Long reportedId = requestDto.reportedId();
         String reportedHandle = memberService.getActiveMemberById(reportedId).getHandle();
-        String reportType = requestDto.reportType().toString();
+        ReportType reportType = requestDto.reportType();
         String reason = requestDto.reason();
 
         //신고자 ID 와 신고 대상 ID 가 동일한 경우
@@ -87,7 +89,8 @@ public class EmailService {
         map.put("reporterId", reporterId);
         map.put("reportedId", reportedId);
         map.put("reportedUrl", "https://www.songpin.kr/users/"+reportedHandle);
-        map.put("reportType", reportType);
+        map.put("reportType", reportType+"("+reportType.getMessage()+")");
+        map.put("reportTime", LocalDateTime.now());
         map.put("reason", reason);
 
         Context context = new Context();
