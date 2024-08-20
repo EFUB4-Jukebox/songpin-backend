@@ -12,7 +12,7 @@ public interface FollowRepository extends JpaRepository<Follow,Long> {
     List<Follow> findAllByFollower(Member follower);
     Long countByFollowing(Member following);
     Long countByFollower(Member follower);
-    Optional<Follow> findByFollowerAndFollowing(Member follower, Member following);
+    List<Follow> findAllByFollowerAndFollowing(Member follower, Member following);
     void deleteAllByFollower(Member member);
     void deleteAllByFollowing(Member member);
 }

@@ -3,7 +3,6 @@ package sws.songpin.domain.alarm.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import sws.songpin.domain.alarm.dto.ssedata.AlarmDefaultDataDto;
 import sws.songpin.domain.alarm.repository.AlarmRepository;
@@ -15,7 +14,6 @@ import java.io.IOException;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class EmitterService {
     private final EmitterRepository emitterRepository;
