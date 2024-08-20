@@ -61,9 +61,7 @@ public class SecurityConfig {
                 "https://api.songpin.n-e.kr",
                 "https://songpin.vercel.app",
                 "https://songpin.kr",
-                "https://www.songpin.kr",
-                "https://dev.songpin.n-e.kr",
-                "https://prod.songpin.n-e.kr"));
+                "https://www.songpin.kr"));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
         configuration.addAllowedHeader("*");
