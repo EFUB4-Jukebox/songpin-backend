@@ -37,18 +37,17 @@ public class BookmarkService {
         if (!member.equals(playlist.getCreator()) && playlist.getVisibility() == Visibility.PRIVATE) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_REQUEST);
         }
-        Optional<Bookmark> bookmark = getBookmarkByPlaylistAndMember(playlist, member);
-        if(bookmark.isPresent()){
-            bookmark.ifPresent(bookmarkRepository::delete);
-            return false;
-        }
-        else{
+        List<Bookmark> bookmarks = bookmarkRepository.findAllByPlaylistAndMember(playlist, member);
+        if (bookmarks.isEmpty()) {
             Bookmark newBookmark = Bookmark.builder()
                     .member(member)
                     .playlist(playlist)
                     .build();
             bookmarkRepository.save(newBookmark);
             return true;
+        } else  { // 북마크가 존재하면 삭제
+            bookmarkRepository.deleteAll(bookmarks);
+            return false;
         }
     }
 
@@ -63,11 +62,6 @@ public class BookmarkService {
                 .map(playlist -> playlistService.convertToPlaylistUnitDto(playlist, currentMember))
                 .collect(Collectors.toList());
         return BookmarkListResponseDto.from(bookmarkList);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<Bookmark> getBookmarkByPlaylistAndMember(Playlist playlist, Member member) {
-        return bookmarkRepository.findByPlaylistAndMember(playlist, member);
     }
 
     public void deleteAllBookmarksOfMember(Member member){

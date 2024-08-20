@@ -30,7 +30,6 @@ import static sws.songpin.global.common.EscapeSpecialCharactersService.escapeSpe
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class PlaceService {
 
@@ -58,19 +57,11 @@ public class PlaceService {
     }
 
     // 장소 검색 (네이티브 쿼리 이용)
-    @Transactional(readOnly = true)
     public PlaceSearchResponseDto searchPlaces(String keyword, SortBy sortBy, Pageable pageable) {
         // 키워드의 이스케이프 처리 및 띄어쓰기 제거
         String escapedWord = escapeSpecialCharacters(keyword);
         String keywordNoSpaces = escapedWord.replace(" ", "");
-
-        Page<Object[]> placePage;
-        switch (sortBy) {
-            case COUNT -> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByCount(keywordNoSpaces, pageable);
-            case NEWEST -> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByNewest(keywordNoSpaces, pageable);
-            case ACCURACY -> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByAccuracy(keywordNoSpaces, pageable);
-            default -> throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
-        }
+        Page<Object[]> placePage = getSearchedPlacePage(sortBy, keywordNoSpaces, pageable);
 
         // Page<Object[]>를 Page<PlaceUnitDto>로 변환
         Page<PlaceUnitDto> placeUnitPage = placePage.map(objects -> {
@@ -84,12 +75,26 @@ public class PlaceService {
         return PlaceSearchResponseDto.from(placeUnitPage);
     }
 
+    @Transactional(readOnly = true)
+    public Page<Object[]> getSearchedPlacePage(SortBy sortBy, String keywordNoSpaces, Pageable pageable) {
+        Page<Object[]> placePage;
+        switch (sortBy) {
+            case COUNT -> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByCount(keywordNoSpaces, pageable);
+            case NEWEST -> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByNewest(keywordNoSpaces, pageable);
+            case ACCURACY -> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByAccuracy(keywordNoSpaces, pageable);
+            default -> throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
+        }
+        return placePage;
+    }
+
     // Place를 providerAddressId로 찾아 가져오거나 생성
+    @Transactional
     public Place getOrCreatePlace(PlaceAddRequestDto placeRequestDto) {
         return getPlaceByProviderAddressId(placeRequestDto.providerAddressId())
                 .orElseGet(() -> createPlace(placeRequestDto));
     }
 
+    @Transactional
     public Place createPlace(PlaceAddRequestDto placeRequestDto) {
         Place place = placeRequestDto.toEntity();
         return placeRepository.save(place);

@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sws.songpin.domain.genre.entity.Genre;
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
@@ -23,7 +22,6 @@ import sws.songpin.global.exception.ErrorCode;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -31,7 +29,6 @@ import static sws.songpin.global.common.EscapeSpecialCharactersService.escapeSpe
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class SongService {
 
     private final SpotifyUtil spotifyUtil;
@@ -40,7 +37,6 @@ public class SongService {
     private final MemberService memberService;
 
     // Spotify
-    @Transactional(readOnly = true)
     public List<SpotifySearchDto> searchTracks(String keyword, int offset) {
         List<Track> tracks = spotifyUtil.searchTracks(keyword, offset);
         return tracks.stream()
@@ -53,32 +49,12 @@ public class SongService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public Optional<GenreName> calculateAvgGenreName(List<Genre> genres) {
-        Map<GenreName, Long> genreCount = genres.stream()
-                .collect(Collectors.groupingBy(Genre::getGenreName, Collectors.counting()));
-
-        return genreCount.entrySet().stream()
-                .sorted(Map.Entry.<GenreName, Long>comparingByValue().reversed()
-                        .thenComparing(Map.Entry::getKey))
-                .map(Map.Entry::getKey)
-                .findFirst();
-    }
-
     // 노래 검색
-    @Transactional(readOnly = true)
     public SongSearchResponseDto searchSongs(String keyword, SortBy sortBy, Pageable pageable) {
         // 키워드의 이스케이프 처리 및 띄어쓰기 제거
         String escapedWord = escapeSpecialCharacters(keyword);
         String keywordNoSpaces = escapedWord.replace(" ", "");
-
-        Page<Object[]> songPage;
-        switch (sortBy) {
-            case NEWEST -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByNewest(keywordNoSpaces, pageable);
-            case COUNT -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByCount(keywordNoSpaces, pageable);
-            case ACCURACY -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByAccuracy(keywordNoSpaces, pageable);
-            default -> throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
-        }
+        Page<Object[]> songPage = getSearchedSongPage(sortBy, keywordNoSpaces, pageable);
 
         Page<SongUnitDto> songUnitPage = songPage.map(objects -> {
             SongInfoDto songInfo = new SongInfoDto(
@@ -96,6 +72,19 @@ public class SongService {
         return SongSearchResponseDto.from(songUnitPage);
     }
 
+    @Transactional(readOnly = true)
+    Page<Object[]> getSearchedSongPage(SortBy sortBy, String keywordNoSpaces, Pageable pageable) {
+        Page<Object[]> songPage;
+        switch (sortBy) {
+            case NEWEST -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByNewest(keywordNoSpaces, pageable);
+            case COUNT -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByCount(keywordNoSpaces, pageable);
+            case ACCURACY -> songPage = songRepository.findAllBySongNameOrArtistContainingIgnoreSpacesOrderByAccuracy(keywordNoSpaces, pageable);
+            default -> throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
+        }
+        return songPage;
+    }
+
+    @Transactional
     public Song createSong(SongAddRequestDto songRequestDto) {
         Song song = songRequestDto.toEntity();
         return songRepository.save(song);
@@ -106,13 +95,13 @@ public class SongService {
         return songRepository.findByProviderTrackCode(providerTrackCode);
     }
 
+    @Transactional
     public Song getOrCreateSong(SongAddRequestDto songRequestDto) {
         return getSongByProviderTrackCode(songRequestDto.providerTrackCode())
                 .orElseGet(() -> createSong(songRequestDto));
     }
 
     // 특정 노래에 대한 상세정보
-    @Transactional(readOnly = true)
     public SongDetailsResponseDto getSongDetails(Long songId) {
         Song song = getSongById(songId);
         Member currentMember = memberService.getCurrentMember();

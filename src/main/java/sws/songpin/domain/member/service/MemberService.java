@@ -20,17 +20,15 @@ import java.util.Optional;
 import static sws.songpin.global.common.EscapeSpecialCharactersService.escapeSpecialCharacters;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
 
     // 유저 검색
-    @Transactional(readOnly = true)
     public MemberSearchResponseDto searchMembers(String keyword, Pageable pageable) {
         // 키워드의 이스케이프 처리
         String escapedWord = escapeSpecialCharacters(keyword);
-        Page<Member> memberPage = memberRepository.findAllByHandleContainingOrNicknameContaining(escapedWord, pageable);
+        Page<Member> memberPage = getSearchedMemberPage(escapedWord, pageable);
         Long currentMemberId = getCurrentMember().getMemberId();
 
         // Page<Member>를 Page<MemberUnitDto>로 변환
@@ -39,6 +37,11 @@ public class MemberService {
         );
         // MemberSearchResponseDto를 반환
         return MemberSearchResponseDto.from(memberUnitDtoPage);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Member> getSearchedMemberPage(String escapedWord, Pageable pageable) {
+        return memberRepository.findAllByHandleContainingOrNicknameContaining(escapedWord, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -101,6 +104,7 @@ public class MemberService {
         return memberRepository.existsByHandle(handle);
     }
 
+    @Transactional
     public Member saveMember(Member member){
         return memberRepository.save(member);
     }
