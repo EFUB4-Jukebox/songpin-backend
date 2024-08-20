@@ -22,10 +22,11 @@ public class HomeService {
     private final PinRepository pinRepository;
     private final PlaceRepository placeRepository;
 
+    @Transactional(readOnly = true)
     public HomeResponseDto getHome() {
         Member currentMember = memberService.getCurrentMember();
-        List<Pin> pins = findTop3ByOrderByPinIdDesc();
-        List<Place> places = findTop3ByOrderByPlaceIdDesc();
+        List<Pin> pins = pinRepository.findTop3ByOrderByPinIdDesc();
+        List<Place> places = placeRepository.findTop3ByOrderByPlaceIdDesc();
         // pinList
         List<PinBasicUnitDto> pinList = pins.stream()
                 .map(pin -> PinBasicUnitDto.from(pin, pin.getCreator().equals(currentMember)))
@@ -38,15 +39,5 @@ public class HomeService {
                 })
                 .collect(Collectors.toList());
         return HomeResponseDto.from(currentMember, pinList, placeList);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Pin> findTop3ByOrderByPinIdDesc() {
-        return pinRepository.findTop3ByOrderByPinIdDesc();
-    }
-
-    @Transactional(readOnly = true)
-    public List<Place> findTop3ByOrderByPlaceIdDesc() {
-        return placeRepository.findTop3ByOrderByPlaceIdDesc();
     }
 }
