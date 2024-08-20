@@ -45,7 +45,7 @@ public class FollowService {
             alarmService.createFollowAlarm(currentMember, targetMember);
             return true;
         } else { // 팔로우가 존재하면 삭제
-            followRepository.deleteAllInBatch(follows);
+            followRepository.deleteAll(follows);
             return false;
         }
     }
@@ -63,7 +63,7 @@ public class FollowService {
         if (follows.isEmpty()) {
             throw new CustomException(ErrorCode.FOLLOW_NOT_FOUND);
         } else { // 팔로우가 존재하면 삭제
-            followRepository.deleteAllInBatch(follows);
+            followRepository.deleteAll(follows);
         }
     }
 
