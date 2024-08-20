@@ -1,6 +1,7 @@
 package sws.songpin.domain.follow.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sws.songpin.domain.alarm.service.AlarmService;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -36,14 +38,15 @@ public class FollowService {
             throw new CustomException(ErrorCode.FOLLOW_BAD_REQUEST);
         }
 
-        Optional<Follow> followOptional = followRepository.findByFollowerAndFollowing(currentMember, targetMember);
-        if (followOptional.isPresent()) { // 팔로우가 존재하면 삭제
-            followRepository.delete(followOptional.get());
-            return false;
-        } else { // 팔로우 추가
+        // 1개가 존재하기를 기대하지만, 멀티 스레드 이슈로 여러개가 입력될 수 있음
+        List<Follow> follows = followRepository.findAllByFollowerAndFollowing(currentMember, targetMember);
+        if (follows.isEmpty()) { // 팔로우 추가
             followRepository.save(FollowRequestDto.toEntity(currentMember, targetMember));
             alarmService.createFollowAlarm(currentMember, targetMember);
             return true;
+        } else { // 팔로우가 존재하면 삭제
+            followRepository.deleteAllInBatch(follows);
+            return false;
         }
     }
 
@@ -55,11 +58,12 @@ public class FollowService {
             throw new CustomException(ErrorCode.FOLLOW_BAD_REQUEST);
         }
 
-        Optional<Follow> followOptional = followRepository.findByFollowerAndFollowing(targetMember, currentMember);
-        if (followOptional.isPresent()) { // 팔로우가 존재하면 삭제
-            followRepository.delete(followOptional.get());
-        } else {
+        // 1개가 존재하기를 기대하지만, 멀티 스레드 이슈로 여러개가 입력될 수 있음
+        List<Follow> follows = followRepository.findAllByFollowerAndFollowing(currentMember, targetMember);
+        if (follows.isEmpty()) {
             throw new CustomException(ErrorCode.FOLLOW_NOT_FOUND);
+        } else { // 팔로우가 존재하면 삭제
+            followRepository.deleteAllInBatch(follows);
         }
     }
 
@@ -80,11 +84,12 @@ public class FollowService {
         if (follower.equals(following)) {
             return null;
         }
-        Optional<Follow> followOptional = followRepository.findByFollowerAndFollowing(follower, following);
-        if (followOptional.isPresent()) {
-            return true;
-        } else {
+        // 1개가 존재하기를 기대하지만, 멀티 스레드 이슈로 여러개가 입력될 수 있음
+        List<Follow> follows = followRepository.findAllByFollowerAndFollowing(follower, following);
+        if (follows.isEmpty()) {
             return false;
+        } else {
+            return true;
         }
     }
 
