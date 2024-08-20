@@ -11,7 +11,6 @@ import sws.songpin.global.exception.CustomException;
 import sws.songpin.global.exception.ErrorCode;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class GenreService {
     private final GenreRepository genreRepository;
@@ -29,6 +28,7 @@ public class GenreService {
         }
     }
 
+    @Transactional(readOnly = true)
     public Genre getGenreByGenreName(GenreName genreName) {
         return genreRepository.findByGenreName(genreName)
                 .orElseThrow(() -> new CustomException(ErrorCode.GENRE_NOT_FOUND));
