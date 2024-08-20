@@ -233,7 +233,7 @@ public class PlaylistService {
 
     @Transactional(readOnly = true)
     public boolean isPlaylistBookmarkedByMember(Playlist playlist, Member member) {
-        return bookmarkRepository.findByPlaylistAndMember(playlist, member).isPresent();
+        return bookmarkRepository.existsByPlaylistAndMember(playlist, member);
     }
 
     public void deleteAllPlaylistsOfMember(Member member) {
