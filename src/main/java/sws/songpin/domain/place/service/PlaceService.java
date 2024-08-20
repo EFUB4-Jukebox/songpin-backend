@@ -61,10 +61,10 @@ public class PlaceService {
         // 키워드의 이스케이프 처리 및 띄어쓰기 제거
         String escapedWord = escapeSpecialCharacters(keyword);
         String keywordNoSpaces = escapedWord.replace(" ", "");
-        Page<Object[]> placePages = getPlacePages(sortBy, keywordNoSpaces, pageable);
+        Page<Object[]> placePage = getSearchedPlacePage(sortBy, keywordNoSpaces, pageable);
 
         // Page<Object[]>를 Page<PlaceUnitDto>로 변환
-        Page<PlaceUnitDto> placeUnitPage = placePages.map(objects -> {
+        Page<PlaceUnitDto> placeUnitPage = placePage.map(objects -> {
             Long placeId = ((Number) objects[0]).longValue();
             String placeName = (String) objects[1];
             int placePinCount = ((Number) objects[2]).intValue();
@@ -76,15 +76,15 @@ public class PlaceService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Object[]> getPlacePages(SortBy sortBy, String keywordNoSpaces, Pageable pageable) {
-        Page<Object[]> placePages;
+    public Page<Object[]> getSearchedPlacePage(SortBy sortBy, String keywordNoSpaces, Pageable pageable) {
+        Page<Object[]> placePage;
         switch (sortBy) {
-            case COUNT -> placePages = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByCount(keywordNoSpaces, pageable);
-            case NEWEST -> placePages = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByNewest(keywordNoSpaces, pageable);
-            case ACCURACY -> placePages = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByAccuracy(keywordNoSpaces, pageable);
+            case COUNT -> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByCount(keywordNoSpaces, pageable);
+            case NEWEST -> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByNewest(keywordNoSpaces, pageable);
+            case ACCURACY -> placePage = placeRepository.findAllByPlaceNameContainingIgnoreSpacesOrderByAccuracy(keywordNoSpaces, pageable);
             default -> throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
         }
-        return placePages;
+        return placePage;
     }
 
     // Place를 providerAddressId로 찾아 가져오거나 생성
