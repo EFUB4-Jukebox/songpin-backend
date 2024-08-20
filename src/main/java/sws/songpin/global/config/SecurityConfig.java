@@ -23,7 +23,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import sws.songpin.global.auth.CustomLogoutHandler;
-import sws.songpin.global.auth.JwtAuthenticationEntryPoint;
+import sws.songpin.global.auth.CustomAuthenticationEntryPoint;
 import sws.songpin.global.auth.JwtFilter;
 import sws.songpin.global.auth.JwtUtil;
 
@@ -36,7 +36,7 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomLogoutHandler logoutHandler;
 
     @Bean
@@ -110,7 +110,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/members/{handle}/playlists").permitAll()
                         .requestMatchers(HttpMethod.GET, "/members/{handle}/feed").permitAll()
                         .anyRequest().authenticated())
-                .exceptionHandling(e -> e.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .exceptionHandling(e -> e.authenticationEntryPoint(customAuthenticationEntryPoint))
         ;
 
         return http.build();
