@@ -37,6 +37,7 @@ public class PlaceService {
     private final PlaceRepository placeRepository;
 
     // 장소 상세보기
+    @Transactional(readOnly = true)
     public PlaceDetailsResponseDto getPlaceDetails(Long placeId) {
         // 해당 Place의 Pin들을 가져와 Song끼리 grouping
         Place place = getPlaceById(placeId);
@@ -57,6 +58,7 @@ public class PlaceService {
     }
 
     // 장소 검색 (네이티브 쿼리 이용)
+    @Transactional(readOnly = true)
     public PlaceSearchResponseDto searchPlaces(String keyword, SortBy sortBy, Pageable pageable) {
         // 키워드의 이스케이프 처리 및 띄어쓰기 제거
         String escapedWord = escapeSpecialCharacters(keyword);

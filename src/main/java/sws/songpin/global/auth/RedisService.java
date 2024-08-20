@@ -21,6 +21,7 @@ public class RedisService {
          return redisTemplate.opsForValue().setIfAbsent(key, value, timeout);
     }
 
+    @Transactional(readOnly = true)
     public Object getValues(String key){
         return redisTemplate.opsForValue().get(key);
     }

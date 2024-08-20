@@ -63,16 +63,19 @@ public class FollowService {
         }
     }
 
+    @Transactional(readOnly = true)
     public Boolean checkIfFollowing(Member targetMember){
         Member currentMember = memberService.getCurrentMember();
         return checkIfFollowExists(currentMember, targetMember);
     }
 
+    @Transactional(readOnly = true)
     public Boolean checkIfFollower(Member targetMember) {
         Member currentMember = memberService.getCurrentMember();
         return checkIfFollowExists(targetMember, currentMember);
     }
 
+    @Transactional(readOnly = true)
     public Boolean checkIfFollowExists(Member follower, Member following) {
         if (follower.equals(following)) {
             return null;
