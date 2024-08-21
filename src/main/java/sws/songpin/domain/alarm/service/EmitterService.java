@@ -11,6 +11,7 @@ import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -24,7 +25,12 @@ public class EmitterService {
 
     public SseEmitter subscribe() {
         Member member = memberService.getCurrentMember();
-        SseEmitter emitter = registerEmitter(member.getMemberId());
+        Long memberId = member.getMemberId();
+
+        // 이미 존재하는 Emitter가 있는지 확인
+        SseEmitter emitter = Optional.ofNullable(emitterRepository.get(memberId))
+                .orElseGet(() -> registerEmitter(memberId));
+
         sendToClientIfNewAlarmExists(member);
         return emitter;
     }
