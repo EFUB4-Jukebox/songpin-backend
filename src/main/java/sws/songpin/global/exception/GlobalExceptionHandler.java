@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -73,5 +74,18 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
         return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
+    }
+
+    // MVC 계층에서 발생한 AccessDeniedException 처리
+    @ExceptionHandler({AccessDeniedException.class})
+    protected ResponseEntity<ErrorDto> handleAccessDeniedException(AccessDeniedException e, HttpServletRequest request){
+        ErrorDto errorDto = new ErrorDto(
+                LocalDateTime.now().toString(),
+                HttpStatus.FORBIDDEN.value(),
+                "ACCESS_DENIED",
+                "접근 권한이 없습니다.",
+                request.getRequestURI()
+        );
+        return new ResponseEntity<>(errorDto, HttpStatus.FORBIDDEN);
     }
 }
