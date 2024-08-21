@@ -2,7 +2,9 @@ package sws.songpin.domain.pin.dto.response;
 
 import sws.songpin.domain.genre.entity.GenreName;
 import sws.songpin.domain.pin.entity.Pin;
+import sws.songpin.domain.place.entity.Place;
 import sws.songpin.domain.song.dto.response.SongInfoDto;
+import sws.songpin.domain.song.entity.Song;
 
 import java.time.LocalDate;
 
@@ -18,15 +20,15 @@ public record PinBasicUnitDto(
         Boolean isMine
 
 ) {
-    public static PinBasicUnitDto from(Pin pin, Boolean isMine) {
+    public static PinBasicUnitDto from(Pin pin, Song song, Place place, GenreName genreName, boolean isMine) {
         return new PinBasicUnitDto(
                 pin.getPinId(),
-                SongInfoDto.from(pin.getSong()),
+                SongInfoDto.from(song),
                 pin.getListenedDate(),
-                pin.getPlace().getPlaceName(),
-                pin.getPlace().getLatitude( ),
-                pin.getPlace().getLongitude(),
-                pin.getGenre().getGenreName(),
+                place.getPlaceName(),
+                place.getLatitude(),
+                place.getLongitude(),
+                genreName,
                 isMine
         );
     }

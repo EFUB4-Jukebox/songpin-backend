@@ -16,14 +16,14 @@ public record PinExistingInfoResponseDto(
         String memo,
         Visibility visibility
 ) {
-    public static PinExistingInfoResponseDto from(Pin pin) {
+    public static PinExistingInfoResponseDto from(Pin pin, GenreName genreName) {
         return new PinExistingInfoResponseDto(
                 pin.getSong().getImgPath(),
                 pin.getSong().getTitle(),
                 pin.getSong().getArtist(),
                 pin.getListenedDate(),
                 pin.getPlace().getPlaceName(),
-                pin.getGenre().getGenreName(),
+                genreName,
                 pin.getMemo(),
                 pin.getVisibility()
         );
