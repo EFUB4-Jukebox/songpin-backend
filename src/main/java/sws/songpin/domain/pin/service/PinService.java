@@ -150,7 +150,7 @@ public class PinService {
         Page<SongDetailsPinDto> songDetailsPinPage = pinPage.map(pin -> {
             Boolean isMine = pin.getCreator().getMemberId().equals(currentMemberId);
             String memo = getMemoContent(pin.getMemo(), pin.getVisibility(), isMine);
-            return SongDetailsPinDto.from(pin, memo, isMine);
+            return SongDetailsPinDto.from(pin, pin.getCreator(), pin.getPlace(), memo, isMine);
         });
         return SongDetailsPinListResponseDto.from(songDetailsPinPage);
     }
@@ -218,7 +218,7 @@ public class PinService {
         Member currentMember = memberService.getCurrentMember();
         List<Pin> pins = pinRepository.findAllByCreatorAndDate(currentMember,year, month);
         List<PinBasicUnitDto> pinList = pins.stream()
-                .map(pin -> PinBasicUnitDto.from(pin, true))
+                .map(pin -> PinBasicUnitDto.from(pin, pin.getSong(), pin.getPlace(), pin.getGenre().getGenreName(), true))
                 .collect(Collectors.toList());
         return new PinBasicListResponseDto(pinList);
     }
@@ -266,7 +266,7 @@ public class PinService {
     @Transactional(readOnly = true)
     public PinExistingInfoResponseDto getPinInfo(Long pinId) {
         Pin pin = getPinById(pinId);
-        return PinExistingInfoResponseDto.from(pin);
+        return PinExistingInfoResponseDto.from(pin, pin.getGenre().getGenreName());
     }
 
 }

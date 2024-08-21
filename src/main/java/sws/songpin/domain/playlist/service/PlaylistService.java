@@ -13,6 +13,7 @@ import sws.songpin.domain.follow.entity.Follow;
 import sws.songpin.domain.member.service.MemberService;
 import sws.songpin.domain.model.SortBy;
 import sws.songpin.domain.model.Visibility;
+import sws.songpin.domain.pin.entity.Pin;
 import sws.songpin.domain.playlist.dto.response.*;
 import sws.songpin.domain.playlist.dto.request.PlaylistAddRequestDto;
 import sws.songpin.domain.playlist.dto.request.PlaylistUpdateRequestDto;
@@ -72,14 +73,15 @@ public class PlaylistService {
         playlistPins.stream()
                 .sorted(Comparator.comparingInt(PlaylistPin::getPinIndex).reversed())
                 .forEach(playlistPin -> {
-                    pinList.add(PlaylistPinUnitDto.from(playlistPin));
+                    Pin pin = playlistPin.getPin();
+                    pinList.add(PlaylistPinUnitDto.from(playlistPin, pin, pin.getSong(), pin.getPlace(), pin.getGenre().getGenreName()));
                     if (imgPathList.size() < 3) {
                         imgPathList.add(playlistPin.getPin().getSong().getImgPath());
                     }
                 });
         // isBookmarked
         boolean isBookmarked = isPlaylistBookmarkedByMember(playlist, currentMember);
-        return PlaylistDetailsResponseDto.from(playlist, imgPathList, pinList, isMine, isBookmarked);
+        return PlaylistDetailsResponseDto.from(playlist, playlist.getCreator(), imgPathList, pinList, isMine, isBookmarked);
     }
 
     // 플레이리스트 편집
@@ -228,7 +230,7 @@ public class PlaylistService {
                 .limit(3)
                 .collect(Collectors.toList());
         boolean isBookmarked = isPlaylistBookmarkedByMember(playlist, currentMember);
-        return PlaylistUnitDto.from(playlist, imgPathList, isBookmarked);
+        return PlaylistUnitDto.from(playlist, playlist.getCreator(), playlist.getPlaylistPins().size(), imgPathList, isBookmarked);
     }
 
     @Transactional(readOnly = true)

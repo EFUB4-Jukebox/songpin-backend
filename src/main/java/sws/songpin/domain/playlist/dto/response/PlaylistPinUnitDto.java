@@ -1,8 +1,12 @@
 package sws.songpin.domain.playlist.dto.response;
 
 import sws.songpin.domain.genre.entity.GenreName;
+import sws.songpin.domain.pin.entity.Pin;
+import sws.songpin.domain.place.entity.Place;
 import sws.songpin.domain.playlistpin.entity.PlaylistPin;
 import sws.songpin.domain.song.dto.response.SongInfoDto;
+import sws.songpin.domain.song.entity.Song;
+
 import java.time.LocalDate;
 
 public record PlaylistPinUnitDto(
@@ -16,18 +20,18 @@ public record PlaylistPinUnitDto(
         GenreName genreName,
         int pinIndex
 ) {
-    public static PlaylistPinUnitDto from (PlaylistPin playlistPin) {
-        SongInfoDto songInfo = SongInfoDto.from(playlistPin.getPin().getSong());
+    public static PlaylistPinUnitDto from (PlaylistPin playlistPin, Pin pin, Song song, Place place, GenreName genreName) {
+        SongInfoDto songInfo = SongInfoDto.from(song);
             return new PlaylistPinUnitDto(
-                playlistPin.getPlaylistPinId(),
-                playlistPin.getPin().getPinId(),
-                songInfo,
-                playlistPin.getPin().getListenedDate(),
-                playlistPin.getPin().getPlace().getPlaceName(),
-                playlistPin.getPin().getPlace().getLatitude(),
-                playlistPin.getPin().getPlace().getLongitude(),
-                playlistPin.getPin().getGenre().getGenreName(),
-                playlistPin.getPinIndex()
+                    playlistPin.getPlaylistPinId(),
+                    pin.getPinId(),
+                    songInfo,
+                    pin.getListenedDate(),
+                    place.getPlaceName(),
+                    place.getLatitude(),
+                    place.getLongitude(),
+                    genreName,
+                    playlistPin.getPinIndex()
         );
     }
 }
