@@ -106,7 +106,7 @@ public class JwtUtil {
     //Access Token 재발급에서 사용
     public boolean isTokenExpired(String accessToken) {
         try {
-            Claims claims = Jwts.parser().setSigningKey(accessKey).parseClaimsJws(accessToken).getBody();
+            Claims claims = Jwts.parserBuilder().setSigningKey(accessKey).build().parseClaimsJws(accessToken).getBody();
             return claims.getExpiration().before(new Date());
         } catch (ExpiredJwtException e){
             return true;
