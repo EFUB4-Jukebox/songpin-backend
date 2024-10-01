@@ -36,8 +36,8 @@ public interface PinRepository extends JpaRepository <Pin, Long> {
     @Query("SELECT p FROM Pin p WHERE p.creator = :creator AND YEAR(p.listenedDate) = :year AND MONTH(p.listenedDate) = :month")
     List<Pin> findAllByCreatorAndDate(@Param("creator") Member creator, @Param("year") int year, @Param("month") int month);
 
-    @Query("SELECT COUNT(p) FROM Pin p WHERE YEAR(p.listenedDate) = :currentYear")
-    long countByListenedDateYear(@Param("currentYear") int currentYear);
+    @Query("SELECT COUNT(p) FROM Pin p WHERE YEAR(p.createdTime) = :currentYear")
+    long countByCreatedTimeYear(@Param("currentYear") int currentYear);
 
     @Query("SELECT p.genre.genreName, COUNT(p) FROM Pin p GROUP BY p.genre ORDER BY COUNT(p) DESC")
     List<Object[]> findMostPopularGenreName();

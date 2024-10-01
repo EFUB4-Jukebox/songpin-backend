@@ -38,7 +38,7 @@ public class StatisticsService {
     }
 
     public long getTotalPinCount() {
-        return pinRepository.countByListenedDateYear(LocalDate.now().getYear());
+        return pinRepository.countByCreatedTimeYear(LocalDate.now().getYear());
     }
 
     @Transactional(readOnly = true)
