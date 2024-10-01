@@ -29,7 +29,7 @@ jobs:
           echo "${{ secrets.APPLICATION_PROD }}" > ./application.yml
 
       # 환경별 yml 파일 생성(2) - dev
-      - name: Bake application-dev.yml
+      - name: Make application-dev.yml
         if: contains(github.ref, 'deploy')
         run: |
           cd ./src/main/resources

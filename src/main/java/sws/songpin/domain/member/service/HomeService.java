@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class HomeService {
     private final MemberService memberService;
@@ -30,7 +29,7 @@ public class HomeService {
         List<Place> places = placeRepository.findTop3ByOrderByPlaceIdDesc();
         // pinList
         List<PinBasicUnitDto> pinList = pins.stream()
-                .map(pin -> PinBasicUnitDto.from(pin, pin.getCreator().equals(currentMember)))
+                .map(pin -> PinBasicUnitDto.from(pin, pin.getSong(), pin.getPlace(), pin.getGenre().getGenreName(), pin.getCreator().equals(currentMember)))
                 .collect(Collectors.toList());
         // placeList
         List<PlaceUnitDto> placeList = places.stream()

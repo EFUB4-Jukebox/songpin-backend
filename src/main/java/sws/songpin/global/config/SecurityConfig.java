@@ -1,6 +1,7 @@
 package sws.songpin.global.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -22,10 +23,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import sws.songpin.global.auth.CustomLogoutHandler;
-import sws.songpin.global.auth.JwtAuthenticationEntryPoint;
-import sws.songpin.global.auth.JwtFilter;
-import sws.songpin.global.auth.JwtUtil;
+import sws.songpin.global.auth.*;
 
 import java.util.Arrays;
 
@@ -36,14 +34,16 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomLogoutHandler logoutHandler;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
                 .requestMatchers("/error", "/favicon.ico",
-                        "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs", "/v3/api-docs/**");
+                        "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs", "/v3/api-docs/**")
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
     private static final String[] AUTH_WHITELIST = {
@@ -110,7 +110,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/members/{handle}/playlists").permitAll()
                         .requestMatchers(HttpMethod.GET, "/members/{handle}/feed").permitAll()
                         .anyRequest().authenticated())
-                .exceptionHandling(e -> e.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                )
         ;
 
         return http.build();

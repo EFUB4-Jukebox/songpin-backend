@@ -3,7 +3,6 @@ package sws.songpin.domain.alarm.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import sws.songpin.domain.alarm.dto.ssedata.AlarmDefaultDataDto;
 import sws.songpin.domain.alarm.repository.AlarmRepository;
@@ -12,10 +11,10 @@ import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.member.service.MemberService;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class EmitterService {
     private final EmitterRepository emitterRepository;
@@ -26,7 +25,12 @@ public class EmitterService {
 
     public SseEmitter subscribe() {
         Member member = memberService.getCurrentMember();
-        SseEmitter emitter = registerEmitter(member.getMemberId());
+        Long memberId = member.getMemberId();
+
+        // 이미 존재하는 Emitter가 있는지 확인
+        SseEmitter emitter = Optional.ofNullable(emitterRepository.get(memberId))
+                .orElseGet(() -> registerEmitter(memberId));
+
         sendToClientIfNewAlarmExists(member);
         return emitter;
     }

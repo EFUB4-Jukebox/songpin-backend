@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional(readOnly = true) // Transaction 모두 읽기 전용
 @RequiredArgsConstructor
 public class StatisticsService {
     private final MapPlaceRepository mapPlaceRepository;
@@ -30,8 +29,7 @@ public class StatisticsService {
     // 종합 통계
 
     public StatsOverallResponseDto getOverallStats() {
-        int currentYear = LocalDate.now().getYear();
-        long totalPinCount = pinRepository.countByListenedDateYear(currentYear);
+        long totalPinCount = getTotalPinCount();
         Pageable pageable = PageRequest.of(0, 1);
         StatsPopularSongDto popularSong = getMostPopularSongDto(pageable).orElse(null);
         StatsPlaceUnitDto popularPlace = getMostPopularPlaceDto(pageable).orElse(null);
@@ -39,7 +37,12 @@ public class StatisticsService {
         return StatsOverallResponseDto.from(totalPinCount, popularSong, popularPlace, popularGenreName);
     }
 
-    private Optional<StatsPopularSongDto> getMostPopularSongDto(Pageable pageable) {
+    public long getTotalPinCount() {
+        return pinRepository.countByCreatedTimeYear(LocalDate.now().getYear());
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<StatsPopularSongDto> getMostPopularSongDto(Pageable pageable) {
         Slice<StatsSongProjectionDto> topSongsSlice = songRepository.findTopSongs(pageable);
         if (topSongsSlice != null && !topSongsSlice.getContent().isEmpty()) {
             return Optional.of(StatsPopularSongDto.from(topSongsSlice.getContent().get(0)));
@@ -47,7 +50,8 @@ public class StatisticsService {
         return Optional.empty();
     }
 
-    private Optional<StatsPlaceUnitDto> getMostPopularPlaceDto(Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Optional<StatsPlaceUnitDto> getMostPopularPlaceDto(Pageable pageable) {
         Slice<StatsPlaceProjectionDto> topPlacesSlice = mapPlaceRepository.findTopPlaces(pageable);
         if (topPlacesSlice != null && !topPlacesSlice.getContent().isEmpty()) {
             return Optional.of(StatsPlaceUnitDto.from(topPlacesSlice.getContent().get(0)));
@@ -55,7 +59,8 @@ public class StatisticsService {
         return Optional.empty();
     }
 
-    private Optional<GenreName> getMostPopularGenreName() {
+    @Transactional(readOnly = true)
+    public Optional<GenreName> getMostPopularGenreName() {
         List<Object[]> objectList = pinRepository.findMostPopularGenreName();
         if (!objectList.isEmpty()) {
             return Optional.of(GenreName.from(objectList.get(0)[0].toString()));
@@ -63,6 +68,7 @@ public class StatisticsService {
             return Optional.empty();
         }
     }
+
 
     // 장르별 통계
 
@@ -74,7 +80,8 @@ public class StatisticsService {
         return StatsGenreResponseDto.from(placeUnitDtos, songUnitDtos);
     }
 
-    private List<StatsSongUnitDto> getTopSongsFromAllGenres(GenreName[] genreNames, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public List<StatsSongUnitDto> getTopSongsFromAllGenres(GenreName[] genreNames, Pageable pageable) {
         List<StatsSongUnitDto> songUnitDtos = new ArrayList<>();
         for (GenreName genreName : genreNames) {
             Slice<StatsSongProjectionDto> dtoSlice = songRepository.findTopSongsByGenreName(genreName, pageable);
@@ -85,7 +92,8 @@ public class StatisticsService {
         return songUnitDtos;
     }
 
-    private List<StatsPlaceUnitDto> getTopPlacesFromAllGenres(GenreName[] genreNames, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public List<StatsPlaceUnitDto> getTopPlacesFromAllGenres(GenreName[] genreNames, Pageable pageable) {
         List<StatsPlaceUnitDto> placeUnitDtos = new ArrayList<>();
         for (GenreName genreName : genreNames) {
             Slice<StatsPlaceProjectionDto> dtoSlice = mapPlaceRepository.findTopPlacesByGenreName(genreName, pageable);

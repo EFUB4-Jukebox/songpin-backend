@@ -1,5 +1,6 @@
 package sws.songpin.domain.playlist.dto.response;
 
+import sws.songpin.domain.member.entity.Member;
 import sws.songpin.domain.model.Visibility;
 import sws.songpin.domain.playlist.entity.Playlist;
 
@@ -17,12 +18,12 @@ public record PlaylistUnitDto(
         List<String> imgPathList,
         Boolean isBookmarked
 ) {
-    public static PlaylistUnitDto from (Playlist playlist, List<String> imgPathList, boolean isBookmarked) {
+    public static PlaylistUnitDto from (Playlist playlist, Member creator, int pinCount, List<String> imgPathList, boolean isBookmarked) {
         return new PlaylistUnitDto(
                 playlist.getPlaylistId(),
                 playlist.getPlaylistName(),
-                playlist.getCreator().getNickname(),
-                playlist.getPlaylistPins().size(),
+                creator.getNickname(),
+                pinCount,
                 playlist.getModifiedTime(),
                 playlist.getVisibility(),
                 imgPathList,

@@ -32,6 +32,7 @@ import sws.songpin.global.exception.ErrorCode;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -104,9 +105,20 @@ public class PinService {
         List<Genre> genres = pinRepository.findBySong(song).stream()
                 .map(Pin::getGenre)
                 .collect(Collectors.toList());
-        Optional<GenreName> avgGenreName = songService.calculateAvgGenreName(genres);
+        Optional<GenreName> avgGenreName = calculateAvgGenreNameOfSong(genres);
         avgGenreName.ifPresent(song::setAvgGenreName);
         songRepository.save(song);
+    }
+
+    public Optional<GenreName> calculateAvgGenreNameOfSong(List<Genre> genres) {
+        Map<GenreName, Long> genreCount = genres.stream()
+                .collect(Collectors.groupingBy(Genre::getGenreName, Collectors.counting()));
+
+        return genreCount.entrySet().stream()
+                .sorted(Map.Entry.<GenreName, Long>comparingByValue().reversed()
+                        .thenComparing(Map.Entry::getKey))
+                .map(Map.Entry::getKey)
+                .findFirst();
     }
 
     // 현재 로그인된 사용자가 핀의 생성자인지 확인
@@ -138,7 +150,7 @@ public class PinService {
         Page<SongDetailsPinDto> songDetailsPinPage = pinPage.map(pin -> {
             Boolean isMine = pin.getCreator().getMemberId().equals(currentMemberId);
             String memo = getMemoContent(pin.getMemo(), pin.getVisibility(), isMine);
-            return SongDetailsPinDto.from(pin, memo, isMine);
+            return SongDetailsPinDto.from(pin, pin.getCreator(), pin.getPlace(), memo, isMine);
         });
         return SongDetailsPinListResponseDto.from(songDetailsPinPage);
     }
@@ -206,7 +218,7 @@ public class PinService {
         Member currentMember = memberService.getCurrentMember();
         List<Pin> pins = pinRepository.findAllByCreatorAndDate(currentMember,year, month);
         List<PinBasicUnitDto> pinList = pins.stream()
-                .map(pin -> PinBasicUnitDto.from(pin, true))
+                .map(pin -> PinBasicUnitDto.from(pin, pin.getSong(), pin.getPlace(), pin.getGenre().getGenreName(), true))
                 .collect(Collectors.toList());
         return new PinBasicListResponseDto(pinList);
     }
@@ -254,7 +266,7 @@ public class PinService {
     @Transactional(readOnly = true)
     public PinExistingInfoResponseDto getPinInfo(Long pinId) {
         Pin pin = getPinById(pinId);
-        return PinExistingInfoResponseDto.from(pin);
+        return PinExistingInfoResponseDto.from(pin, pin.getGenre().getGenreName());
     }
 
 }
