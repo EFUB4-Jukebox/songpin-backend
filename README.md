@@ -12,7 +12,7 @@ EFUB 4기 SWS 3팀 "SongPin" 프로젝트 백엔드 레포지토리입니다.
 <br>
 <img src="src/main/resources/static/logo_songpin.png" width="300">
 
-**나의 음악지도, SongPin**
+### **나의 음악지도, SongPin**
 
 <a href="https://www.instagram.com/songpin_official/">
   <img alt="Instagram" src="https://img.shields.io/badge/-Instagram-white?logo=Instagram&logoColor=d42121">
